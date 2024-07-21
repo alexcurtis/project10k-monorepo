@@ -1,0 +1,7 @@
+npmScopes: {
+  "tiptap-pro": {
+    npmRegistryServer: "https://registry.tiptap.dev/",
+    npmAlwaysAuth: true,
+    npmAuthToken: "INSERT AUTH KEY FROM https://cloud.tiptap.dev/pro-extensions",
+  }
+}
