@@ -1,12 +1,14 @@
 import { memo, useState, useContext, useCallback } from 'react';
 import { EditableText } from './components';
-import { BlockEditor } from './editor';
+// import { BlockEditor } from './editor';
 import { Insight, InsightStore, Quote } from './types';
 import { useInsightStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
 
 // import { Button } from './components';
 import { usePub } from './hooks';
+
+import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
 
 import {Button} from '@vspark/catalyst/button';
 
@@ -70,8 +72,8 @@ export const JournalEditor = memo(({ content, onUpdate }: { content: object, onU
     return (
         <div className='p-4 bg-zinc-800 min-h-96 rounded'>
             <BlockEditor
-                content={content}
-                onUpdate={onUpdate}
+                // content={content}
+                // onUpdate={onUpdate}
             />
         </div>
     );
