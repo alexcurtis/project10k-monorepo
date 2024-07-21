@@ -3,7 +3,7 @@
 import { EditorContent } from '@tiptap/react'
 import React, { useMemo, useRef } from 'react'
 
-import { LinkMenu } from ':/components/menus'
+import { LinkMenu } from '@/components/menus'
 
 import { useBlockEditor } from '@/hooks/useBlockEditor'
 

@@ -19,14 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-    //   "@block-editor/*": ["./node_modules/block-editor/src/*"],
-    //   "@catalyst/*": ["./node_modules/block-editor/src/catalyst/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "references": [
-    {"path": "../../packages/block-editor"}
-  ],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
