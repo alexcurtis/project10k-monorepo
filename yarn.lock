@@ -3885,11 +3885,13 @@ __metadata:
     eslint-config-next: "npm:14.2.5"
     eventemitter3: "npm:^5.0.1"
     next: "npm:14.2.5"
+    next-transpile-modules: "npm:^10.0.1"
     pdfjs-dist: "npm:^3.4.120"
     postcss: "npm:^8"
     react: "npm:^18"
     react-dom: "npm:^18"
     tailwindcss: "npm:^3.4.1"
+    tsconfig-paths-webpack-plugin: "npm:^4.1.0"
     typescript: "npm:^5"
     uuid: "npm:^10.0.0"
     zustand: "npm:^4.5.4"
@@ -4470,7 +4472,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^4.0.0":
+"chalk@npm:^4.0.0, chalk@npm:^4.1.0":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -5105,7 +5107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.12.0":
+"enhanced-resolve@npm:^5.10.0, enhanced-resolve@npm:^5.12.0, enhanced-resolve@npm:^5.7.0":
   version: 5.17.0
   resolution: "enhanced-resolve@npm:5.17.0"
   dependencies:
@@ -6708,7 +6710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json5@npm:^2.2.3":
+"json5@npm:^2.2.2, json5@npm:^2.2.3":
   version: 2.2.3
   resolution: "json5@npm:2.2.3"
   bin:
@@ -7268,6 +7270,15 @@ __metadata:
   version: 0.6.3
   resolution: "negotiator@npm:0.6.3"
   checksum: 10c0/3ec9fd413e7bf071c937ae60d572bc67155262068ed522cf4b3be5edbe6ddf67d095ec03a3a14ebf8fc8e95f8e1d61be4869db0dbb0de696f6b837358bd43fc2
+  languageName: node
+  linkType: hard
+
+"next-transpile-modules@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "next-transpile-modules@npm:10.0.1"
+  dependencies:
+    enhanced-resolve: "npm:^5.10.0"
+  checksum: 10c0/e047655170bc5bfdfad7d3694a28a49dc7e817c6616bbd0b9139a03a81f4bee34c96ecfdbc1cb626ea66a79b54322782ad316bf72d2a367fa424795e6ef7bcca
   languageName: node
   linkType: hard
 
@@ -9072,6 +9083,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsconfig-paths-webpack-plugin@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "tsconfig-paths-webpack-plugin@npm:4.1.0"
+  dependencies:
+    chalk: "npm:^4.1.0"
+    enhanced-resolve: "npm:^5.7.0"
+    tsconfig-paths: "npm:^4.1.2"
+  checksum: 10c0/c030e867e70a3f6d1799fdffa209c3a35e1435ad99aac01946b9ebb0fa8208b7b508c1dfe8c8e13d6a2ef70c75b4db062fbfd3c1f3362c69b6c65ffd4a50e226
+  languageName: node
+  linkType: hard
+
 "tsconfig-paths@npm:^3.15.0":
   version: 3.15.0
   resolution: "tsconfig-paths@npm:3.15.0"
@@ -9081,6 +9103,17 @@ __metadata:
     minimist: "npm:^1.2.6"
     strip-bom: "npm:^3.0.0"
   checksum: 10c0/5b4f301a2b7a3766a986baf8fc0e177eb80bdba6e396792ff92dc23b5bca8bb279fc96517dcaaef63a3b49bebc6c4c833653ec58155780bc906bdbcf7dda0ef5
+  languageName: node
+  linkType: hard
+
+"tsconfig-paths@npm:^4.1.2":
+  version: 4.2.0
+  resolution: "tsconfig-paths@npm:4.2.0"
+  dependencies:
+    json5: "npm:^2.2.2"
+    minimist: "npm:^1.2.6"
+    strip-bom: "npm:^3.0.0"
+  checksum: 10c0/09a5877402d082bb1134930c10249edeebc0211f36150c35e1c542e5b91f1047b1ccf7da1e59babca1ef1f014c525510f4f870de7c9bda470c73bb4e2721b3ea
   languageName: node
   linkType: hard
 

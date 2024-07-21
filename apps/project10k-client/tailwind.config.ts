@@ -5,7 +5,8 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "../../packages/catalyst/**/*.{js,ts,jsx,tsx,mdx}" // Catalyst UI Package Tailwind Pickup
+    "../../packages/catalyst/**/*.{js,ts,jsx,tsx,mdx}", // Catalyst UI Package Tailwind Pickup
+    "../../packages/block-editor/src/**/*.{js,ts,jsx,tsx,mdx}" // Block Editor UI Package Tailwind Pickup
   ],
   theme: {
     extend: {
