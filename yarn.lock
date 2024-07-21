@@ -3074,6 +3074,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tiptap/extension-collaboration@npm:^2.5.4":
+  version: 2.5.4
+  resolution: "@tiptap/extension-collaboration@npm:2.5.4"
+  peerDependencies:
+    "@tiptap/core": ^2.5.4
+    "@tiptap/pm": ^2.5.4
+    y-prosemirror: ^1.2.6
+  checksum: 10c0/15db52e8c9531fdeabbd56630f85888592867f31100e2929e4d82b9e4a77c559ee67c3bd35c8cec0b209f00a1e3d44f7b8322e2089984a9615a1d8df68f32594
+  languageName: node
+  linkType: hard
+
 "@tiptap/extension-color@npm:^2.5.4":
   version: 2.5.4
   resolution: "@tiptap/extension-color@npm:2.5.4"
@@ -3771,6 +3782,7 @@ __metadata:
     "@tiptap/extension-character-count": "npm:^2.5.4"
     "@tiptap/extension-code-block": "npm:^2.5.4"
     "@tiptap/extension-code-block-lowlight": "npm:^2.5.4"
+    "@tiptap/extension-collaboration": "npm:^2.5.4"
     "@tiptap/extension-color": "npm:^2.5.4"
     "@tiptap/extension-document": "npm:^2.5.4"
     "@tiptap/extension-dropcursor": "npm:^2.5.4"
@@ -3830,6 +3842,8 @@ __metadata:
     typescript: "npm:5.1.6"
     uuid: "npm:^9.0.0"
     y-prosemirror: "npm:^1.2.9"
+    y-protocols: "npm:^1.0.6"
+    yjs: "npm:13.6.18"
   languageName: unknown
   linkType: soft
 
@@ -6789,7 +6803,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lib0@npm:^0.2.42":
+"lib0@npm:^0.2.42, lib0@npm:^0.2.85, lib0@npm:^0.2.86":
   version: 0.2.94
   resolution: "lib0@npm:0.2.94"
   dependencies:
@@ -9521,6 +9535,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"y-protocols@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "y-protocols@npm:1.0.6"
+  dependencies:
+    lib0: "npm:^0.2.85"
+  peerDependencies:
+    yjs: ^13.0.0
+  checksum: 10c0/fae7d63d4609e75eac8114320aa3581311993cd0c1b7ac03d13dc30c9a95d7b1680e4500786bb417c1fb3d11a69e1bed3e50d08e15febde9b8abf70f133eb917
+  languageName: node
+  linkType: hard
+
 "yallist@npm:^3.0.2":
   version: 3.1.1
   resolution: "yallist@npm:3.1.1"
@@ -9541,6 +9566,15 @@ __metadata:
   bin:
     yaml: bin.mjs
   checksum: 10c0/e1ee78b381e5c710f715cc4082fd10fc82f7f5c92bd6f075771d20559e175616f56abf1c411f545ea0e9e16e4f84a83a50b42764af5f16ec006328ba9476bb31
+  languageName: node
+  linkType: hard
+
+"yjs@npm:13.6.18":
+  version: 13.6.18
+  resolution: "yjs@npm:13.6.18"
+  dependencies:
+    lib0: "npm:^0.2.86"
+  checksum: 10c0/ef886370f5d4ff98491c3612cbd5b4ae3a75d1756aeae98f0a0855f29acf80008f019fe22067fddc447bceacfea00c20f9c3efc0bb7b5cbec62aacb435cb8072
   languageName: node
   linkType: hard
 
