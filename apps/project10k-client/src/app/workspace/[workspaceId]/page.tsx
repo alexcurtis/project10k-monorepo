@@ -1,19 +1,18 @@
 'use client';
 import dynamic from "next/dynamic";
 import React from 'react';
-import Link from 'next/link';
 
 import { ApolloAppProvider } from '@/app/graphql';
 import { Workspaces } from '@/app/workspaces';
 
 
-function WorkspacesPage() {
+function WorkspacePage({ params }: { params: { workspaceId: string }}) {
     return (
         <div className="dark flex flex-row min-h-screen bg-slate-700">
             <div className="bg-black">
+                {params.workspaceId}
                 <ApolloAppProvider>
                     <Workspaces />
-                    <Link href="/workspace/id">this page!</Link>
                 </ApolloAppProvider>
             </div>
         </div>
@@ -21,5 +20,5 @@ function WorkspacesPage() {
 }
 
 // Turn Off SSR for Main App
-export default dynamic(async () => WorkspacesPage, { ssr: false });
+export default dynamic(async () => WorkspacePage, { ssr: false });
 
