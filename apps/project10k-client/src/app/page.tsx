@@ -6,12 +6,59 @@ import React, { createContext, useContext } from 'react';
 import { MindMap } from './mindmap'
 import { PdfViewer } from './pdfviewer';
 import { Journal } from './journal';
-import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
+// import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
+
+import {
+    ApolloClient,
+    InMemoryCache,
+    ApolloProvider,
+    gql
+} from "@apollo/client";
+
+import { create } from 'zustand';
+
+type WorkspaceStore = {
+    id: string,
+    name: string,
+    setName: (name: string) => void
+}
+
+const useCounterStore = create<WorkspaceStore>((set) => ({
+    id: '',
+    name: 'Carvana',
+    setName: (name: string) => set({ name })
+}));
+
+
 
 function Home() {
+
+    const client = new ApolloClient({
+        cache: new InMemoryCache(),
+        uri: "http://localhost:3000/graphql",
+    });
+
+
+    client
+  .query({
+    query: gql`
+      query {
+  workspaces {
+    id, name
+  }
+}
+    `,
+  })
+  .then((result) => console.log(result));
+
     return (
         <div className="dark min-h-screen">
-            <BlockEditor/>
+            {/* <ApolloProvider client={client}>
+                <div>
+
+                </div>
+            </ApolloProvider> */}
+            {/* <BlockEditor/> */}
         </div>
 
         // <div className="dark flex flex-row min-h-screen">
