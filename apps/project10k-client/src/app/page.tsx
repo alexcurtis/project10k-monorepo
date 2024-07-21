@@ -1,19 +1,25 @@
-"use client";
-
+'use client';
+import dynamic from "next/dynamic";
 import React, { createContext, useContext } from 'react';
 
 // import Image from "next/image";
 import { MindMap } from './mindmap'
 import { PdfViewer } from './pdfviewer';
 import { Journal } from './journal';
+import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
 
-export default function Home() {
+function Home() {
     return (
-        <div className="dark flex flex-row min-h-screen">
-            <Journal />
-            <MindMap />
-            <PdfViewer />
+        <div className="dark min-h-screen">
+            <BlockEditor/>
         </div>
+
+        // <div className="dark flex flex-row min-h-screen">
+        //     <BlockEditor/>
+        //     {/* <Journal />
+        //     <MindMap />
+        //     <PdfViewer /> */}
+        // </div>
 
         // <main className="flex min-h-screen flex-col items-center justify-between p-24">
         //   <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -124,3 +130,7 @@ export default function Home() {
         // </main>
     );
 }
+
+// Turn Off SSR for Main App
+export default dynamic(async () => Home, { ssr: false });
+
