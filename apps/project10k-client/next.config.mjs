@@ -14,15 +14,16 @@ export default {
             ...config.resolve.plugins,
             new TsconfigPathsPlugin({ configFile: '../../packages/block-editor/tsconfig.json' }),
         ];
-        config.module.rules = [
-            ...config.module.rules,
-            {
-                test: /\.(js|jsx|ts|tsx)$/,
-                include: [workspace],
-                exclude: /node_modules/,
-                use: options.defaultLoaders.babel,
-            },
-        ];
+        //Referenced In Fix For TS Paths - But seems to work fine without it
+        // config.module.rules = [
+        //     ...config.module.rules,
+        //     {
+        //         test: /\.(js|jsx|ts|tsx)$/,
+        //         include: [workspace],
+        //         exclude: /node_modules/,
+        //         use: options.defaultLoaders.babel,
+        //     },
+        // ];
         return config;
     },
 };
