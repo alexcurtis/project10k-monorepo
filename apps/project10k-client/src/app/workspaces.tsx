@@ -1,6 +1,7 @@
 import { useQuery, gql } from "@apollo/client";
 import { Button } from '@vspark/catalyst/button';
 import { Badge } from '@vspark/catalyst/badge';
+import { Loader } from '@vspark/catalyst/loader';
 //import Link from 'next/link';
 
 import { IWorkspace } from './types/entities';
@@ -21,7 +22,6 @@ const Q_MY_WORKSPACES = gql`query GetMyWorkspaces{
 }`;
 
 function Workspace({ workspace }: { workspace: IWorkspace }) {
-    console.log('test', workspace.id);
     return (
         <li className="flex items-center justify-between gap-x-6 py-5">
             <div className="min-w-0">
@@ -57,8 +57,7 @@ function Workspace({ workspace }: { workspace: IWorkspace }) {
 
 export function Workspaces() {
     const { loading, error, data } = useQuery<IWorkspacesQL>(Q_MY_WORKSPACES);
-    console.log('data ', data);
-    if (loading || !data) { return <p>Loading...</p>; }
+    if (loading || !data) { return <Loader/>; }
     return (
         <ul role="list" className="divide-y divide-zinc-800">
             {data.workspaces.map((workspace: IWorkspace) => (
