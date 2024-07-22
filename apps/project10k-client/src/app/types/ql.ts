@@ -4,10 +4,12 @@ import {
 } from './entities';
 
 export interface IQueryLanguage {
-    error: ApolloError,
-    loading: boolean
 }
 
 export interface IWorkspacesQL extends IQueryLanguage {
     workspaces: IWorkspace[]
+}
+
+export interface IWorkspaceQL extends IQueryLanguage {
+    workspace: IWorkspace
 }

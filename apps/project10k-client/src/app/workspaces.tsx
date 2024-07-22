@@ -63,7 +63,7 @@ function Workspace({ workspace }: { workspace: IWorkspace }) {
 
 export function Workspaces() {
     const { loading, error, data } = useQuery<IWorkspacesQL>(Q_MY_WORKSPACES);
-    if (loading || !data) { return <Loader/>; }
+    if (loading || !data) { return (<Loader/>); }
     return (
         <ul role="list" className="divide-y divide-zinc-800">
             {data.workspaces.map((workspace: IWorkspace) => (
