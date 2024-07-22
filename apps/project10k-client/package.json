@@ -23,6 +23,7 @@
         "@vspark/block-editor": "workspace:^",
         "@vspark/catalyst": "workspace:^",
         "@xyflow/react": "^12.0.2",
+        "date-fns": "^3.6.0",
         "eventemitter3": "^5.0.1",
         "graphql": "^16.9.0",
         "next": "14.2.5",

@@ -3,17 +3,14 @@ import dynamic from "next/dynamic";
 import React from 'react';
 
 import { ApolloAppProvider } from '@/app/graphql';
-import { Workspaces } from '@/app/workspaces';
-
 
 function WorkspacePage({ params }: { params: { workspaceId: string }}) {
     return (
-        <div className="dark min-h-screen w-full bg-slate-700">
+        <div className="dark min-h-screen w-full bg-zinc-950">
             <div className="bg-black">
                 {params.workspaceId}
-                <ApolloAppProvider>
-                    <Workspaces />
-                </ApolloAppProvider>
+                {/* <ApolloAppProvider>
+                </ApolloAppProvider> */}
             </div>
         </div>
     );

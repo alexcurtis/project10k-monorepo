@@ -2,7 +2,8 @@ import { useQuery, gql } from "@apollo/client";
 import { Button } from '@vspark/catalyst/button';
 import { Badge } from '@vspark/catalyst/badge';
 import { Loader } from '@vspark/catalyst/loader';
-//import Link from 'next/link';
+import Link from 'next/link';
+import { format } from 'date-fns';
 
 import { IWorkspace } from './types/entities';
 import { IWorkspacesQL } from './types/ql';
@@ -35,9 +36,9 @@ function Workspace({ workspace }: { workspace: IWorkspace }) {
                 </div>
                 <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-zinc-400">
                     <p className="whitespace-nowrap">
-                        Due on 
+                        Last updated on 
                         <time dateTime={workspace.updated_at}>
-                            {' ' + workspace.updated_at}
+                            {' ' + format(workspace.updated_at, 'Pp')}
                         </time>
                     </p>
                     <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
@@ -47,9 +48,14 @@ function Workspace({ workspace }: { workspace: IWorkspace }) {
                 </div>
             </div>
             <div className="flex flex-none items-center gap-x-4">
-                <Button href={`/workspace/${workspace.id}`}>
-                    View Workspace
-                </Button>
+                <Link
+                    legacyBehavior={true}
+                    passHref
+                    href={`/workspace/${workspace.id}`}>
+                    <Button>
+                        View Workspace
+                    </Button>
+                </Link>
             </div>
         </li>
     );
