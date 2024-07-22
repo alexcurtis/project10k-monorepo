@@ -9,8 +9,7 @@ import { IWorkspace } from './types/entities';
 import { IWorkspacesQL } from './types/ql';
 
 
-
-const Q_MY_WORKSPACES = gql`query GetMyWorkspaces{
+const Q_MY_WORKSPACES = gql`query GetMyWorkspaces {
     workspaces{
         id,
         name,

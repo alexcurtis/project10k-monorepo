@@ -9,8 +9,8 @@ import { ApolloAppProvider } from '@/app/graphql';
 import { IWorkspace } from '@/app/types/entities';
 import { IWorkspaceQL } from '@/app/types/ql';
 
-const Q_MY_WORKSPACE = gql`query {
-    workspace(id: "254627db-8666-4926-8a40-ccc19858c1eb"){
+const Q_MY_WORKSPACE = gql`query GetWorkspace($id: String!) {
+    workspace(id: $id){
         id,
         name,
         created_at,
