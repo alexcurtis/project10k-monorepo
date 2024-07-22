@@ -8,7 +8,14 @@ import { useShallow } from 'zustand/react/shallow';
 // import { Button } from './components';
 import { usePub } from './hooks';
 
-import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
+// import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
+import {
+    useQuery,
+    gql
+} from "@apollo/client";
+
+import { WorkspacesQL } from './types/ql';
+import { Workspace } from './types/entities';
 
 import {Button} from '@vspark/catalyst/button';
 
@@ -67,14 +74,33 @@ const isSameInsight = (prevProps: { id: string; }, nextProps: { id: string; }) =
     return prevProps.id === nextProps.id;
 };
 
-export const JournalEditor = memo(({ content, onUpdate }: { content: object, onUpdate: (update: object) => void }) => {
+export const JournalEditor = memo(({ id, content, onUpdate }: { id: string, content: object, onUpdate: (update: object) => void }) => {
     console.log('RENDERING BIG EXPENSIVE EDITOR VIEW');
+
+    const TEST_QUERY = gql`query {
+        workspaces(id: ${id}) {
+            id,
+            name
+        }
+    }`;
+
+    const { loading, error, data } = useQuery<WorkspacesQL>(TEST_QUERY);
+    console.log('data ', data);
+    if (loading || !data) { return <p>Loading...</p>; }
+    
     return (
         <div className='p-4 bg-zinc-800 min-h-96 rounded'>
-            <BlockEditor
+            {/* <BlockEditor
                 // content={content}
                 // onUpdate={onUpdate}
-            />
+            /> */}
+            <ul>
+                {data.workspaces.map((workspace: Workspace) => (
+                    <li key={workspace.id}>
+                        {workspace.name}
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }, isSameInsight);
