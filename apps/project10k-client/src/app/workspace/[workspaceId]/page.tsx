@@ -10,7 +10,7 @@ import { WorkspaceContext } from '@/app/context';
 import { Journal } from '@/app/components/journal';
 
 const Q_MY_WORKSPACE = gql`query GetWorkspace($id: String!) {
-    workspace(id: $id){
+    workspace(id: $id, withJournal: false){
         id,
         name,
         created_at,
@@ -44,6 +44,7 @@ function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
     });
     if (loading || !data) { return (<Loader />); }
     const workspace = data.workspace;
+    console.log('rendering workspace layout');
     return (
         <>
             <Header name={workspace.name}/>
@@ -55,6 +56,7 @@ function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
 }
 
 function WorkspacePage({ params }: { params: { workspaceId: string } }) {
+    console.log('rendering workspace page');
     return (
         <>
             <ApolloAppProvider>

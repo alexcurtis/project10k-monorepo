@@ -1,6 +1,7 @@
 import { ApolloError } from "@apollo/client";
 import {
-    IWorkspace
+    IWorkspace,
+    IJournal
 } from './entities';
 
 export interface IQueryLanguage {
@@ -13,3 +14,7 @@ export interface IWorkspacesQL extends IQueryLanguage {
 export interface IWorkspaceQL extends IQueryLanguage {
     workspace: IWorkspace
 }
+
+// export interface IJournalQL extends IQueryLanguage {
+//     journal: IJournal
+// }

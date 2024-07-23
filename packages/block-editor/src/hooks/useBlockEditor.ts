@@ -10,35 +10,28 @@ declare global {
     }
 }
 
-export const useBlockEditor = () => {
-
-    // Should this be useCallback
-    const onUpdate = useCallback((cb) => {
-
-    }, [])
-
-
+export const useBlockEditor = ({ initialContent, onUpdate }: { initialContent: string, onUpdate: () => void }) => {
     const leftSidebar = useSidebar()
-    const editor = useEditor(
-        {
-            autofocus: true,
-            onCreate: ({ editor }) => {
-            },
-            onUpdate({ editor }) {
-                console.log('editor updated', editor.getJSON());
-            },
-            extensions: [
-                ...ExtensionKit({}),
-            ],
-            editorProps: {
-                attributes: {
-                    autocomplete: 'off',
-                    autocorrect: 'off',
-                    autocapitalize: 'off',
-                    class: 'min-h-full',
-                },
+    console.log('Use Block Editor');
+    const editor = useEditor({
+        immediatelyRender: false,
+        content: initialContent,
+        autofocus: true,
+        onCreate: ({ editor }) => {
+        },
+        onUpdate: onUpdate,
+        extensions: [
+            ...ExtensionKit({}),
+        ],
+        editorProps: {
+            attributes: {
+                autocomplete: 'off',
+                autocorrect: 'off',
+                autocapitalize: 'off',
+                class: 'min-h-full',
             },
         },
+    },
         [],
     )
 

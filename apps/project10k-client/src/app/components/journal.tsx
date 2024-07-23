@@ -1,24 +1,68 @@
-import { useContext } from 'react';
-import { useQuery, gql } from '@apollo/client';
+'use client';
+
+import { useContext, useCallback } from 'react';
+import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loader } from '@vspark/catalyst/loader';
+import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
+
+
+import { Button } from '@vspark/catalyst/button';
 
 import { WorkspaceContext } from '@/app/context';
-import { IWorkspaceQL } from '@/app/types/ql';
+import { IWorkspaceQL, IJournalML } from '@/app/types/ql';
 
-const Q_MY_WORKSPACE_JOURNAL  = gql`query GetWorkspaceJournal($id: String!) {
-    workspace(id: $id){
-        name
+const Q_MY_WORKSPACE_WITH_JOURNAL = gql`query GetWorkspaceJournal($id: String!) {
+    workspace(id: $id, withJournal: true){
+        name,
+        journal {
+            id,
+            content
+        }
     }
 }`;
 
-export function Journal(){
-    const workspace = useContext(WorkspaceContext);
-    const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE_JOURNAL, {
-        variables: { id: workspace.id }
+const M_UPDATE_JOURNAL = gql`mutation GetWorkspaceJournal($id: String!, $content: String!) {
+    updateJournal(
+      journal: {id: $id, content: $content}
+    ) {
+      id
+      content
+    }
+  }
+`
+
+export function Journal() {
+    const { id } = useContext(WorkspaceContext);
+    const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE_WITH_JOURNAL, {
+        variables: { id: id }
     });
+    // const [updateJournal] = useMutation(M_UPDATE_JOURNAL, {
+    //     ignoreResults: true, // Ensures The Editor Does Not Get Re-Rendered When Editor Updated
+    // });
+    const updateJournalCb = useCallback((evnt) => {
+        // const json = JSON.stringify(evnt.editor.getJSON());
+        // console.log('updating with ', {
+        //     id: data?.workspace.journal.id,
+        //     content: json
+        // });
+        // updateJournal({
+        //     variables: {
+        //         id: data?.workspace.journal.id,
+        //         content: json
+        //     }
+        // })
+    }, [data]);
+
+    console.log('RENDERING JOURNAL', id, data);
+    if (loading || !data) { return (<Loader />); }
+    const journal = data.workspace.journal;
+    const contentJson = JSON.parse(journal.content);
     return (
         <div className='py-5'>
-            Journal <div>{data.workspace.name}</div>
+            <BlockEditor
+                initialContent={contentJson}
+                onUpdate={updateJournalCb}
+            />
         </div>
     )
 }

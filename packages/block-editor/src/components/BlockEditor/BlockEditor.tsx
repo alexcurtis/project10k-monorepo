@@ -19,43 +19,48 @@ import { EditorHeader } from './components/EditorHeader'
 import { TextMenu } from '../menus/TextMenu'
 import { ContentItemMenu } from '../menus/ContentItemMenu'
 
-export const BlockEditor = ({}: TiptapProps) => {
-  const menuContainerRef = useRef(null)
+export const BlockEditor = ({ initialContent, onUpdate }: { initialContent: string, onUpdate: () => void }) => {
+    const menuContainerRef = useRef(null)
 
-  const { editor, characterCount, leftSidebar } = useBlockEditor()
+    const { editor, characterCount, leftSidebar } = useBlockEditor({
+        initialContent,
+        onUpdate
+    });
 
-  const providerValue = useMemo(() => {
-    return {
+    const providerValue = useMemo(() => {
+        return {
+        }
+    }, [])
+
+    if (!editor) {
+        return null
     }
-  }, [])
 
-  if (!editor) {
-    return null
-  }
+    console.log('Rendering Block Editor');
 
-  return (
-    <EditorContext.Provider value={providerValue}>
-      <div className="flex h-full" ref={menuContainerRef}>
-        <Sidebar isOpen={leftSidebar.isOpen} onClose={leftSidebar.close} editor={editor} />
-        <div className="relative flex flex-col flex-1 h-full overflow-hidden">
-          <EditorHeader
-            characters={characterCount.characters()}
-            words={characterCount.words()}
-            isSidebarOpen={leftSidebar.isOpen}
-            toggleSidebar={leftSidebar.toggle}
-          />
-          <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
-          <ContentItemMenu editor={editor} />
-          <LinkMenu editor={editor} appendTo={menuContainerRef} />
-          <TextMenu editor={editor} />
-          <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
-          <TableRowMenu editor={editor} appendTo={menuContainerRef} />
-          <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
-          <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
-        </div>
-      </div>
-    </EditorContext.Provider>
-  )
+    return (
+        <EditorContext.Provider value={providerValue}>
+            <div className="flex h-full" ref={menuContainerRef}>
+                <Sidebar isOpen={leftSidebar.isOpen} onClose={leftSidebar.close} editor={editor} />
+                <div className="relative flex flex-col flex-1 h-full overflow-hidden">
+                    <EditorHeader
+                        characters={characterCount.characters()}
+                        words={characterCount.words()}
+                        isSidebarOpen={leftSidebar.isOpen}
+                        toggleSidebar={leftSidebar.toggle}
+                    />
+                    <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
+                    <ContentItemMenu editor={editor} />
+                    <LinkMenu editor={editor} appendTo={menuContainerRef} />
+                    <TextMenu editor={editor} />
+                    <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
+                    <TableRowMenu editor={editor} appendTo={menuContainerRef} />
+                    <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
+                    <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+                </div>
+            </div>
+        </EditorContext.Provider>
+    )
 }
 
 export default BlockEditor
