@@ -12,9 +12,12 @@ declare global {
 
 export const useBlockEditor = ({ initialContent, onUpdate }: { initialContent: string, onUpdate: () => void }) => {
     const leftSidebar = useSidebar()
-    console.log('Use Block Editor');
     const editor = useEditor({
+        // Performance Options
+        // https://tiptap.dev/blog/release-notes/say-hello-to-tiptap-2-5-our-most-performant-editor-yet
         immediatelyRender: false,
+        shouldRerenderOnTransaction: false,
+        //----
         content: initialContent,
         autofocus: true,
         onCreate: ({ editor }) => {
@@ -35,6 +38,7 @@ export const useBlockEditor = ({ initialContent, onUpdate }: { initialContent: s
         [],
     )
 
+    console.log('Use Block Editor');
 
     // TODO - DO WE NEED A DESTRUCTOR HERE TO CLEANUP?
 

@@ -39,7 +39,6 @@ export const BlockEditor = ({ initialContent, onUpdate }: { initialContent: stri
     console.log('Rendering Block Editor');
 
     return (
-        <EditorContext.Provider value={providerValue}>
             <div className="flex h-full" ref={menuContainerRef}>
                 <Sidebar isOpen={leftSidebar.isOpen} onClose={leftSidebar.close} editor={editor} />
                 <div className="relative flex flex-col flex-1 h-full overflow-hidden">
@@ -59,7 +58,6 @@ export const BlockEditor = ({ initialContent, onUpdate }: { initialContent: stri
                     <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
                 </div>
             </div>
-        </EditorContext.Provider>
     )
 }
 
