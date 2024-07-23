@@ -1,12 +1,13 @@
 'use client';
 import dynamic from 'next/dynamic';
-import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 
 import { Loader } from '@vspark/catalyst/loader';
 import { ApolloAppProvider } from '@/app/graphql';
-import { IWorkspace } from '@/app/types/entities';
 import { IWorkspaceQL } from '@/app/types/ql';
+
+import { WorkspaceContext } from '@/app/context';
+import { Journal } from '@/app/components/journal';
 
 const Q_MY_WORKSPACE = gql`query GetWorkspace($id: String!) {
     workspace(id: $id){
@@ -22,15 +23,19 @@ const Q_MY_WORKSPACE = gql`query GetWorkspace($id: String!) {
 
 function Header({ name }: { name: string }) {
     return (
-        <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-            <h1 className="text-base font-semibold leading-7 text-white">{name}</h1>
+        <header className="flex items-center justify-between border-b border-white/5 p-4">
+            <h1 className="text-lg font-semibold leading-7 text-white">{name}</h1>
         </header>
     );
 }
 
 function Content() {
     return (
-        <></>
+        <>
+            <div className="px-4 py-2">
+                <Journal/>
+            </div>
+        </>
     );
 }
 function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
@@ -42,7 +47,9 @@ function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
     return (
         <>
             <Header name={workspace.name}/>
-            <Content />
+            <WorkspaceContext.Provider value={{ id: workspaceId }}>
+                <Content />
+            </WorkspaceContext.Provider>
         </>
     );
 }
