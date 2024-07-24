@@ -31,8 +31,8 @@ function Layout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (
         <>
             <Sidebar />
-            <div className="min-h-full h-full xl:pl-48">
-                <main className="min-h-full h-full">
+            <div className="min-h-full h-full max-h-full xl:pl-48">
+                <main className="flex flex-col min-h-full h-full max-h-full">
                     {children}
                 </main>
             </div>
@@ -42,9 +42,9 @@ function Layout({ children }: Readonly<{ children: React.ReactNode; }>) {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (
-        <html lang="en" className="min-h-full h-full">
-            <body className={`min-h-full h-full ${inter.className}`}>
-                <div className="dark min-h-full h-full w-full bg-zinc-950">
+        <html lang="en" className="min-h-full h-full max-h-full">
+            <body className={`min-h-full h-full max-h-full ${inter.className}`}>
+                <div className="dark min-h-full h-full max-h-full w-full bg-zinc-950">
                     <Layout>
                         {children}
                     </Layout>

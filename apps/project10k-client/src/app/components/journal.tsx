@@ -66,12 +66,12 @@ export function Journal() {
     const contentJson = JSON.parse(journal.content);
     console.log('RENDERING JOURNAL', id, data);
     return (
-        <div className='py-5'>
+        <>
             <BlockEditor
                 initialContent={contentJson}
                 onUpdate={updateJournalCb}
             />
-        </div>
+        </>
     )
 }
 
