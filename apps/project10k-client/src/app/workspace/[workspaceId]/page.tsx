@@ -9,6 +9,7 @@ import { IWorkspaceQL } from '@/app/types/ql';
 
 import { WorkspaceContext } from '@/app/context';
 import { Journal } from '@/app/components/journal';
+import { MindMap } from '@/app/components/mindmap';
 
 const Q_MY_WORKSPACE = gql`query GetWorkspace($id: String!) {
     workspace(id: $id, withJournal: false){
@@ -52,7 +53,7 @@ function ContentPanels() {
                             minSize={DEFAULT_MIN_PANEL_SIZE}
                             defaultSize={40}
                             >
-                            {'panel 2'}
+                            <MindMap/>
                         </Panel>
                     </PanelGroup>
                 </Panel>
