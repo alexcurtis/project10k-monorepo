@@ -6,8 +6,7 @@ import { debounce } from 'lodash';
 import { Loader } from '@vspark/catalyst/loader';
 import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
 
-
-import { Button } from '@vspark/catalyst/button';
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 import { WorkspaceContext } from '@/app/context';
 import { IWorkspaceQL, IJournalML } from '@/app/types/ql';

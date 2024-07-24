@@ -62,7 +62,7 @@ function SidebarItem({ item, pathname }: { item: SidebarItem, pathname: string }
 export function Sidebar() {
     const pathname = usePathname();
     return (
-        <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
+        <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-48 xl:flex-col">
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 ring-1 ring-white/5">
                 <Logo />
                 <nav className="flex flex-1 flex-col">
