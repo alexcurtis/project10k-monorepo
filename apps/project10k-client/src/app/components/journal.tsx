@@ -60,9 +60,9 @@ function JournalLoader() {
 export function Journal() {
 
     console.log('re-rendering journal!!!');
-    const { id } = useContext(WorkspaceContext);
+    const { _id }  = useContext(WorkspaceContext);
     const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE_WITH_JOURNAL, {
-        variables: { id: id }
+        variables: { id: _id }
     });
     const [updateJournal, { }] = useMutation(M_UPDATE_JOURNAL, {
         ignoreResults: true, // Ensures The Editor Does Not Get Re-Rendered When Editor Updated

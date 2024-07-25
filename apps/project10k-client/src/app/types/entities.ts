@@ -1,8 +1,23 @@
+export type IMindMapNodePosition = {
+    x: number,
+    y: number
+}
+
+export type IMindMapNode = {
+    position: IMindMapNodePosition    
+}
+
+export type IJournal = {
+    _id: string,
+    name: string,
+    mindMapNode: IMindMapNode
+}
+
 export type IWorkspace = {
     _id: string,
     name: string,
     updatedAt: string
-    // journal: IJournal
+    journals: IJournal[]
 }
 
 export type IAccount = {
@@ -13,8 +28,5 @@ export type IAccount = {
     workspaces: IWorkspace[]
 }
 
-// export type IJournal = {
-//     id: string,
-//     content: string
-// }
+
 

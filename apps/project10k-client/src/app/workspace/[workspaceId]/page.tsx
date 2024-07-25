@@ -11,14 +11,22 @@ import { WorkspaceContext } from '@/app/context';
 import { Journal } from '@/app/components/journal';
 import { MindMap } from '@/app/components/mindmap';
 
-const Q_MY_WORKSPACE = gql`query GetWorkspace($id: String!) {
-    workspace(id: $id, withJournal: false){
-        id,
-        name,
-        created_at,
-        updated_at,
-        companies {
-            id, name
+const Q_MY_WORKSPACE = gql`query GetWorkspace($id: ID!) {
+    workspace(id: $id){
+        _id,
+        name
+        journals {
+            _id
+            name
+            mindMapNode {
+                position {
+                    x, y
+                }
+                edges {
+                    target
+                }
+            }
+            journalEntry
         }
     }
 }`;
@@ -46,7 +54,7 @@ function ContentPanels() {
                         direction="vertical"
                         >
                         <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>
-                            <Journal/>
+                            {/* <Journal/> */}
                         </Panel>
                         <PanelResizeHandle className="h-1 bg-white/5" />
                         <Panel
@@ -75,16 +83,17 @@ function WorspacePageLoader(){
 }
 
 function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
+    console.log('workspaceId', workspaceId);
     const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE, {
         variables: { id: workspaceId }
     });
     if (loading || !data) { return (<WorspacePageLoader />); }
     const workspace = data.workspace;
-    console.log('rendering workspace layout');
+    console.log('rendering workspace', workspace);
     return (
         <>
             <Header name={workspace.name} />
-            <WorkspaceContext.Provider value={{ id: workspaceId }}>
+            <WorkspaceContext.Provider value={{ ...workspace }}>
                 <ContentPanels />
             </WorkspaceContext.Provider>
         </>

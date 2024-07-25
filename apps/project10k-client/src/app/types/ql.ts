@@ -2,7 +2,7 @@ import { ApolloError } from "@apollo/client";
 import {
     IAccount,
     IWorkspace,
-    IJournal
+    // IJournal
 } from './entities';
 
 export interface IQueryLanguage {
