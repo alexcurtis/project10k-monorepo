@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import {
     ReactFlow,
     ReactFlowProvider,
@@ -17,6 +19,27 @@ import '@xyflow/react/dist/style.css';
 
 const BACKGROUND_COLOR = '#09090b';
 
+
+// const edges = [
+//     { id: 'e1-2', source: '1', target: '2' }
+// ];
+
+function buildEdges(nodes){
+    return nodes.flatMap((node) => {
+        console.log('chugging edge builder');
+        if(!node.edges){ return []; }
+        return node.edges.map((edge) => {
+            const source = node.id;
+            const target = edge.target;
+            return {
+                id: `e${source}-${target}`,
+                source,
+                target
+            }
+        });
+    });
+}
+
 const nodes = [
     {
         id: '1',
@@ -26,7 +49,11 @@ const nodes = [
         },
         data: {
             label: 'This is a test title'
-        }
+        },
+        edges: [
+            { target: '2' },
+            { target: '3' }
+        ]
     },
     {
         id: '2',
@@ -36,7 +63,10 @@ const nodes = [
         },
         data: {
             label: 'This is a test title 2'
-        }
+        },
+        edges: [
+            { target: '3' }
+        ]
     },
     {
         id: '3',
@@ -50,12 +80,15 @@ const nodes = [
     },
 ];
 
-const edges = [
-    { id: 'e1-2', source: '1', target: '2' }
-];
 
 
 export function MindMap() {
+
+    // Build The React Flow Data Structure From Stored Data
+    const edges = useMemo(() => {
+        return buildEdges(nodes);
+    }, [nodes]);
+    
     return (
         <>
             <ReactFlowProvider>

@@ -24,7 +24,7 @@ const activityItems = [
 
 export const metadata: Metadata = {
     title: "Project 10K",
-    description: "Next Generation Analyst Tool",
+    description: "Next Generation Analyst Tool"
 };
 
 function Layout({ children }: Readonly<{ children: React.ReactNode; }>) {

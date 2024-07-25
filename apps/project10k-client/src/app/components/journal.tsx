@@ -85,6 +85,7 @@ export function Journal() {
     if (loading || !data) { return (<JournalLoader />); }
     const journal = data.workspace.journal;
     const contentJson = JSON.parse(journal.content);
+
     console.log('RENDERING JOURNAL', id, data);
     return (
         <>
