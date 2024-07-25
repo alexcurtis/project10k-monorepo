@@ -1,4 +1,3 @@
-import { useQuery, gql } from "@apollo/client";
 import { Button } from '@vspark/catalyst/button';
 import { Badge } from '@vspark/catalyst/badge';
 import { Loader } from '@vspark/catalyst/loader';
@@ -6,34 +5,6 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 
 import { IWorkspace } from './types/entities';
-import { IAccountQL } from './types/ql';
-
-
-const Q_MY_WORKSPACES = gql`query GetMyWorkspaces {
-    workspaces{
-        id,
-        name,
-        created_at,
-        updated_at,
-        companies {
-            id, name
-        }
-    }
-}`;
-
-const Q_MY_ACCOUNT = gql`query getAccount {
-    account(id: "66a18a0a1bb5e1ffd75aa55d") {
-      _id
-      firstName
-      lastName
-      email
-      workspaces {
-        _id
-        name
-      }
-    }
-}`;
-
 
 function Workspace({ workspace }: { workspace: IWorkspace }) {
     return (
@@ -50,9 +21,9 @@ function Workspace({ workspace }: { workspace: IWorkspace }) {
                 <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-zinc-400">
                     <p className="whitespace-nowrap">
                         Last updated on
-                        {/* <time dateTime={workspace.updated_at}>
-                            {' ' + format(workspace.updated_at, 'Pp')}
-                        </time> */}
+                        <time dateTime={workspace.updatedAt}>
+                            {' ' + format(workspace.updatedAt, 'Pp')}
+                        </time>
                     </p>
                     <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
                         <circle r={1} cx={1} cy={1} />
@@ -82,10 +53,7 @@ function WorkspacesLoader() {
     )
 }
 
-export function Workspaces() {
-    const { loading, error, data } = useQuery<IAccountQL>(Q_MY_ACCOUNT);
-    if (loading || !data) { return (<WorkspacesLoader />); }
-    const workspaces = data.account.workspaces;
+export function Workspaces({ workspaces }: { workspaces: IWorkspace[]}) {
     return (
         <ul role="list" className="divide-y divide-zinc-800">
             {workspaces.map((workspace: IWorkspace) => (

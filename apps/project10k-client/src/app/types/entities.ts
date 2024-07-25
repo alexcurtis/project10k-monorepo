@@ -1,6 +1,7 @@
 export type IWorkspace = {
     _id: string,
     name: string,
+    updatedAt: string
     // journal: IJournal
 }
 
