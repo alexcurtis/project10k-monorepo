@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 
 import { IWorkspace } from './types/entities';
-import { IWorkspacesQL } from './types/ql';
+import { IAccountQL } from './types/ql';
 
 
 const Q_MY_WORKSPACES = gql`query GetMyWorkspaces {
@@ -21,6 +21,20 @@ const Q_MY_WORKSPACES = gql`query GetMyWorkspaces {
     }
 }`;
 
+const Q_MY_ACCOUNT = gql`query getAccount {
+    account(id: "66a18a0a1bb5e1ffd75aa55d") {
+      _id
+      firstName
+      lastName
+      email
+      workspaces {
+        _id
+        name
+      }
+    }
+}`;
+
+
 function Workspace({ workspace }: { workspace: IWorkspace }) {
     return (
         <li className="flex items-center justify-between gap-x-6 py-5">
@@ -30,15 +44,15 @@ function Workspace({ workspace }: { workspace: IWorkspace }) {
                         {workspace.name}
                     </p>
                     <Badge>
-                    {'Complete'}
+                        {'Complete'}
                     </Badge>
                 </div>
                 <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-zinc-400">
                     <p className="whitespace-nowrap">
-                        Last updated on 
-                        <time dateTime={workspace.updated_at}>
+                        Last updated on
+                        {/* <time dateTime={workspace.updated_at}>
                             {' ' + format(workspace.updated_at, 'Pp')}
-                        </time>
+                        </time> */}
                     </p>
                     <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
                         <circle r={1} cx={1} cy={1} />
@@ -50,7 +64,7 @@ function Workspace({ workspace }: { workspace: IWorkspace }) {
                 <Link
                     legacyBehavior={true}
                     passHref
-                    href={`/workspace/${workspace.id}`}>
+                    href={`/workspace/${workspace._id}`}>
                     <Button>
                         View Workspace
                     </Button>
@@ -60,7 +74,7 @@ function Workspace({ workspace }: { workspace: IWorkspace }) {
     );
 }
 
-function WorkspacesLoader(){
+function WorkspacesLoader() {
     return (
         <div className="py-5">
             <Loader />
@@ -69,12 +83,13 @@ function WorkspacesLoader(){
 }
 
 export function Workspaces() {
-    const { loading, error, data } = useQuery<IWorkspacesQL>(Q_MY_WORKSPACES);
+    const { loading, error, data } = useQuery<IAccountQL>(Q_MY_ACCOUNT);
     if (loading || !data) { return (<WorkspacesLoader />); }
+    const workspaces = data.account.workspaces;
     return (
         <ul role="list" className="divide-y divide-zinc-800">
-            {data.workspaces.map((workspace: IWorkspace) => (
-                <Workspace key={workspace.id} workspace={workspace} />
+            {workspaces.map((workspace: IWorkspace) => (
+                <Workspace key={workspace._id} workspace={workspace} />
             ))}
         </ul>
     )
