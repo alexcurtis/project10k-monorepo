@@ -48,21 +48,21 @@ function ContentPanels() {
             <PanelGroup
                 autoSaveId="layout-h-persistence"
                 direction="horizontal"
-                >
+            >
                 <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>
                     <PanelGroup
                         autoSaveId="layout-v-persistence"
                         direction="vertical"
-                        >
+                    >
                         <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>
-                            {/* <Journal/> */}
+                            <Journal />
                         </Panel>
                         <PanelResizeHandle className="h-1 bg-white/5" />
                         <Panel
                             minSize={DEFAULT_MIN_PANEL_SIZE}
                             defaultSize={40}
-                            >
-                            <MindMap/>
+                        >
+                            <MindMap />
                         </Panel>
                     </PanelGroup>
                 </Panel>
@@ -75,7 +75,7 @@ function ContentPanels() {
     );
 }
 
-function WorspacePageLoader(){
+function WorspacePageLoader() {
     return (
         <div className="p-4">
             <Loader />

@@ -9,33 +9,34 @@ import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 import { WorkspaceContext } from '@/app/context';
-import { IWorkspaceQL, IJournalML } from '@/app/types/ql';
+import {
+    IWorkspaceQL,
+    IJournalML,
+    IJournalEntryQL
+} from '@/app/types/ql';
 
 import '@vspark/block-editor/src/app/editor.css';
 
 // How Often Editor Saves When Typing / Making Changes
 const EDITOR_SAVE_DEBOUNCE = 500;
 
-const Q_MY_WORKSPACE_WITH_JOURNAL = gql`query GetWorkspaceJournal($id: String!) {
-    workspace(id: $id, withJournal: true){
-        name,
-        journal {
-            id,
-            content
-        }
+const Q_JOURNAL_ENTRY = gql`query GetJournalEntry($id: ID!) {
+    journalEntry(id: $id){
+        _id
+        content
     }
 }`;
 
-// Journal Update Query - Only Return ID, So The Mutator Doesn't Drive A Re-Render
-const M_UPDATE_JOURNAL = gql`mutation UpdateJournal($id: String!, $content: String!) {
-    updateJournal(
-      journal: {id: $id, content: $content}
-    ) {
-        id,
-        content
-    }
-  }
-`
+// // Journal Update Query - Only Return ID, So The Mutator Doesn't Drive A Re-Render
+// const M_UPDATE_JOURNAL = gql`mutation UpdateJournal($id: String!, $content: String!) {
+//     updateJournal(
+//       journal: {id: $id, content: $content}
+//     ) {
+//         id,
+//         content
+//     }
+//   }
+// `
 
 function JournalHeader() {
     return (
@@ -58,41 +59,39 @@ function JournalLoader() {
 
 // Block Editor Does Not Re-Render When Data Updated - Editor Is An Expensive Function
 export function Journal() {
+    const workspaceContext = useContext(WorkspaceContext);
+    if (!workspaceContext) { return; }
+    const activeJournalId = workspaceContext.activeJournal;
 
-    console.log('re-rendering journal!!!');
-    const { _id }  = useContext(WorkspaceContext);
-    const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE_WITH_JOURNAL, {
-        variables: { id: _id }
+    const activeJournal = workspaceContext.workspace.journals.find((journal) => {
+        return journal._id === activeJournalId;
+    })
+
+    const journalEntry = activeJournal?.journalEntry;
+
+    console.log('activeJournalId', activeJournalId, journalEntry);
+    const { loading, error, data } = useQuery<IJournalEntryQL>(Q_JOURNAL_ENTRY, {
+        variables: { id: journalEntry }
     });
-    const [updateJournal, { }] = useMutation(M_UPDATE_JOURNAL, {
-        ignoreResults: true, // Ensures The Editor Does Not Get Re-Rendered When Editor Updated
-    });
+    // const [updateJournal, { }] = useMutation(M_UPDATE_JOURNAL, {
+    //     ignoreResults: true, // Ensures The Editor Does Not Get Re-Rendered When Editor Updated
+    // });
     const updateJournalCb = useCallback(debounce((evnt) => {
         const json = JSON.stringify(evnt.editor.getJSON());
-        console.log('updating with ', {
-            id: data?.workspace.journal.id,
-            content: json
-        });
-        updateJournal({
-            variables: {
-                id: data?.workspace.journal.id,
-                content: json
-            },
-            ignoreResults: true
-        })
+        console.log('updating with ', evnt.editor.getJSON());
     }, EDITOR_SAVE_DEBOUNCE), [data]);
 
-    if (loading || !data) { return (<JournalLoader />); }
-    const journal = data.workspace.journal;
-    const contentJson = JSON.parse(journal.content);
 
-    console.log('RENDERING JOURNAL', id, data);
+
+
+    if (loading || !data) { return (<JournalLoader />); }
+    console.log('RENDERING JOURNAL', activeJournalId, data);
     return (
         <>
             <div className="flex flex-col h-full max-h-full">
                 <JournalHeader />
                 <BlockEditor
-                    initialContent={contentJson}
+                    initialContent={data.journalEntry.content}
                     onUpdate={updateJournalCb}
                 />
             </div>

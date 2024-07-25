@@ -10,7 +10,7 @@ import { Workspaces } from '@/app/workspaces';
 import { IAccountQL } from './types/ql';
 
 const Q_MY_ACCOUNT = gql`query getAccount {
-    account(id: "66a29b1877ea446646e74718") {
+    account(id: "66a2c830431114c0983d16f7") {
       _id
       firstName
       lastName

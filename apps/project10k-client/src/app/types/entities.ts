@@ -9,10 +9,16 @@ export type IMindMapNode = {
     position: IMindMapNodePosition    
 }
 
+export type IJournalEntry = {
+    _id: string,
+    content: object
+}
+
 export type IJournal = {
     _id: string,
     name: string,
-    mindMapNode: IMindMapNode
+    mindMapNode: IMindMapNode,
+    journalEntry: string
 }
 
 export type IWorkspace = {
