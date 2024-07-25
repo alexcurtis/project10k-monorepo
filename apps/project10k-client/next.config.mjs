@@ -6,7 +6,7 @@ import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 const workspace = join(process.cwd(), '../../packages/block-editor');
 
 export default {
-    reactStrictMode: true, // Enable This When Checking For Mounting Problems
+    reactStrictMode: false, // Enable This When Checking For Mounting Problems
     
     // Custom Webpack Resolution for The Block Editor. So It Can Use The @/ tsconfig paths together
     webpack: (config, options) => {

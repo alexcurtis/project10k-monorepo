@@ -76,7 +76,7 @@ function FlowGraph({nodes, edges, onNodesChange, onEdgesChange, onConnect, onNod
         if(selectedNodeId){ onNodeSelected(selectedNodeId); }
     }, []);
 
-    useOnSelectionChange({ onChange: onNodeSelectionChanged });
+    // useOnSelectionChange({ onChange: onNodeSelectionChanged });
 
 
 

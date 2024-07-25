@@ -1,3 +1,5 @@
+import { Dispatch } from 'react';
+
 export type IMindMapNodePosition = {
     x: number,
     y: number
@@ -28,5 +30,10 @@ export type IAccount = {
     workspaces: IWorkspace[]
 }
 
-
+// Context For Workspaces
+export type IWorkspaceContext = {
+    workspace: IWorkspace,
+    activeJournal: string | undefined,
+    setActiveJournal: Dispatch<string>
+}
 

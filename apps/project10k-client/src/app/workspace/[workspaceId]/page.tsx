@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useQuery, gql } from '@apollo/client';
@@ -83,17 +84,30 @@ function WorspacePageLoader(){
 }
 
 function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
-    console.log('workspaceId', workspaceId);
+    console.log('rendering workspace layout - workspaceId', workspaceId);
+    const [activeJournal, setActiveJournal] = useState<string>();
+
     const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE, {
-        variables: { id: workspaceId }
+        variables: { id: workspaceId },
+        onCompleted: () => {
+            // Default To First Journal As Active On A New Opened Workspace
+            const firstJournal = data?.workspace.journals[0]._id;
+            setActiveJournal(firstJournal);
+        },
     });
-    if (loading || !data) { return (<WorspacePageLoader />); }
+    // Ensure Data and ActiveJournal Are Synced Before Rendering Workspace
+    if (loading || !data || !activeJournal) { return (<WorspacePageLoader />); }
     const workspace = data.workspace;
-    console.log('rendering workspace', workspace);
+    console.log('---------rendering real workspace-----------', activeJournal, workspace);
     return (
         <>
             <Header name={workspace.name} />
-            <WorkspaceContext.Provider value={{ ...workspace }}>
+            <WorkspaceContext.Provider
+                value={{
+                    workspace,
+                    activeJournal,
+                    setActiveJournal
+                }}>
                 <ContentPanels />
             </WorkspaceContext.Provider>
         </>
