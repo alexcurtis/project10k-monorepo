@@ -10,7 +10,7 @@ import { IWorkspaceQL } from '@/app/types/ql';
 
 import { WorkspaceContext } from '@/app/context';
 import { Journal } from '@/app/components/journal';
-import { MindMap } from '@/app/components/mindmap';
+import { MindMap } from '@/app/components/mindmap/mindmap';
 
 const Q_MY_WORKSPACE = gql`query GetWorkspace($id: ID!) {
     workspace(id: $id){

@@ -33,8 +33,7 @@ const selector = (state: InsightStore) => ({
     edges: state.edges,
     onNodesChange: state.onNodesChange,
     onEdgesChange: state.onEdgesChange,
-    onConnect: state.onConnect,
-    setCurrentNode: state.setCurrentNode
+    onConnect: state.onConnect
 });
 
 

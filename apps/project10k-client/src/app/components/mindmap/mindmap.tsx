@@ -1,4 +1,9 @@
-import { useMemo, useContext, useCallback } from 'react';
+import {
+    useEffect,
+    useMemo,
+    useContext,
+    useCallback
+} from 'react';
 
 import {
     ReactFlow,
@@ -13,15 +18,28 @@ import {
     OnNodesChange,
     OnEdgesChange,
     OnConnect,
-    Node
+    Node,
 } from '@xyflow/react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { WorkspaceContext } from '@/app/context';
 import { IJournal } from '@/app/types/entities';
 
+import { MindMapInteractivityStore, useMindMapInteractivityStore } from './store';
+
 import '@xyflow/react/dist/style.css';
 
 const BACKGROUND_COLOR = '#09090b';
+
+const selector = (state: MindMapInteractivityStore) => ({
+    nodes: state.nodes,
+    edges: state.edges,
+    onNodesChange: state.onNodesChange,
+    onEdgesChange: state.onEdgesChange,
+    onConnect: state.onConnect,
+    setNodes: state.setNodes,
+    setEdges: state.setEdges
+});
 
 // function buildEdges(nodes) {
 //     return nodes.flatMap((node) => {
@@ -39,6 +57,10 @@ const BACKGROUND_COLOR = '#09090b';
 //     });
 // }
 
+
+// USE THE APOLLO CACHE - WRITE THE INTERACTIVITY CHANGES TO CACHE. READ THEM AFTER.... 
+ //ONLY PROBLEM IS THAT THEY ARE STORED AT THE JOURNAL LEVEL. WE DONT WANT THOSE RE-RENDERING TONS
+
 function buildNodesFromJournals(journals: IJournal[]) {
     return journals.map((journal) => {
         return {
@@ -54,18 +76,45 @@ export function FlowGraph() {
     console.log('rendering flow graph');
     const workspaceContext = useContext(WorkspaceContext);
     if (!workspaceContext) { return; }
+    const { setActiveJournal } = workspaceContext;
+    const workspace = workspaceContext.workspace;
+    const { journals } = workspace;
+
+    // MindMap Interactivity Store
+    const {
+        nodes,
+        edges,
+        onNodesChange,
+        onEdgesChange,
+        onConnect,
+        setNodes
+    } = useMindMapInteractivityStore(useShallow(selector));
+
+
+    useEffect(() => {
+        // Push Nodes From Journal Into Interactivity Store
+        const nodes = buildNodesFromJournals(journals);
+        console.log('useEffect nodes', nodes);
+        setNodes(nodes);
+        // Todo Also Push Edges
+    }, [journals]);
+
+
 
     const setActiveJournalCb = useCallback<NodeMouseHandler>((_, node) => {
         // As each Node is a Journal (with same ID). Simply Grab The Node ID
         const selectedNodeId = node.id;
-        workspaceContext.setActiveJournal(selectedNodeId);
-    }, [workspaceContext.setActiveJournal]);
+        console.log('set Active journal', selectedNodeId);
+        setActiveJournal(selectedNodeId);
+    }, [setActiveJournal]);
 
-    const workspace = workspaceContext.workspace;
-    const { journals } = workspace;
-    const nodes = buildNodesFromJournals(journals);
-    console.log('nodes', nodes);
 
+
+
+
+    
+
+    
 
     return (
         <>
@@ -74,7 +123,10 @@ export function FlowGraph() {
                     style={{ backgroundColor: BACKGROUND_COLOR }}
                     colorMode="dark"
                     nodes={nodes}
-                    edges={[]}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
                     onNodeClick={setActiveJournalCb}
                 >
                     <Controls />
