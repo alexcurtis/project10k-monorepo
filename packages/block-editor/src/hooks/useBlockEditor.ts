@@ -10,7 +10,7 @@ declare global {
     }
 }
 
-export const useBlockEditor = ({ initialContent, onUpdate }: { initialContent: string, onUpdate: () => void }) => {
+export const useBlockEditor = ({ onUpdate }: { onUpdate: () => void }) => {
     const leftSidebar = useSidebar()
     const editor = useEditor({
         // Performance Options
@@ -18,7 +18,6 @@ export const useBlockEditor = ({ initialContent, onUpdate }: { initialContent: s
         immediatelyRender: false,
         shouldRerenderOnTransaction: false,
         //----
-        content: initialContent,
         autofocus: true,
         onCreate: ({ editor }) => {
         },

@@ -1,7 +1,11 @@
 'use client'
 
 import { EditorContent } from '@tiptap/react'
-import React, { useMemo, useRef } from 'react'
+import React, {
+    useEffect,
+    useMemo,
+    useRef
+} from 'react'
 
 import { LinkMenu } from '@/components/menus'
 
@@ -15,13 +19,18 @@ import { TableColumnMenu, TableRowMenu } from '@/extensions/Table/menus'
 import { TextMenu } from '../menus/TextMenu'
 import { ContentItemMenu } from '../menus/ContentItemMenu'
 
-export const BlockEditor = ({ initialContent, onUpdate }: { initialContent: string, onUpdate: () => void }) => {
+export const BlockEditor = ({ initialContent, onUpdate }: { initialContent: object, onUpdate: () => void }) => {
     const menuContainerRef = useRef(null)
 
     const { editor, characterCount, leftSidebar } = useBlockEditor({
-        initialContent,
         onUpdate
     });
+
+    useEffect(() => {
+        // External Content Has Changed. Update The Editor Content To Match
+        // Warning Is TipTap - https://github.com/ueberdosis/tiptap/issues/3764
+        if (editor) { editor.commands.setContent(initialContent); }
+    }, [editor, initialContent])
 
     const providerValue = useMemo(() => {
         return {
@@ -31,6 +40,8 @@ export const BlockEditor = ({ initialContent, onUpdate }: { initialContent: stri
     if (!editor) {
         return null
     }
+
+
 
     console.log('Rendering Block Editor');
 
