@@ -5,9 +5,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { debounce } from 'lodash';
 import { Loader } from '@vspark/catalyst/loader';
 import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
-import { EditableText } from '@vspark/catalyst/editable-text';
-
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { EditableText, EditableTextSubmitEvent } from '@vspark/catalyst/editable-text';
 
 import { WorkspaceContext } from '@/app/context';
 import {
@@ -42,13 +40,19 @@ const M_UPDATE_JOURNAL_ENTRY = gql`mutation UpdateJournalEntry($id: ID!, $conten
 }
 `
 
+
+
 function JournalHeader() {
+    const onSubmit = (({ value }: EditableTextSubmitEvent) => {
+        console.log('value now needs to be updated', value);
+    });
     return (
         <div className="px-4 py-2 bg-zinc-900 dark:text-white">
             <h2 className="text-lg">
                 <EditableText
                     placeholder="Placeholder"
                     value="Journal Name"
+                    onSubmit={onSubmit}
                 />
             </h2>
         </div>

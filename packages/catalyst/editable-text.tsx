@@ -6,25 +6,28 @@ import React, {
     KeyboardEvent
 } from 'react';
 
-export interface EditableTextChangedEvent {
+export interface EditableTextSubmitEvent {
     value: string;
 }
 
 export interface EditableText {
     value: string;
-    placeholder: string;
-    onBlur?: (event: EditableTextChangedEvent) => void;
-    onChange?: (event: EditableTextChangedEvent) => void
+    placeholder?: string;
+    onBlur?: (event: SyntheticEvent) => void;
+    onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+    onSubmit?: (event: EditableTextSubmitEvent) => void;
+    onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export function EditableText({ value, placeholder, onBlur, onChange }: EditableText) {
+export function EditableText({ value, placeholder, onBlur, onChange, onSubmit, onKeyUp }: EditableText) {
     const [editing, setEditing] = useState(false);
     const [internalValue, setinternalValue] = useState(value);
 
     const onBlurCb = useCallback((evnt: SyntheticEvent) => {
-        if (onBlur) { onBlur({ value: internalValue }); }
+        if (onBlur) { onBlur(evnt); }
+        if (onSubmit) { onSubmit({ value: internalValue }); }
         setEditing(false);
-    }, [setEditing, onBlur]);
+    }, [internalValue, setEditing, onBlur]);
 
     const onClickCb = useCallback(() => {
         setEditing(true);
@@ -32,18 +35,19 @@ export function EditableText({ value, placeholder, onBlur, onChange }: EditableT
 
     const onChangeCb = useCallback((evnt: ChangeEvent<HTMLInputElement>) => {
         const newValue = evnt.target.value;
-        if (onChange) { onChange({ value: internalValue }); }
+        if (onChange) { onChange(evnt); }
         setinternalValue(newValue);
-    }, [setEditing]);
+    }, [internalValue, setEditing]);
 
 
     const onKeyUpCb = useCallback((evnt: KeyboardEvent<HTMLInputElement>) => {
         const key = evnt.key;
         // Only Trigger onBlur When Enter Presset
-        if(key !== 'Enter'){ return; }
-        if (onBlur) { onBlur({ value: internalValue }); }
+        if (key !== 'Enter') { return; }
+        if (onKeyUp) { onKeyUp(evnt); }
+        if (onSubmit) { onSubmit({ value: internalValue }); }
         setEditing(false);
-    }, [onChangeCb]);
+    }, [internalValue, onChangeCb]);
 
 
     return (
@@ -57,7 +61,7 @@ export function EditableText({ value, placeholder, onBlur, onChange }: EditableT
                     onChange={onChangeCb}
                     onKeyUp={onKeyUpCb}
                 />
-                : 
+                :
                 <span onClick={onClickCb}>
                     {internalValue}
                 </span>
