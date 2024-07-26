@@ -92,6 +92,8 @@ export function Journal() {
         return journal._id === activeJournalId;
     })
 
+    console.log('active journal (in journal render)', activeJournal);
+
     // If For Some (Strange) Reason No Active Journal. TODO - Make This An Error Gate
     if(!activeJournal){ return; }
     const journalEntry = activeJournal.journalEntry;
@@ -135,7 +137,7 @@ export function Journal() {
      // Saftey Gate - If Loading or No Data
      if (loading || !data || !activeJournal) { return (<JournalLoader />); }
 
-    console.log('RENDERING JOURNAL', activeJournalId, data);
+    console.log('RENDERING JOURNAL', activeJournalId, data, 'active journal name', activeJournal.name);
     return (
         <>
             <div className="flex flex-col h-full max-h-full">
