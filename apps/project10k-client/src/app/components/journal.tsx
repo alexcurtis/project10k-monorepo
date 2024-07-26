@@ -19,6 +19,22 @@ import '@vspark/block-editor/src/app/editor.css';
 // How Often Editor Saves When Typing / Making Changes
 const EDITOR_SAVE_DEBOUNCE = 500;
 
+
+// Journal Update Mutation
+const M_UPDATE_JOURNAL = gql`mutation UpdateJournalEntry($id: ID!, $name: String!) {
+    updateJournal(
+        id: $id,
+        journal: {
+            name: $name
+        }
+    ){
+        _id
+        name
+    }
+}
+`
+
+// Journal Entry Query - Entry Stored Seperatly from Journal (As can be big)
 const Q_JOURNAL_ENTRY = gql`query GetJournalEntry($id: ID!) {
     journalEntry(id: $id){
         _id
@@ -26,7 +42,7 @@ const Q_JOURNAL_ENTRY = gql`query GetJournalEntry($id: ID!) {
     }
 }`;
 
-// Journal Entry Update Query
+// Journal Entry Update Mutation
 const M_UPDATE_JOURNAL_ENTRY = gql`mutation UpdateJournalEntry($id: ID!, $content: JSON!) {
     updateJournalEntry(
         id: $id,
@@ -41,18 +57,15 @@ const M_UPDATE_JOURNAL_ENTRY = gql`mutation UpdateJournalEntry($id: ID!, $conten
 `
 
 
-
-function JournalHeader() {
-    const onSubmit = (({ value }: EditableTextSubmitEvent) => {
-        console.log('value now needs to be updated', value);
-    });
+function JournalHeader({ name, onNameChange } : { name: string, onNameChange: (name: EditableTextSubmitEvent) => void }) {
+    console.log('rendering header');
     return (
         <div className="px-4 py-2 bg-zinc-900 dark:text-white">
             <h2 className="text-lg">
                 <EditableText
                     placeholder="Placeholder"
-                    value="Journal Name"
-                    onSubmit={onSubmit}
+                    value={name}
+                    onSubmit={onNameChange}
                 />
             </h2>
         </div>
@@ -78,19 +91,37 @@ export function Journal() {
         return journal._id === activeJournalId;
     })
 
-    const journalEntry = activeJournal?.journalEntry;
+    // If For Some (Strange) Reason No Active Journal. TODO - Make This An Error Gate
+    if(!activeJournal){ return; }
+    const journalEntry = activeJournal.journalEntry;
 
-    console.log('activeJournalId', activeJournalId, journalEntry);
+    // Query
     const { loading, error, data } = useQuery<IJournalEntryQL>(Q_JOURNAL_ENTRY, {
         variables: { id: journalEntry }
     });
 
-    const [updateJournalEntry, { }] = useMutation(M_UPDATE_JOURNAL_ENTRY, {
-        ignoreResults: true, // Ensures The Editor Does Not Get Re-Rendered When Editor Updated
+    // Mutators
+    const [updateJournal, { }] = useMutation(M_UPDATE_JOURNAL, {
+        // No Need To Update Locally As Journal Is Used For MindMap As Well. Best To Let Workspace Update
+        ignoreResults: true
     });
 
+    const [updateJournalEntry, { }] = useMutation(M_UPDATE_JOURNAL_ENTRY, {
+        // Ensures The Editor Does Not Get Re-Rendered When Editor Updated
+        ignoreResults: true
+    });
+
+    const onNameChangeCb = useCallback(({ value }: EditableTextSubmitEvent) => {
+        updateJournal({
+            variables: {
+                id: activeJournal._id,
+                name: value
+            }
+        })
+    }, [updateJournal, activeJournal]);
+
+    // When Journal Entry Changes - Update 
     const updateJournalEntryCb = useCallback(debounce((evnt) => {
-        console.log('updating with ', evnt.editor.getJSON());
         updateJournalEntry({
             variables: {
                 id: journalEntry,
@@ -98,15 +129,19 @@ export function Journal() {
             },
             ignoreResults: true
         })
-    }, EDITOR_SAVE_DEBOUNCE), [journalEntry]);
+    }, EDITOR_SAVE_DEBOUNCE), [updateJournalEntry, journalEntry]);
 
+     // Saftey Gate - If Loading or No Data
+     if (loading || !data || !activeJournal) { return (<JournalLoader />); }
 
-    if (loading || !data) { return (<JournalLoader />); }
     console.log('RENDERING JOURNAL', activeJournalId, data);
     return (
         <>
             <div className="flex flex-col h-full max-h-full">
-                <JournalHeader />
+                <JournalHeader
+                    name={activeJournal.name}
+                    onNameChange={onNameChangeCb}
+                />
                 <BlockEditor
                     initialContent={data.journalEntry.content}
                     onUpdate={updateJournalEntryCb}
