@@ -66,6 +66,7 @@ function JournalHeader({ name, onNameChange } : { name: string, onNameChange: (n
                     placeholder="Placeholder"
                     value={name}
                     onSubmit={onNameChange}
+                    neverEmpty={true}
                 />
             </h2>
         </div>

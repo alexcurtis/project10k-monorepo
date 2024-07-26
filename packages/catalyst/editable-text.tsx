@@ -17,15 +17,32 @@ export interface EditableText {
     onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
     onSubmit?: (event: EditableTextSubmitEvent) => void;
     onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void;
+    neverEmpty?: boolean;
 }
 
-export function EditableText({ value, placeholder, onBlur, onChange, onSubmit, onKeyUp }: EditableText) {
+export function EditableText({ value, placeholder, onBlur, onChange, onSubmit, onKeyUp, neverEmpty }: EditableText) {
     const [editing, setEditing] = useState(false);
     const [internalValue, setinternalValue] = useState(value);
 
+    const onSubmitCb = useCallback((evnt: EditableTextSubmitEvent) => {
+        // If Can Be Empty. Just Pass Through
+        if(!neverEmpty && onSubmit){ return onSubmit(evnt); }
+
+        // If Never Empty and Empty, Revert To Original Value + No Trigger On Submit
+        if(neverEmpty && evnt.value === ''){
+            setinternalValue(value);
+        }
+        // As Value Is Not Empty. Trigger Submit If Available
+        else if(onSubmit){ onSubmit(evnt); }
+        
+        // Finally Ensure Input Is Turned Back To Regular Text
+        setEditing(false);
+
+    }, [value, setinternalValue, onSubmit]);
+
     const onBlurCb = useCallback((evnt: SyntheticEvent) => {
         if (onBlur) { onBlur(evnt); }
-        if (onSubmit) { onSubmit({ value: internalValue }); }
+        onSubmitCb({ value: internalValue });
         setEditing(false);
     }, [internalValue, setEditing, onBlur]);
 
@@ -45,7 +62,7 @@ export function EditableText({ value, placeholder, onBlur, onChange, onSubmit, o
         // Only Trigger onBlur When Enter Presset
         if (key !== 'Enter') { return; }
         if (onKeyUp) { onKeyUp(evnt); }
-        if (onSubmit) { onSubmit({ value: internalValue }); }
+        onSubmitCb({ value: internalValue });
         setEditing(false);
     }, [internalValue, onChangeCb]);
 
