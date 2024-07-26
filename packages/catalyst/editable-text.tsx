@@ -2,14 +2,19 @@ import React, {
     useState,
     useCallback,
     SyntheticEvent,
-    ChangeEvent
+    ChangeEvent,
+    KeyboardEvent
 } from 'react';
+
+export interface EditableTextChangedEvent {
+    value: string;
+}
 
 export interface EditableText {
     value: string;
     placeholder: string;
-    onBlur?: (event: SyntheticEvent) => void;
-    onChange?: (event: SyntheticEvent) => void
+    onBlur?: (event: EditableTextChangedEvent) => void;
+    onChange?: (event: EditableTextChangedEvent) => void
 }
 
 export function EditableText({ value, placeholder, onBlur, onChange }: EditableText) {
@@ -17,8 +22,8 @@ export function EditableText({ value, placeholder, onBlur, onChange }: EditableT
     const [internalValue, setinternalValue] = useState(value);
 
     const onBlurCb = useCallback((evnt: SyntheticEvent) => {
+        if (onBlur) { onBlur({ value: internalValue }); }
         setEditing(false);
-        if (onBlur) { onBlur(evnt); }
     }, [setEditing, onBlur]);
 
     const onClickCb = useCallback(() => {
@@ -27,9 +32,19 @@ export function EditableText({ value, placeholder, onBlur, onChange }: EditableT
 
     const onChangeCb = useCallback((evnt: ChangeEvent<HTMLInputElement>) => {
         const newValue = evnt.target.value;
-        if (onChange) { onChange(evnt); }
+        if (onChange) { onChange({ value: internalValue }); }
         setinternalValue(newValue);
     }, [setEditing]);
+
+
+    const onKeyUpCb = useCallback((evnt: KeyboardEvent<HTMLInputElement>) => {
+        const key = evnt.key;
+        // Only Trigger onBlur When Enter Presset
+        if(key !== 'Enter'){ return; }
+        if (onBlur) { onBlur({ value: internalValue }); }
+        setEditing(false);
+    }, [onChangeCb]);
+
 
     return (
         <>
@@ -40,6 +55,7 @@ export function EditableText({ value, placeholder, onBlur, onChange }: EditableT
                     autoFocus
                     value={internalValue}
                     onChange={onChangeCb}
+                    onKeyUp={onKeyUpCb}
                 />
                 : 
                 <span onClick={onClickCb}>
