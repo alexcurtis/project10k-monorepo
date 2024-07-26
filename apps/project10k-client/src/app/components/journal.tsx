@@ -5,6 +5,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { debounce } from 'lodash';
 import { Loader } from '@vspark/catalyst/loader';
 import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
+import { EditableText } from '@vspark/catalyst/editable-text';
 
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
@@ -27,22 +28,28 @@ const Q_JOURNAL_ENTRY = gql`query GetJournalEntry($id: ID!) {
     }
 }`;
 
-// // Journal Update Query - Only Return ID, So The Mutator Doesn't Drive A Re-Render
-// const M_UPDATE_JOURNAL = gql`mutation UpdateJournal($id: String!, $content: String!) {
-//     updateJournal(
-//       journal: {id: $id, content: $content}
-//     ) {
-//         id,
-//         content
-//     }
-//   }
-// `
+// Journal Entry Update Query
+const M_UPDATE_JOURNAL_ENTRY = gql`mutation UpdateJournalEntry($id: ID!, $content: JSON!) {
+    updateJournalEntry(
+        id: $id,
+        journalEntry: {
+      	    content: $content
+        }
+    ){
+        _id
+        content
+    }
+}
+`
 
 function JournalHeader() {
     return (
         <div className="px-4 py-2 bg-zinc-900 dark:text-white">
             <h2 className="text-lg">
-                Journal Name
+                <EditableText
+                    placeholder="Placeholder"
+                    value="Journal Name"
+                />
             </h2>
         </div>
     )
@@ -73,15 +80,21 @@ export function Journal() {
     const { loading, error, data } = useQuery<IJournalEntryQL>(Q_JOURNAL_ENTRY, {
         variables: { id: journalEntry }
     });
-    // const [updateJournal, { }] = useMutation(M_UPDATE_JOURNAL, {
-    //     ignoreResults: true, // Ensures The Editor Does Not Get Re-Rendered When Editor Updated
-    // });
-    const updateJournalCb = useCallback(debounce((evnt) => {
-        const json = JSON.stringify(evnt.editor.getJSON());
+
+    const [updateJournalEntry, { }] = useMutation(M_UPDATE_JOURNAL_ENTRY, {
+        ignoreResults: true, // Ensures The Editor Does Not Get Re-Rendered When Editor Updated
+    });
+
+    const updateJournalEntryCb = useCallback(debounce((evnt) => {
         console.log('updating with ', evnt.editor.getJSON());
-    }, EDITOR_SAVE_DEBOUNCE), [data]);
-
-
+        updateJournalEntry({
+            variables: {
+                id: journalEntry,
+                content: evnt.editor.getJSON()
+            },
+            ignoreResults: true
+        })
+    }, EDITOR_SAVE_DEBOUNCE), [journalEntry]);
 
 
     if (loading || !data) { return (<JournalLoader />); }
@@ -92,7 +105,7 @@ export function Journal() {
                 <JournalHeader />
                 <BlockEditor
                     initialContent={data.journalEntry.content}
-                    onUpdate={updateJournalCb}
+                    onUpdate={updateJournalEntryCb}
                 />
             </div>
         </>
