@@ -2,7 +2,6 @@ import { useCallback } from 'react'
 import { Editor, useEditor } from '@tiptap/react'
 import { ExtensionKit } from '@/extensions/extension-kit'
 import { useSidebar } from './useSidebar'
-// import { initialContent } from '@/lib/data/initialContent' INITIAL CONTENT FILL
 
 declare global {
     interface Window {
@@ -10,7 +9,7 @@ declare global {
     }
 }
 
-export const useBlockEditor = ({ onUpdate }: { onUpdate: () => void }) => {
+export const useBlockEditor = ({ initialContent, onUpdate }: { initialContent: object, onUpdate: () => void }) => {
     const leftSidebar = useSidebar()
     const editor = useEditor({
         // Performance Options
@@ -18,6 +17,7 @@ export const useBlockEditor = ({ onUpdate }: { onUpdate: () => void }) => {
         immediatelyRender: false,
         shouldRerenderOnTransaction: false,
         //----
+        content: initialContent,
         autofocus: true,
         onCreate: ({ editor }) => {
         },

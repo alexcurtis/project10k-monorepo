@@ -23,14 +23,15 @@ export const BlockEditor = ({ initialContent, onUpdate }: { initialContent: obje
     const menuContainerRef = useRef(null)
 
     const { editor, characterCount, leftSidebar } = useBlockEditor({
+        initialContent,
         onUpdate
     });
 
-    useEffect(() => {
-        // External Content Has Changed. Update The Editor Content To Match
-        // Warning Is TipTap - https://github.com/ueberdosis/tiptap/issues/3764
-        if (editor) { editor.commands.setContent(initialContent); }
-    }, [editor, initialContent])
+    // useEffect(() => {
+    //     // External Content Has Changed. Update The Editor Content To Match
+    //     // Warning Is TipTap - https://github.com/ueberdosis/tiptap/issues/3764
+    //     if (editor) { editor.commands.setContent(initialContent); }
+    // }, [editor, initialContent])
 
     const providerValue = useMemo(() => {
         return {
