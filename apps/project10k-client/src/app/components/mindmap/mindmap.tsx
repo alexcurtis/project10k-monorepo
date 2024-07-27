@@ -35,11 +35,17 @@ import {
     MindMapInteractivityStore,
     useMindMapInteractivityStore
 } from './store';
+import { DefaultNode } from './node';
 
 import '@xyflow/react/dist/style.css';
 
 // MindMap Background Colour ()
 const BACKGROUND_COLOUR = '#09090b';
+
+// Flow Node Types
+const nodeTypes = {
+    default: DefaultNode
+};
 
 // Local Interactivity Store Selector
 const selector = (state: MindMapInteractivityStore) => ({
@@ -94,7 +100,7 @@ const M_UPDATE_JOURNAL_MINDMAPNODE = gql`mutation UpdateJournalMindMapNode($id: 
 // }
 
 
-function buildNodesFromJournals(journals: IJournal[]) {
+function buildNodesFromJournals(journals: IJournal[], onNodeDeleteCb) {
     return journals.map((journal) => {
         console.log('xxxxcx', journal.mindMapNode);
         const { mindMapNode } = journal;
@@ -102,8 +108,11 @@ function buildNodesFromJournals(journals: IJournal[]) {
             ...mindMapNode,
             // Map Over ID From Journal
             id: journal._id,
-            // Pull In Journal Name For Node Label
-            data: { label: journal.name }
+            // Pull In Journal Name For Node Label + Assign Events To Nodes
+            data: {
+                label: journal.name,
+                onNodeDeleteCb
+            }
         }
     });
 }
@@ -130,13 +139,19 @@ export function FlowGraph() {
         setNodes
     } = useMindMapInteractivityStore(useShallow(selector));
 
+    const onNodeDeleteCb = useCallback(() => {
+        console.log('ON NODE DELETE');
+        alert('tyest');
+    }, [journals]);
+
+
     useEffect(() => {
         // Push Nodes From Journal Into Interactivity Store
-        const nodes = buildNodesFromJournals(journals);
+        const nodes = buildNodesFromJournals(journals, onNodeDeleteCb);
         console.log('useEffect nodes', nodes);
         setNodes(nodes);
         // Todo Also Push Edges
-    }, [journals]);
+    }, [journals, onNodeDeleteCb]);
 
     const setActiveJournalCb = useCallback<NodeMouseHandler>((_, node) => {
         // As each Node is a Journal (with same ID). Simply Grab The Node ID
@@ -147,8 +162,6 @@ export function FlowGraph() {
 
     // After Drag Event Ended. Persist To GraphQL
     const onNodeDragStopCb = useCallback((_evnt: MouseEvent, node: Node) => {
-        // TODO - IF MINDMAP HAS ITS OWN ID, THEN WE NEED TO MAP IT TO A JOURNAL....
-
         // Journal ID and Node ID are the same
         updateJournalMindMapNode({
             variables: {
@@ -171,11 +184,14 @@ export function FlowGraph() {
                     // Allows Node Click To Trigger More Successfully
                     // https://github.com/xyflow/xyflow/issues/3833
                     nodeDragThreshold={5}
+                    deleteKeyCode={["Delete", "Backspace"]}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
                     onNodeClick={setActiveJournalCb}
                     onNodeDragStop={onNodeDragStopCb}
+                    nodeTypes={nodeTypes}
+                    // onDelete={(nodes, edges) => { console.log('on delete', nodes, edges); }}
                 >
                     <Controls />
                     <MiniMap />
