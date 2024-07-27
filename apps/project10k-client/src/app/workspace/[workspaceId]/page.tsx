@@ -20,6 +20,7 @@ const Q_MY_WORKSPACE = gql`query GetWorkspace($id: ID!) {
             _id
             name
             mindMapNode {
+                _id
                 position {
                     x, y
                 }

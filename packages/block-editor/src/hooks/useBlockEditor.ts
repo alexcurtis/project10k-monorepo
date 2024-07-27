@@ -1,5 +1,6 @@
 import { Editor, useEditor } from '@tiptap/react'
 import { ExtensionKit } from '@/extensions/extension-kit'
+import { DebouncedFunc } from 'lodash';
 
 declare global {
     interface Window {
@@ -7,7 +8,7 @@ declare global {
     }
 }
 
-export const useBlockEditor = ({ content, onUpdate }: { content: object, onUpdate: () => void }) => {
+export const useBlockEditor = ({ content, onUpdate }: { content: object, onUpdate: DebouncedFunc<(evnt: any) => void> }) => {
     console.log('end hook for use editor', content);
     const editor = useEditor({
         // Performance Options

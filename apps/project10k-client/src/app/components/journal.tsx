@@ -19,7 +19,6 @@ import '@vspark/block-editor/src/app/editor.css';
 // How Often Editor Saves When Typing / Making Changes
 const EDITOR_SAVE_DEBOUNCE = 500;
 
-
 // Journal Update Mutation
 const M_UPDATE_JOURNAL = gql`mutation UpdateJournalEntry($id: ID!, $name: String!) {
     updateJournal(
@@ -32,7 +31,7 @@ const M_UPDATE_JOURNAL = gql`mutation UpdateJournalEntry($id: ID!, $name: String
         name
     }
 }
-`
+`;
 
 // Journal Entry Query - Entry Stored Seperatly from Journal (As can be big)
 const Q_JOURNAL_ENTRY = gql`query GetJournalEntry($id: ID!) {
@@ -40,7 +39,8 @@ const Q_JOURNAL_ENTRY = gql`query GetJournalEntry($id: ID!) {
         _id
         content
     }
-}`;
+}
+`;
 
 // Journal Entry Update Mutation
 const M_UPDATE_JOURNAL_ENTRY = gql`mutation UpdateJournalEntry($id: ID!, $content: JSON!) {
@@ -54,8 +54,7 @@ const M_UPDATE_JOURNAL_ENTRY = gql`mutation UpdateJournalEntry($id: ID!, $conten
         content
     }
 }
-`
-
+`;
 
 function JournalHeader({ name, onNameChange } : { name: string, onNameChange: (name: EditableTextSubmitEvent) => void }) {
     console.log('rendering header');
@@ -104,15 +103,8 @@ export function Journal() {
     });
 
     // Mutators
-    const [updateJournal, { }] = useMutation(M_UPDATE_JOURNAL, {
-        // No Need To Update Locally As Journal Is Used For MindMap As Well. Best To Let Workspace Update
-        ignoreResults: true
-    });
-
-    const [updateJournalEntry, { }] = useMutation(M_UPDATE_JOURNAL_ENTRY, {
-        // Ensures The Editor Does Not Get Re-Rendered When Editor Updated
-        ignoreResults: true
-    });
+    const [updateJournal, { }] = useMutation(M_UPDATE_JOURNAL);
+    const [updateJournalEntry, { }] = useMutation(M_UPDATE_JOURNAL_ENTRY);
 
     const onNameChangeCb = useCallback(({ value }: EditableTextSubmitEvent) => {
         updateJournal({

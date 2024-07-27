@@ -2,7 +2,8 @@ import {
     useEffect,
     useMemo,
     useContext,
-    useCallback
+    useCallback,
+    MouseEvent
 } from 'react';
 
 import {
@@ -13,6 +14,8 @@ import {
     Background,
     BackgroundVariant,
     NodeMouseHandler,
+    NodeChange,
+    applyNodeChanges,
     useOnSelectionChange,
     NodeToolbar,
     OnNodesChange,
@@ -20,17 +23,25 @@ import {
     OnConnect,
     Node,
 } from '@xyflow/react';
+
+import { useQuery, useMutation, gql } from '@apollo/client';
+import { debounce } from 'lodash';
 import { useShallow } from 'zustand/react/shallow';
 
 import { WorkspaceContext } from '@/app/context';
 import { IJournal } from '@/app/types/entities';
 
-import { MindMapInteractivityStore, useMindMapInteractivityStore } from './store';
+import {
+    MindMapInteractivityStore,
+    useMindMapInteractivityStore
+} from './store';
 
 import '@xyflow/react/dist/style.css';
 
-const BACKGROUND_COLOR = '#09090b';
+// MindMap Background Colour ()
+const BACKGROUND_COLOUR = '#09090b';
 
+// Local Interactivity Store Selector
 const selector = (state: MindMapInteractivityStore) => ({
     nodes: state.nodes,
     edges: state.edges,
@@ -40,6 +51,31 @@ const selector = (state: MindMapInteractivityStore) => ({
     setNodes: state.setNodes,
     setEdges: state.setEdges
 });
+
+// todo - sort out IDS here
+// Journal Update Mutation For Mind Map Node
+const M_UPDATE_JOURNAL_MINDMAPNODE = gql`mutation UpdateJournalMindMapNode($id: ID!, $x: Float!, $y: Float!) {
+	updateJournal(
+        id: $id, journal: {
+            mindMapNode: {
+                position: {
+                    x: $x
+                    y: $y
+                }
+            }
+        }
+    ){
+        _id,
+        mindMapNode {
+            _id,
+            position {
+                x,
+                y
+            }
+        }
+    }
+}
+`;
 
 // function buildEdges(nodes) {
 //     return nodes.flatMap((node) => {
@@ -58,14 +94,15 @@ const selector = (state: MindMapInteractivityStore) => ({
 // }
 
 
-// USE THE APOLLO CACHE - WRITE THE INTERACTIVITY CHANGES TO CACHE. READ THEM AFTER.... 
- //ONLY PROBLEM IS THAT THEY ARE STORED AT THE JOURNAL LEVEL. WE DONT WANT THOSE RE-RENDERING TONS
-
 function buildNodesFromJournals(journals: IJournal[]) {
     return journals.map((journal) => {
+        console.log('xxxxcx', journal.mindMapNode);
+        const { mindMapNode } = journal;
         return {
+            ...mindMapNode,
+            // Map Over ID From Journal
             id: journal._id,
-            position: journal.mindMapNode.position,
+            // Pull In Journal Name For Node Label
             data: { label: journal.name }
         }
     });
@@ -79,6 +116,9 @@ export function FlowGraph() {
     const { setActiveJournal } = workspaceContext;
     const workspace = workspaceContext.workspace;
     const { journals } = workspace;
+
+    // Mutators
+    const [updateJournalMindMapNode, { }] = useMutation(M_UPDATE_JOURNAL_MINDMAPNODE);
 
     // MindMap Interactivity Store
     const {
@@ -105,11 +145,26 @@ export function FlowGraph() {
         setActiveJournal(selectedNodeId);
     }, [setActiveJournal]);
 
+    // After Drag Event Ended. Persist To GraphQL
+    const onNodeDragStopCb = useCallback((_evnt: MouseEvent, node: Node) => {
+        // TODO - IF MINDMAP HAS ITS OWN ID, THEN WE NEED TO MAP IT TO A JOURNAL....
+
+        // Journal ID and Node ID are the same
+        updateJournalMindMapNode({
+            variables: {
+                id: node.id,
+                x: node.position.x,
+                y: node.position.y
+            }
+        });
+    }, [updateJournalMindMapNode]);
+
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
                 <ReactFlow
-                    style={{ backgroundColor: BACKGROUND_COLOR }}
+                    style={{ backgroundColor: BACKGROUND_COLOUR }}
                     colorMode="dark"
                     nodes={nodes}
                     edges={edges}
@@ -117,11 +172,12 @@ export function FlowGraph() {
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
                     onNodeClick={setActiveJournalCb}
+                    onNodeDragStop={onNodeDragStopCb}
                 >
                     <Controls />
                     <MiniMap />
                     <Background
-                        style={{ backgroundColor: BACKGROUND_COLOR }}
+                        style={{ backgroundColor: BACKGROUND_COLOUR }}
                         variant={BackgroundVariant.Dots}
                         gap={12}
                         size={1}

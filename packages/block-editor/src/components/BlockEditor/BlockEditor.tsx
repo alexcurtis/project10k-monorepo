@@ -1,21 +1,20 @@
 'use client'
 
-import { EditorContent, useCurrentEditor } from '@tiptap/react'
+import { EditorContent } from '@tiptap/react'
 import React, { useRef } from 'react'
+import { DebouncedFunc } from 'lodash';
 
 import { LinkMenu } from '@/components/menus'
-
 import { useBlockEditor } from '@/hooks/useBlockEditor'
-
-import '@/styles/index.css'
-
 import ImageBlockMenu from '@/extensions/ImageBlock/components/ImageBlockMenu'
 import { ColumnsMenu } from '@/extensions/MultiColumn/menus'
 import { TableColumnMenu, TableRowMenu } from '@/extensions/Table/menus'
 import { TextMenu } from '../menus/TextMenu'
 import { ContentItemMenu } from '../menus/ContentItemMenu'
 
-export const BlockEditor = ({ content, onUpdate }: { content: object, onUpdate: () => void }) => {
+import '@/styles/index.css'
+
+export const BlockEditor = ({ content, onUpdate }: { content: object, onUpdate: DebouncedFunc<(evnt: any) => void> }) => {
     const menuContainerRef = useRef(null)
 
     const { editor } = useBlockEditor({

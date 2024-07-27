@@ -6,6 +6,7 @@ export type IMindMapNodePosition = {
 }
 
 export type IMindMapNode = {
+    _id: string,
     position: IMindMapNodePosition    
 }
 
