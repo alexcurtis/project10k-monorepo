@@ -168,6 +168,9 @@ export function FlowGraph() {
                     colorMode="dark"
                     nodes={nodes}
                     edges={edges}
+                    // Allows Node Click To Trigger More Successfully
+                    // https://github.com/xyflow/xyflow/issues/3833
+                    nodeDragThreshold={5}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}

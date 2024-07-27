@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { Editor, useEditor } from '@tiptap/react'
 import { ExtensionKit } from '@/extensions/extension-kit'
 import { DebouncedFunc } from 'lodash';
@@ -32,7 +34,14 @@ export const useBlockEditor = ({ content, onUpdate }: { content: object, onUpdat
                 class: 'min-h-full',
             },
         },
-    }, [content, onUpdate]);
+    }, []);
+
+    useEffect(() => {
+        if (!editor || editor === null) { return; }
+        const { from, to } = editor.state.selection;
+        editor.commands.setContent(content);
+        editor.commands.setTextSelection({ from, to });
+    }, [content]);
 
     console.log('Use Block Editor');
     window.editor = editor
