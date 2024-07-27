@@ -90,7 +90,6 @@ export function FlowGraph() {
         setNodes
     } = useMindMapInteractivityStore(useShallow(selector));
 
-
     useEffect(() => {
         // Push Nodes From Journal Into Interactivity Store
         const nodes = buildNodesFromJournals(journals);
@@ -99,22 +98,12 @@ export function FlowGraph() {
         // Todo Also Push Edges
     }, [journals]);
 
-
-
     const setActiveJournalCb = useCallback<NodeMouseHandler>((_, node) => {
         // As each Node is a Journal (with same ID). Simply Grab The Node ID
         const selectedNodeId = node.id;
         console.log('set Active journal', selectedNodeId);
         setActiveJournal(selectedNodeId);
     }, [setActiveJournal]);
-
-
-
-
-
-    
-
-    
 
     return (
         <>

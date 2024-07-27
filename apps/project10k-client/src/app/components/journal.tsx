@@ -81,9 +81,9 @@ function JournalLoader() {
     )
 }
 
-
 // Block Editor Does Not Re-Render When Data Updated - Editor Is An Expensive Function
 export function Journal() {
+    console.log('Top Of Journal');
     const workspaceContext = useContext(WorkspaceContext);
     if (!workspaceContext) { return; }
     const activeJournalId = workspaceContext.activeJournal;
@@ -146,7 +146,7 @@ export function Journal() {
                     onNameChange={onNameChangeCb}
                 />
                 <BlockEditor
-                    initialContent={data.journalEntry.content}
+                    content={data.journalEntry.content}
                     onUpdate={updateJournalEntryCb}
                 />
             </div>
