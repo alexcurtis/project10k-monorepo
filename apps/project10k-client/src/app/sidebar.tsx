@@ -50,7 +50,7 @@ function SidebarItem({ item, pathname }: { item: SidebarItem, pathname: string }
                 legacyBehavior={true}
                 passHref
                 href={item.href}>
-                <a className={`${classNames} group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6`}>
+                <a className={`${classNames} group flex gap-x-3 rounded-md p-2 text-base font-semibold leading-6`}>
                     <item.icon aria-hidden="true" className="h-6 w-6 shrink-0" />
                     {item.name}
                 </a>
