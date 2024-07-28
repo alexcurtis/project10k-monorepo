@@ -33,8 +33,7 @@ const selector = (state: InsightStore) => ({
     edges: state.edges,
     onNodesChange: state.onNodesChange,
     onEdgesChange: state.onEdgesChange,
-    onConnect: state.onConnect,
-    setCurrentNode: state.setCurrentNode
+    onConnect: state.onConnect
 });
 
 
@@ -76,7 +75,7 @@ function FlowGraph({nodes, edges, onNodesChange, onEdgesChange, onConnect, onNod
         if(selectedNodeId){ onNodeSelected(selectedNodeId); }
     }, []);
 
-    useOnSelectionChange({ onChange: onNodeSelectionChanged });
+    // useOnSelectionChange({ onChange: onNodeSelectionChanged });
 
 
 

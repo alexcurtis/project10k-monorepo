@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useQuery, gql } from '@apollo/client';
@@ -9,16 +10,26 @@ import { IWorkspaceQL } from '@/app/types/ql';
 
 import { WorkspaceContext } from '@/app/context';
 import { Journal } from '@/app/components/journal';
-import { MindMap } from '@/app/components/mindmap';
+import { MindMap } from '@/app/components/mindmap/mindmap';
 
-const Q_MY_WORKSPACE = gql`query GetWorkspace($id: String!) {
-    workspace(id: $id, withJournal: false){
-        id,
-        name,
-        created_at,
-        updated_at,
-        companies {
-            id, name
+const Q_MY_WORKSPACE = gql`query GetWorkspace($id: ID!) {
+    workspace(id: $id){
+        _id,
+        name
+        journals {
+            _id
+            name
+            mindMapNode {
+                _id
+                position {
+                    x, y
+                }
+                edges {
+                    _id
+                    target
+                }
+            }
+            journalEntry
         }
     }
 }`;
@@ -39,21 +50,21 @@ function ContentPanels() {
             <PanelGroup
                 autoSaveId="layout-h-persistence"
                 direction="horizontal"
-                >
+            >
                 <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>
                     <PanelGroup
                         autoSaveId="layout-v-persistence"
                         direction="vertical"
-                        >
+                    >
                         <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>
-                            <Journal/>
+                            <Journal />
                         </Panel>
                         <PanelResizeHandle className="h-1 bg-white/5" />
                         <Panel
                             minSize={DEFAULT_MIN_PANEL_SIZE}
                             defaultSize={40}
-                            >
-                            <MindMap/>
+                        >
+                            <MindMap />
                         </Panel>
                     </PanelGroup>
                 </Panel>
@@ -66,7 +77,7 @@ function ContentPanels() {
     );
 }
 
-function WorspacePageLoader(){
+function WorspacePageLoader() {
     return (
         <div className="p-4">
             <Loader />
@@ -75,16 +86,30 @@ function WorspacePageLoader(){
 }
 
 function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
+    console.log('rendering workspace layout - workspaceId', workspaceId);
+    const [activeJournal, setActiveJournal] = useState<string>();
+
     const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE, {
-        variables: { id: workspaceId }
+        variables: { id: workspaceId },
+        onCompleted: () => {
+            // Default To First Journal As Active On A New Opened Workspace
+            const firstJournal = data?.workspace.journals[0]._id;
+            setActiveJournal(firstJournal);
+        },
     });
-    if (loading || !data) { return (<WorspacePageLoader />); }
+    // Ensure Data and ActiveJournal Are Synced Before Rendering Workspace
+    if (loading || !data || !activeJournal) { return (<WorspacePageLoader />); }
     const workspace = data.workspace;
-    console.log('rendering workspace layout');
+    console.log('---------rendering real workspace-----------', activeJournal, workspace);
     return (
         <>
             <Header name={workspace.name} />
-            <WorkspaceContext.Provider value={{ id: workspaceId }}>
+            <WorkspaceContext.Provider
+                value={{
+                    workspace,
+                    activeJournal,
+                    setActiveJournal
+                }}>
                 <ContentPanels />
             </WorkspaceContext.Provider>
         </>

@@ -1,2 +1,3 @@
 import { createContext } from 'react';
-export const WorkspaceContext = createContext({});
+import { IWorkspaceContext } from './types/entities';
+export const WorkspaceContext = createContext<IWorkspaceContext | null>(null);

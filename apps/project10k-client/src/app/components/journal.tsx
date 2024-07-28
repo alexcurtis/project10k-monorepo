@@ -5,43 +5,68 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { debounce } from 'lodash';
 import { Loader } from '@vspark/catalyst/loader';
 import { BlockEditor } from '@vspark/block-editor/src/components/BlockEditor';
-
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { EditableText, EditableTextSubmitEvent } from '@vspark/catalyst/editable-text';
 
 import { WorkspaceContext } from '@/app/context';
-import { IWorkspaceQL, IJournalML } from '@/app/types/ql';
+import {
+    IWorkspaceQL,
+    IJournalML,
+    IJournalEntryQL
+} from '@/app/types/ql';
 
 import '@vspark/block-editor/src/app/editor.css';
 
 // How Often Editor Saves When Typing / Making Changes
 const EDITOR_SAVE_DEBOUNCE = 500;
 
-const Q_MY_WORKSPACE_WITH_JOURNAL = gql`query GetWorkspaceJournal($id: String!) {
-    workspace(id: $id, withJournal: true){
-        name,
-        journal {
-            id,
-            content
-        }
-    }
-}`;
-
-// Journal Update Query - Only Return ID, So The Mutator Doesn't Drive A Re-Render
-const M_UPDATE_JOURNAL = gql`mutation UpdateJournal($id: String!, $content: String!) {
+// Journal Update Mutation
+const M_UPDATE_JOURNAL = gql`mutation UpdateJournalEntry($id: ID!, $name: String!) {
     updateJournal(
-      journal: {id: $id, content: $content}
-    ) {
-        id,
+        id: $id,
+        journal: {
+            name: $name
+        }
+    ){
+        _id
+        name
+    }
+}
+`;
+
+// Journal Entry Query - Entry Stored Seperatly from Journal (As can be big)
+const Q_JOURNAL_ENTRY = gql`query GetJournalEntry($id: ID!) {
+    journalEntry(id: $id){
+        _id
         content
     }
-  }
-`
+}
+`;
 
-function JournalHeader() {
+// Journal Entry Update Mutation
+const M_UPDATE_JOURNAL_ENTRY = gql`mutation UpdateJournalEntry($id: ID!, $content: JSON!) {
+    updateJournalEntry(
+        id: $id,
+        journalEntry: {
+      	    content: $content
+        }
+    ){
+        _id
+        content
+    }
+}
+`;
+
+function JournalHeader({ name, onNameChange } : { name: string, onNameChange: (name: EditableTextSubmitEvent) => void }) {
+    console.log('rendering header');
     return (
         <div className="px-4 py-2 bg-zinc-900 dark:text-white">
             <h2 className="text-lg">
-                Journal Name
+                <EditableText
+                    placeholder="Placeholder"
+                    value={name}
+                    onSubmit={onNameChange}
+                    neverEmpty={true}
+                />
             </h2>
         </div>
     )
@@ -55,45 +80,66 @@ function JournalLoader() {
     )
 }
 
-
 // Block Editor Does Not Re-Render When Data Updated - Editor Is An Expensive Function
 export function Journal() {
+    console.log('Top Of Journal');
+    const workspaceContext = useContext(WorkspaceContext);
+    if (!workspaceContext) { return; }
+    const activeJournalId = workspaceContext.activeJournal;
 
-    console.log('re-rendering journal!!!');
-    const { id } = useContext(WorkspaceContext);
-    const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE_WITH_JOURNAL, {
-        variables: { id: id }
+    const activeJournal = workspaceContext.workspace.journals.find((journal) => {
+        return journal._id === activeJournalId;
+    })
+
+    console.log('active journal (in journal render)', activeJournal);
+
+    // If For Some (Strange) Reason No Active Journal. TODO - Make This An Error Gate
+    if(!activeJournal){ return; }
+    const journalEntry = activeJournal.journalEntry;
+
+    // Query
+    const { loading, error, data } = useQuery<IJournalEntryQL>(Q_JOURNAL_ENTRY, {
+        variables: { id: journalEntry }
     });
-    const [updateJournal, { }] = useMutation(M_UPDATE_JOURNAL, {
-        ignoreResults: true, // Ensures The Editor Does Not Get Re-Rendered When Editor Updated
-    });
-    const updateJournalCb = useCallback(debounce((evnt) => {
-        const json = JSON.stringify(evnt.editor.getJSON());
-        console.log('updating with ', {
-            id: data?.workspace.journal.id,
-            content: json
-        });
+
+    // Mutators
+    const [updateJournal, { }] = useMutation(M_UPDATE_JOURNAL);
+    const [updateJournalEntry, { }] = useMutation(M_UPDATE_JOURNAL_ENTRY);
+
+    const onNameChangeCb = useCallback(({ value }: EditableTextSubmitEvent) => {
         updateJournal({
             variables: {
-                id: data?.workspace.journal.id,
-                content: json
+                id: activeJournal._id,
+                name: value
+            }
+        })
+    }, [updateJournal, activeJournal]);
+
+    // When Journal Entry Changes - Update 
+    const updateJournalEntryCb = useCallback(debounce((evnt) => {
+        updateJournalEntry({
+            variables: {
+                id: journalEntry,
+                content: evnt.editor.getJSON()
             },
             ignoreResults: true
         })
-    }, EDITOR_SAVE_DEBOUNCE), [data]);
+    }, EDITOR_SAVE_DEBOUNCE), [updateJournalEntry, journalEntry]);
 
-    if (loading || !data) { return (<JournalLoader />); }
-    const journal = data.workspace.journal;
-    const contentJson = JSON.parse(journal.content);
+     // Saftey Gate - If Loading or No Data
+     if (loading || !data || !activeJournal) { return (<JournalLoader />); }
 
-    console.log('RENDERING JOURNAL', id, data);
+    console.log('RENDERING JOURNAL', activeJournalId, data, 'active journal name', activeJournal.name);
     return (
         <>
             <div className="flex flex-col h-full max-h-full">
-                <JournalHeader />
+                <JournalHeader
+                    name={activeJournal.name}
+                    onNameChange={onNameChangeCb}
+                />
                 <BlockEditor
-                    initialContent={contentJson}
-                    onUpdate={updateJournalCb}
+                    content={data.journalEntry.content}
+                    onUpdate={updateJournalEntryCb}
                 />
             </div>
         </>

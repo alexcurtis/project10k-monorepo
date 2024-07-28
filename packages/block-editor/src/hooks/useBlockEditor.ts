@@ -1,8 +1,8 @@
-import { useCallback } from 'react'
+import { useEffect } from 'react';
+
 import { Editor, useEditor } from '@tiptap/react'
 import { ExtensionKit } from '@/extensions/extension-kit'
-import { useSidebar } from './useSidebar'
-// import { initialContent } from '@/lib/data/initialContent' INITIAL CONTENT FILL
+import { DebouncedFunc } from 'lodash';
 
 declare global {
     interface Window {
@@ -10,15 +10,15 @@ declare global {
     }
 }
 
-export const useBlockEditor = ({ initialContent, onUpdate }: { initialContent: string, onUpdate: () => void }) => {
-    const leftSidebar = useSidebar()
+export const useBlockEditor = ({ content, onUpdate }: { content: object, onUpdate: DebouncedFunc<(evnt: any) => void> }) => {
+    console.log('end hook for use editor', content);
     const editor = useEditor({
         // Performance Options
         // https://tiptap.dev/blog/release-notes/say-hello-to-tiptap-2-5-our-most-performant-editor-yet
         immediatelyRender: false,
         shouldRerenderOnTransaction: false,
         //----
-        content: initialContent,
+        content: content,
         autofocus: true,
         onCreate: ({ editor }) => {
         },
@@ -34,17 +34,16 @@ export const useBlockEditor = ({ initialContent, onUpdate }: { initialContent: s
                 class: 'min-h-full',
             },
         },
-    },
-        [],
-    )
+    }, []);
+
+    useEffect(() => {
+        if (!editor || editor === null) { return; }
+        const { from, to } = editor.state.selection;
+        editor.commands.setContent(content);
+        editor.commands.setTextSelection({ from, to });
+    }, [content]);
 
     console.log('Use Block Editor');
-
-    // TODO - DO WE NEED A DESTRUCTOR HERE TO CLEANUP?
-
-    const characterCount = editor?.storage.characterCount || { characters: () => 0, words: () => 0 }
-
     window.editor = editor
-
-    return { editor, characterCount, leftSidebar }
+    return { editor }
 }
