@@ -27,8 +27,7 @@ import {
     EdgeChange
 } from '@xyflow/react';
 
-import { useQuery, useMutation, gql } from '@apollo/client';
-import { debounce } from 'lodash';
+import { useMutation, gql } from '@apollo/client';
 import { useShallow } from 'zustand/react/shallow';
 
 import { WorkspaceContext } from '@/app/context';
@@ -100,7 +99,6 @@ const M_DELETE_JOURNAL_FROM_WORKSPACE = gql`mutation DeleteJournalOnWorkspace($i
 
 function buildNodesFromJournals(journals: IJournal[], onNodeDeleteCb: (id: string) => void): Node[] {
     return journals.map((journal) => {
-        console.log('xxxxcx', journal.mindMapNode);
         const { mindMapNode } = journal;
         return {
             ...mindMapNode,
@@ -119,12 +117,11 @@ function buildNodesFromJournals(journals: IJournal[], onNodeDeleteCb: (id: strin
 function buildEdgesFromJournals(journals: IJournal[]) : Edge[] {
     return journals.flatMap((journal) => {
         const { mindMapNode } = journal;
-        console.log('FOUND EDGES ', mindMapNode.edges);
         return mindMapNode.edges.map((edge) => {
             const source = mindMapNode._id;
             const target = edge.target;
             return {
-                id: `e${source}-${target}`,
+                id: edge._id,
                 source,
                 target
             }
@@ -133,22 +130,20 @@ function buildEdgesFromJournals(journals: IJournal[]) : Edge[] {
 }
 
 function buildEdgeFromConnection(connection: Connection) : Edge {
+    const { source, target } = connection;
     return {
-        id: '',
-        source: connection.source,
-        target: connection.target
+        id: `e${source}-${target}`,
+        source: source,
+        target: target
     };
 }
 
 function createMindMapNodeUpdateFromFlowNode(node: Node, edges: Edge[]){
-    console.log('node ', node);
-    
-    // Need To find a way of getting existing IDs in here.... for edges....
-    
     const mindMapNodeEdges = edges
         .filter((edge) => edge.source === node.id)
         .map((edge) => {
             return {
+                _id: edge.id,
                 target: edge.target
             };
         });

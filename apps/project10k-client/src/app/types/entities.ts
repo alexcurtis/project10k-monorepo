@@ -12,7 +12,8 @@ export type IMindMapNodePosition = {
 }
 
 export type IMindMapEdge = {
-    target: string;
+    _id: string,
+    target: string
 }
 
 export type IMindMapNode = {
