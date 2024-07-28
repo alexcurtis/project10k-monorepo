@@ -25,6 +25,7 @@ const Q_MY_WORKSPACE = gql`query GetWorkspace($id: ID!) {
                     x, y
                 }
                 edges {
+                    _id
                     target
                 }
             }

@@ -23,7 +23,8 @@ import {
     OnConnect,
     Node,
     Edge,
-    Connection
+    Connection,
+    EdgeChange
 } from '@xyflow/react';
 
 import { useQuery, useMutation, gql } from '@apollo/client';
@@ -75,6 +76,7 @@ const M_UPDATE_MINDMAPNODE = gql`mutation UpdateJournalMindMapNode($journalId: I
                 y
             }
             edges {
+                _id
                 target
             }
         }
@@ -140,6 +142,9 @@ function buildEdgeFromConnection(connection: Connection) : Edge {
 
 function createMindMapNodeUpdateFromFlowNode(node: Node, edges: Edge[]){
     console.log('node ', node);
+    
+    // Need To find a way of getting existing IDs in here.... for edges....
+    
     const mindMapNodeEdges = edges
         .filter((edge) => edge.source === node.id)
         .map((edge) => {
@@ -160,6 +165,15 @@ function createMindMapNodeUpdateFromFlowNode(node: Node, edges: Edge[]){
             }
         }
     };
+}
+
+function findSourceNodeFromEdgeId(id: string, edges: Edge[], nodes: Node[]){
+    // Find The Edge
+    const edge = edges.find((e) => e.id === id);
+    if (!edge){ return; }
+    const { source } = edge;
+    // Find The Node From The Source ID
+    return nodes.find((node) => node.id === source);
 }
 
 export function FlowGraph() {
@@ -233,12 +247,31 @@ export function FlowGraph() {
         updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
     }, [updateMindMapNode, nodes, edges]);
 
+    const onEdgesChangeCb = useCallback((changes: EdgeChange[]) => {
+        // Check If Edge Removed. If So. Update GraphQL
+        const change = changes[0];
+        if(change.type ==='remove'){
+            const node = findSourceNodeFromEdgeId(change.id, edges, nodes);
+            if(node){
+                console.log('Removing edge from node', node)
+                // Remove The Edge So We Can Use New Edge State To Build Node For Graph QL
+                const updatedEdges = edges.filter(edge => edge.id !== change.id);
+                updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
+            }
+        }
+        // Pass Everything To Interactivity Store
+        onEdgesChange(changes);
+    }, [updateMindMapNode, nodes, edges]);
+
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
                 <ReactFlow
                     style={{ backgroundColor: BACKGROUND_COLOUR }}
                     colorMode="dark"
+                    // Fit View To Initial Nodes
+                    fitView={true}
                     nodes={nodes}
                     edges={edges}
                     // Allows Node Click To Trigger More Successfully
@@ -246,7 +279,8 @@ export function FlowGraph() {
                     nodeDragThreshold={5}
                     deleteKeyCode={["Delete", "Backspace"]}
                     onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
+                    onEdgesChange={onEdgesChangeCb}
+                    // onEdgesChange={onEdgesChange}
                     onConnect={onConnection}
                     onNodeClick={setActiveJournalCb}
                     onNodeDragStop={onNodeDragStopCb}
