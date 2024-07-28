@@ -26,9 +26,9 @@ function Layout({ children }: Readonly<{ children: React.ReactNode; }>) {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (
-        <html lang="en" className="min-h-full h-full max-h-full">
+        <html lang="en" className="dark min-h-full h-full max-h-full">
             <body className={`min-h-full h-full max-h-full ${inter.className}`}>
-                <div className="dark min-h-full h-full max-h-full w-full bg-zinc-950">
+                <div className="min-h-full h-full max-h-full w-full dark:bg-zinc-950">
                     <Layout>
                         {children}
                     </Layout>

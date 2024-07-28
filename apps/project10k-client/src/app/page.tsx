@@ -19,6 +19,9 @@ const Q_MY_ACCOUNT = gql`query getAccount {
         _id
         name
         updatedAt
+        journals {
+            _id
+        }
       }
     }
 }`;

@@ -1,9 +1,12 @@
 import {
     useEffect,
-    useMemo,
+    useState,
     useContext,
     useCallback,
-    MouseEvent
+    MouseEvent,
+    Dispatch,
+    SetStateAction,
+    memo
 } from 'react';
 
 import {
@@ -26,6 +29,17 @@ import {
     Connection,
     EdgeChange
 } from '@xyflow/react';
+
+import {
+    Dialog,
+    DialogActions,
+    DialogBody,
+    DialogDescription,
+    DialogTitle
+} from '@vspark/catalyst/dialog';
+
+import { Button } from '@vspark/catalyst/button';
+import { Input } from '@vspark/catalyst/input';
 
 import { useMutation, gql } from '@apollo/client';
 import { useShallow } from 'zustand/react/shallow';
@@ -50,6 +64,17 @@ const BACKGROUND_COLOUR = '#09090b';
 const nodeTypes = {
     default: DefaultNode
 };
+
+interface IDeleteJournalGateway {
+    isOpen: boolean,
+    deleteAction: () => void | null,
+    name: string
+}
+
+interface IDeleteJournalGatewayProps {
+    gateway: IDeleteJournalGateway,
+    setDeleteJournalGateway: Dispatch<SetStateAction<IDeleteJournalGateway>>
+}
 
 // Local Interactivity Store Selector
 const selector = (state: MindMapInteractivityStore) => ({
@@ -114,7 +139,7 @@ function buildNodesFromJournals(journals: IJournal[], onNodeDeleteCb: (id: strin
     });
 }
 
-function buildEdgesFromJournals(journals: IJournal[]) : Edge[] {
+function buildEdgesFromJournals(journals: IJournal[]): Edge[] {
     return journals.flatMap((journal) => {
         const { mindMapNode } = journal;
         return mindMapNode.edges.map((edge) => {
@@ -129,7 +154,7 @@ function buildEdgesFromJournals(journals: IJournal[]) : Edge[] {
     });
 }
 
-function buildEdgeFromConnection(connection: Connection) : Edge {
+function buildEdgeFromConnection(connection: Connection): Edge {
     const { source, target } = connection;
     return {
         id: `e${source}-${target}`,
@@ -138,7 +163,7 @@ function buildEdgeFromConnection(connection: Connection) : Edge {
     };
 }
 
-function createMindMapNodeUpdateFromFlowNode(node: Node, edges: Edge[]){
+function createMindMapNodeUpdateFromFlowNode(node: Node, edges: Edge[]) {
     const mindMapNodeEdges = edges
         .filter((edge) => edge.source === node.id)
         .map((edge) => {
@@ -162,16 +187,48 @@ function createMindMapNodeUpdateFromFlowNode(node: Node, edges: Edge[]){
     };
 }
 
-function findSourceNodeFromEdgeId(id: string, edges: Edge[], nodes: Node[]){
+function findSourceNodeFromEdgeId(id: string, edges: Edge[], nodes: Node[]) {
     // Find The Edge
     const edge = edges.find((e) => e.id === id);
-    if (!edge){ return; }
+    if (!edge) { return; }
     const { source } = edge;
     // Find The Node From The Source ID
     return nodes.find((node) => node.id === source);
 }
 
-export function FlowGraph() {
+const DeleteJournalGateway = memo(function ({ gateway, setDeleteJournalGateway }: IDeleteJournalGatewayProps) {
+    const closeDeleteJournalGatewayCb = () => setDeleteJournalGateway({...gateway, isOpen: false});
+    const triggerDeleteAction = () => {
+        gateway.deleteAction();
+        closeDeleteJournalGatewayCb();
+    }
+    return (
+        <>
+            <Dialog open={gateway.isOpen} onClose={closeDeleteJournalGatewayCb}>
+                <DialogTitle>Delete Journal</DialogTitle>
+                <DialogDescription>
+                    Are you sure you want to delete the journal {gateway.name}?
+                </DialogDescription>
+                <DialogActions>
+                    <Button
+                        plain
+                        onClick={closeDeleteJournalGatewayCb}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={triggerDeleteAction}
+                    >
+                        Delete</Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    );
+});
+
+
+export function FlowGraph({ onNodeDeleteAction }: { onNodeDeleteAction: (name: string, deleteAction: () => void) => void }) {
     console.log('rendering flow graph');
     const workspaceContext = useContext(WorkspaceContext);
     if (!workspaceContext) { return; }
@@ -194,33 +251,35 @@ export function FlowGraph() {
         setNodesAndEdges
     } = useMindMapInteractivityStore(useShallow(selector));
 
+    // On Node Delete
     const onNodeDeleteCb = useCallback((id: string) => {
-        deleteJournalFromWorkspace({
-            variables: {
-                id: workspace._id,
-                journalId: id
-            }
+        // Get The Node Name (For The Dialog)
+        const journal = journals.find((j) => j._id === id);
+        if(!journal){ return; }
+        const { name } = journal;
+        // Trigger Dialog Action
+        onNodeDeleteAction(name, () => {
+            deleteJournalFromWorkspace({
+                variables: {
+                    id: workspace._id,
+                    journalId: id
+                }
+            });
         });
-        console.log('deleting journal....', {
-            id: workspace._id,
-            journalId: id
-        });
-    }, [workspace, journals]);
+    }, [workspace, journals, onNodeDeleteAction]);
 
-
+    // MindMap Builder
     useEffect(() => {
         // Push Nodes From Journal Into Interactivity Store
         const nodes = buildNodesFromJournals(journals, onNodeDeleteCb);
-        console.log('useEffect nodes', nodes);
         const edges = buildEdgesFromJournals(journals);
-        console.log('useEffect edges', edges);
         setNodesAndEdges(nodes, edges);
         // Todo Also Push Edges
     }, [journals, onNodeDeleteCb, setNodesAndEdges]);
 
+    // Set The Active Journal When A Node Is Clicked
     const setActiveJournalCb = useCallback<NodeMouseHandler>((_, node) => {
         const selectedJournalId = node.data.journalId;
-        console.log('set Active journal', selectedJournalId);
         setActiveJournal(selectedJournalId);
     }, [setActiveJournal]);
 
@@ -235,20 +294,19 @@ export function FlowGraph() {
         // Update The Interactivity Store
         onConnect(connection);
         // Persist The Connection To GraphQL
-        console.log('connection', connection);
         const { source } = connection;
         const node = nodes.find((node) => node.id === source);
-        if (!node){ return; }
+        if (!node) { return; }
         updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
     }, [updateMindMapNode, nodes, edges]);
 
+    // When An Edge Is Removed
     const onEdgesChangeCb = useCallback((changes: EdgeChange[]) => {
         // Check If Edge Removed. If So. Update GraphQL
         const change = changes[0];
-        if(change.type ==='remove'){
+        if (change.type === 'remove') {
             const node = findSourceNodeFromEdgeId(change.id, edges, nodes);
-            if(node){
-                console.log('Removing edge from node', node)
+            if (node) {
                 // Remove The Edge So We Can Use New Edge State To Build Node For Graph QL
                 const updatedEdges = edges.filter(edge => edge.id !== change.id);
                 updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
@@ -295,12 +353,28 @@ export function FlowGraph() {
     );
 }
 
+
 export function MindMap() {
     console.log('rendering Mind Map');
+    const [deleteJournalGateway, setDeleteJournalGateway] = useState<IDeleteJournalGateway>({
+        name: '', isOpen: false, deleteAction: () => {}
+    });
+
+    const openDeleteJournalGatewayCb = useCallback((name: string, deleteAction: () => void) => {
+        setDeleteJournalGateway({ name, isOpen: true, deleteAction });
+    }, [setDeleteJournalGateway]);
+
+
     return (
         <>
+            <DeleteJournalGateway
+                gateway={deleteJournalGateway}
+                setDeleteJournalGateway={setDeleteJournalGateway}
+            />
             <ReactFlowProvider>
-                <FlowGraph />
+                <FlowGraph
+                    onNodeDeleteAction={openDeleteJournalGatewayCb}    
+                />
             </ReactFlowProvider>
         </>
     );

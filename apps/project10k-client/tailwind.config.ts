@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 const config: Config = {
-    darkMode: ['class'],
+    darkMode: 'selector',
     safelist: ['ProseMirror'],
     content: [
         "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
