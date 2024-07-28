@@ -1,10 +1,13 @@
-import React, { memo } from "react";
+import React, {
+    memo,
+    SyntheticEvent
+} from "react";
 import { Handle, Position } from "@xyflow/react";
 import { Button } from "@vspark/catalyst/button";
 
 
-export const DefaultNode = memo(({ data, isConnectable }) => {
-    console.log('yoooo!', data.onNodeDeleteCb);
+export const DefaultNode = memo(({ id, data, isConnectable }) => {
+    const { onNodeDeleteCb } = data;
     return (
         <>
             <Handle
@@ -16,9 +19,8 @@ export const DefaultNode = memo(({ data, isConnectable }) => {
             />
             <div>
                 {data.label}
-                <Button onClick={(evnt) => {
-                    console.log('in button click event', data);
-                    data.onNodeDeleteCb();
+                <Button className="nodrag" onClick={(evnt: SyntheticEvent) => {
+                    if(onNodeDeleteCb) { onNodeDeleteCb(data.journalId); }
                     evnt.stopPropagation();
                 }}>
                     Delete

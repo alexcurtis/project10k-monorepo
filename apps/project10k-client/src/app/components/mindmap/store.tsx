@@ -21,6 +21,7 @@ export interface MindMapInteractivityStore {
     onConnect: OnConnect;
     setNodes: (nodes: Node[]) => void;
     setEdges: (edges: Edge[]) => void;
+    setNodesAndEdges: (nodes: Node[], edges: Edge[]) => void;
 }
 
 
@@ -51,5 +52,8 @@ export const useMindMapInteractivityStore = create<MindMapInteractivityStore>((s
     },
     setEdges: (edges: Edge[]) => {
         set({ edges });
+    },
+    setNodesAndEdges(nodes: Node[], edges: Edge[]){
+        set({ nodes, edges });
     }
 }));

@@ -22,6 +22,8 @@ import {
     OnEdgesChange,
     OnConnect,
     Node,
+    Edge,
+    Connection
 } from '@xyflow/react';
 
 import { useQuery, useMutation, gql } from '@apollo/client';
@@ -36,6 +38,8 @@ import {
     useMindMapInteractivityStore
 } from './store';
 import { DefaultNode } from './node';
+import { IMindMapNodeMetaData } from '@/app/types/entities';
+
 
 import '@xyflow/react/dist/style.css';
 
@@ -54,21 +58,13 @@ const selector = (state: MindMapInteractivityStore) => ({
     onNodesChange: state.onNodesChange,
     onEdgesChange: state.onEdgesChange,
     onConnect: state.onConnect,
-    setNodes: state.setNodes,
-    setEdges: state.setEdges
+    setNodesAndEdges: state.setNodesAndEdges
 });
 
-// todo - sort out IDS here
-// Journal Update Mutation For Mind Map Node
-const M_UPDATE_JOURNAL_MINDMAPNODE = gql`mutation UpdateJournalMindMapNode($id: ID!, $x: Float!, $y: Float!) {
+const M_UPDATE_MINDMAPNODE = gql`mutation UpdateJournalMindMapNode($journalId: ID!, $mindMapNode: MindMapNodeInput!) {
 	updateJournal(
-        id: $id, journal: {
-            mindMapNode: {
-                position: {
-                    x: $x
-                    y: $y
-                }
-            }
+        id: $journalId, journal: {
+            mindMapNode: $mindMapNode
         }
     ){
         _id,
@@ -78,45 +74,93 @@ const M_UPDATE_JOURNAL_MINDMAPNODE = gql`mutation UpdateJournalMindMapNode($id: 
                 x,
                 y
             }
+            edges {
+                target
+            }
         }
     }
 }
 `;
 
-// function buildEdges(nodes) {
-//     return nodes.flatMap((node) => {
-//         console.log('chugging edge builder');
-//         if (!node.edges) { return []; }
-//         return node.edges.map((edge) => {
-//             const source = node.id;
-//             const target = edge.target;
-//             return {
-//                 id: `e${source}-${target}`,
-//                 source,
-//                 target
-//             }
-//         });
-//     });
-// }
+// Journal Update Mutation For Mind Map Node
+const M_DELETE_JOURNAL_FROM_WORKSPACE = gql`mutation DeleteJournalOnWorkspace($id: ID!, $journalId: ID!) {
+	deleteJournalOnWorkspace(
+    id: $id,
+  	journalId: $journalId) {
+        _id
+        journals {
+            _id
+        }
+  	}
+}
+`;
 
 
-function buildNodesFromJournals(journals: IJournal[], onNodeDeleteCb) {
+function buildNodesFromJournals(journals: IJournal[], onNodeDeleteCb: (id: string) => void): Node[] {
     return journals.map((journal) => {
         console.log('xxxxcx', journal.mindMapNode);
         const { mindMapNode } = journal;
         return {
             ...mindMapNode,
-            // Map Over ID From Journal
-            id: journal._id,
-            // Pull In Journal Name For Node Label + Assign Events To Nodes
+            // ReMap ID From DB
+            id: mindMapNode._id,
+            // Pull In Meta Data For Node
             data: {
                 label: journal.name,
+                journalId: journal._id,
                 onNodeDeleteCb
             }
         }
     });
 }
 
+function buildEdgesFromJournals(journals: IJournal[]) : Edge[] {
+    return journals.flatMap((journal) => {
+        const { mindMapNode } = journal;
+        console.log('FOUND EDGES ', mindMapNode.edges);
+        return mindMapNode.edges.map((edge) => {
+            const source = mindMapNode._id;
+            const target = edge.target;
+            return {
+                id: `e${source}-${target}`,
+                source,
+                target
+            }
+        });
+    });
+}
+
+function buildEdgeFromConnection(connection: Connection) : Edge {
+    return {
+        id: '',
+        source: connection.source,
+        target: connection.target
+    };
+}
+
+function createMindMapNodeUpdateFromFlowNode(node: Node, edges: Edge[]){
+    console.log('node ', node);
+    const mindMapNodeEdges = edges
+        .filter((edge) => edge.source === node.id)
+        .map((edge) => {
+            return {
+                target: edge.target
+            };
+        });
+    return {
+        variables: {
+            journalId: node.data.journalId,
+            mindMapNode: {
+                _id: node.id,
+                position: {
+                    x: node.position.x,
+                    y: node.position.y
+                },
+                edges: mindMapNodeEdges
+            }
+        }
+    };
+}
 
 export function FlowGraph() {
     console.log('rendering flow graph');
@@ -127,7 +171,9 @@ export function FlowGraph() {
     const { journals } = workspace;
 
     // Mutators
-    const [updateJournalMindMapNode, { }] = useMutation(M_UPDATE_JOURNAL_MINDMAPNODE);
+    const [updateMindMapNode, { }] = useMutation(M_UPDATE_MINDMAPNODE);
+    // TODO - Move These Up The Hierachy If Need A Delete Else Where
+    const [deleteJournalFromWorkspace, { }] = useMutation(M_DELETE_JOURNAL_FROM_WORKSPACE);
 
     // MindMap Interactivity Store
     const {
@@ -136,42 +182,56 @@ export function FlowGraph() {
         onNodesChange,
         onEdgesChange,
         onConnect,
-        setNodes
+        setNodesAndEdges
     } = useMindMapInteractivityStore(useShallow(selector));
 
-    const onNodeDeleteCb = useCallback(() => {
-        console.log('ON NODE DELETE');
-        alert('tyest');
-    }, [journals]);
+    const onNodeDeleteCb = useCallback((id: string) => {
+        deleteJournalFromWorkspace({
+            variables: {
+                id: workspace._id,
+                journalId: id
+            }
+        });
+        console.log('deleting journal....', {
+            id: workspace._id,
+            journalId: id
+        });
+    }, [workspace, journals]);
 
 
     useEffect(() => {
         // Push Nodes From Journal Into Interactivity Store
         const nodes = buildNodesFromJournals(journals, onNodeDeleteCb);
         console.log('useEffect nodes', nodes);
-        setNodes(nodes);
+        const edges = buildEdgesFromJournals(journals);
+        console.log('useEffect edges', edges);
+        setNodesAndEdges(nodes, edges);
         // Todo Also Push Edges
-    }, [journals, onNodeDeleteCb]);
+    }, [journals, onNodeDeleteCb, setNodesAndEdges]);
 
     const setActiveJournalCb = useCallback<NodeMouseHandler>((_, node) => {
-        // As each Node is a Journal (with same ID). Simply Grab The Node ID
-        const selectedNodeId = node.id;
-        console.log('set Active journal', selectedNodeId);
-        setActiveJournal(selectedNodeId);
+        const selectedJournalId = node.data.journalId;
+        console.log('set Active journal', selectedJournalId);
+        setActiveJournal(selectedJournalId);
     }, [setActiveJournal]);
 
     // After Drag Event Ended. Persist To GraphQL
     const onNodeDragStopCb = useCallback((_evnt: MouseEvent, node: Node) => {
-        // Journal ID and Node ID are the same
-        updateJournalMindMapNode({
-            variables: {
-                id: node.id,
-                x: node.position.x,
-                y: node.position.y
-            }
-        });
-    }, [updateJournalMindMapNode]);
+        updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, edges));
+    }, [updateMindMapNode, edges]);
 
+    // On Connection Made
+    const onConnection = useCallback((connection: Connection) => {
+        const updatedEdges = [...edges, buildEdgeFromConnection(connection)];
+        // Update The Interactivity Store
+        onConnect(connection);
+        // Persist The Connection To GraphQL
+        console.log('connection', connection);
+        const { source } = connection;
+        const node = nodes.find((node) => node.id === source);
+        if (!node){ return; }
+        updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
+    }, [updateMindMapNode, nodes, edges]);
 
     return (
         <>
@@ -187,11 +247,10 @@ export function FlowGraph() {
                     deleteKeyCode={["Delete", "Backspace"]}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
+                    onConnect={onConnection}
                     onNodeClick={setActiveJournalCb}
                     onNodeDragStop={onNodeDragStopCb}
                     nodeTypes={nodeTypes}
-                    // onDelete={(nodes, edges) => { console.log('on delete', nodes, edges); }}
                 >
                     <Controls />
                     <MiniMap />
@@ -209,13 +268,6 @@ export function FlowGraph() {
 
 export function MindMap() {
     console.log('rendering Mind Map');
-
-    // Build The React Flow Data Structure From Stored Data
-    // const edges = useMemo(() => {
-    //     return buildEdges(nodes);
-    // }, [nodes]);
-
-
     return (
         <>
             <ReactFlowProvider>
