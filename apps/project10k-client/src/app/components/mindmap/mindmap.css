@@ -4,3 +4,9 @@
     border-radius: 3px;
     background-color: #2563eb;
   }
+
+.react-flow.mindmap-flow {
+    .react-flow__node.selected {
+        box-shadow: 0 0 0 0.5px #fff;
+    }
+  }

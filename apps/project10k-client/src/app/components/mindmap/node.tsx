@@ -23,7 +23,7 @@ export const DefaultNode = memo(({ id, data, isConnectable, selected }: NodeProp
                 />
             </div>
             {selected ?
-                <div className="absolute -top-10 -right-5">
+                <div className="absolute -top-10 -right-6">
                     <Button
                         plain
                         className="nodrag"
@@ -31,7 +31,7 @@ export const DefaultNode = memo(({ id, data, isConnectable, selected }: NodeProp
                             if (onNodeDeleteCb) { onNodeDeleteCb(data.journalId); }
                             evnt.stopPropagation();
                         }}>
-                        <XCircleIcon />
+                            <XCircleIcon className="fill-red-600"/>
                     </Button>
                 </div>
                 : null}
