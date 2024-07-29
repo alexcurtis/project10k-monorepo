@@ -11,33 +11,16 @@ import { IWorkspaceQL } from '@/app/types/ql';
 import { WorkspaceContext } from '@/app/context';
 import { Journal } from '@/app/components/journal';
 import { MindMap } from '@/app/components/mindmap/mindmap';
+import { WORKSPACE_QL_RESPONSE } from '@/app/graphql';
 
 const Q_MY_WORKSPACE = gql`query GetWorkspace($id: ID!) {
-    workspace(id: $id){
-        _id,
-        name
-        journals {
-            _id
-            name
-            mindMapNode {
-                _id
-                position {
-                    x, y
-                }
-                edges {
-                    _id
-                    target
-                }
-            }
-            journalEntry
-        }
-    }
+    workspace(id: $id)${WORKSPACE_QL_RESPONSE}
 }`;
 
 function Header({ name }: { name: string }) {
     return (
         <header className="border-b border-white/5 p-4">
-            <h1 className="text-xl font-semibold leading-7 text-white">{name}</h1>
+            <h1 className="align-middle text-xl font-semibold leading-7 text-white">{name}</h1>
         </header>
     );
 }

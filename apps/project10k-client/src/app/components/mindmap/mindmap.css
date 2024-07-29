@@ -1,0 +1,6 @@
+.react-flow.mindmap-flow .react-flow__handle {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background-color: #2563eb;
+  }

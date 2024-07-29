@@ -1,11 +1,5 @@
 import { Dispatch } from 'react';
 
-export type IMindMapNodeMetaData = {
-    label: string,
-    journalId: string,
-    onNodeDeleteCb: (id: string) => void
-}
-
 export type IMindMapNodePosition = {
     x: number,
     y: number
