@@ -11,6 +11,7 @@ import { IWorkspaceQL } from '@/app/types/ql';
 import { WorkspaceContext } from '@/app/context';
 import { Journal } from '@/app/components/journal';
 import { MindMap } from '@/app/components/mindmap/mindmap';
+import { HtmlViewer } from '@/app/components/doc-viewer/html-viewer';
 import { WORKSPACE_QL_RESPONSE } from '@/app/graphql';
 
 const Q_MY_WORKSPACE = gql`query GetWorkspace($id: ID!) {
@@ -53,7 +54,7 @@ function ContentPanels() {
                 </Panel>
                 <PanelResizeHandle className="w-1 bg-white/5" />
                 <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>
-                    {'panel 3'}
+                    <HtmlViewer/>
                 </Panel>
             </PanelGroup>
         </>
