@@ -1,6 +1,6 @@
 import React from "react";
 
-export function Loader({ text }: { text: string }) {
+export function Loader({ text }: { text?: string }) {
     return (
         <div className="flex items-center" role="status">
             <svg

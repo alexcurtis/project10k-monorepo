@@ -22,3 +22,7 @@ export interface IJournalEntryQL extends IQueryLanguage {
 export interface ICompaniesSearchQL extends IQueryLanguage {
     companySearch: ICompany[];
 }
+
+export interface ICompaniesDocumentsQL extends IQueryLanguage {
+    companySearch: ICompany[];
+}
