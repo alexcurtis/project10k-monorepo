@@ -1,202 +1,96 @@
-import { se } from 'date-fns/locale';
-import {
-    useEffect,
-    useState,
-    useCallback,
-    SyntheticEvent,
-    Component
-} from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useRef, useEffect, useState } from "react";
+// import axios from 'axios';
+// import './HighlightIframe.css';
 
-
-
-
-
-
-
-
-/**
- * Call a function for each leaf element
- *
- * @param {*} eachable
- * @param {function} callback
- */
-function deepForEach(eachable, callback) {
-    eachable.forEach(current => {
-        if (current.forEach) {
-            deepForEach(current, callback)
-        } else {
-            callback(current)
-        }
-    })
+interface Highlight {
+    text: string;
+    range: string;
 }
 
-
-
-/**
- * Helper to conveniently iterate a tree walker
- *
- * @param {TreeWalker} walker
- * @returns {IterableIterator}
- */
 function iterateWalker(walker: TreeWalker) {
     return {
         [Symbol.iterator]() {
-            return this
+            return this;
         },
         next() {
-            const value = walker.nextNode()
-            return { value, done: !value }
-        }
-    }
+            const value = walker.nextNode();
+            return { value, done: !value };
+        },
+    };
 }
 
-
-/**
-* Get the text nodes contained in a given range
-*
-* @param {Range} range
-* @returns {Text[]}
-*/
-function getSelectedNodes(range: Range) {
-    const parent = range.commonAncestorContainer.parentElement;
-    if (!parent) { return null; }
-    const walker = document.createTreeWalker(
-        parent,
-        NodeFilter.SHOW_TEXT, {
-        acceptNode(node) {
-            return range.intersectsNode(node)
-                ? NodeFilter.FILTER_ACCEPT
-                : NodeFilter.FILTER_REJECT
-            }
-        }
-    )
-
-    return [...iterateWalker(walker)]
-}
-
-/**
-* Test if a given node has some actual
-* text other than whitespace
-*
-* @param {Node} node
-* @returns {boolean}
-*/
 function hasText(node) {
-    return /\S/.test(node.textContent)
+    return /\S/.test(node.textContent);
 }
 
-
-
-
-
-
-
-
-
-/**
- * Initialize a range with a given node
- *
- * @param {Node} node
- * @returns {Range}
- */
-function initRange(node, offsets) {
-    const range = document.createRange()
-    // if(offsets.start === 0 && offsets.end === 0){
-    //     range.selectNode(node);
-    //     return range
-    // }
-    range.selectNode(node);
-    if(offsets.start !== 0) { range.setStart(node, offsets.start); }
-    if(offsets.end !== 0) { range.setEnd(node, offsets.end); }
-    return range
-}
-
-/**
- * Extend the last range to the given node if
- * applicable, or push a new range otherwise
- *
- * @param {Range[]} ranges
- * @param {Node} node
- */
-function extendRanges(ranges, node, offsets) {
-    const [current] = ranges.slice(-1)
-
-    if (current.intersectsNode(node.previousSibling)) {
-        current.setEndAfter(node)
-    } else {
-        const range = initRange(node, offsets)
-        ranges.push(range)
-    }
-}
-
-
-
-
-
-/**
- * Given an array of nodes, map their common parent
- * nodes to ranges containing the respective nodes
- *
- * @param {Node[]} nodes
- * @returns {Map<Node, Range[]>}
- */
-function createRangesByParent(nodes, startNode, endNode) {
-    return nodes.reduce((carry, node, index) => {
-        const { parentNode } = node
-        const offsets = { start: 0, end: 0 };
-        if(node === startNode.node){ offsets.start = startNode.offset }
-        if(node === endNode.node){ offsets.end = endNode.offset };
-
-        if (carry.has(parentNode)) {
-            const ranges = carry.get(parentNode)
-            extendRanges(ranges, node, offsets)
+function deepForEach(eachable, callback) {
+    eachable.forEach((current) => {
+        if (current.forEach) {
+            deepForEach(current, callback);
         } else {
-            const range = initRange(node, offsets)
-            carry.set(parentNode, [range])
+            callback(current);
         }
-
-        return carry
-    }, new Map())
+    });
 }
-
-
-function highlightSelected() {
-    const selection = window.getSelection();
-    if (!selection || selection.isCollapsed) { return; }
-    console.log({ selection: selection.toString() });
-
-    const range = selection.getRangeAt(0);
-
-    const startNode = { node: range.startContainer, offset: range.startOffset };
-    const endNode = { node: range.endContainer, offset: range.endOffset };
-
-
-    console.log('selection', selection, range);
-    const selectedNodes = getSelectedNodes(range).filter(hasText);
-    console.log('selected nodes', selectedNodes);
-
-    const idPrefix = uuidv4();
-    let idCount = 0;
-    deepForEach(
-        createRangesByParent(selectedNodes, startNode, endNode),
-        range => {
-            const mark = document.createElement('mark')
-            mark.setAttribute('id', `${idPrefix}-${idCount}`);
-            idCount++;
-            range.surroundContents(mark)
-        }
-    )
-    selection.removeAllRanges();
-}
-
 
 export function HtmlViewer() {
-    console.log('Html Viewer Render');
-    const [html, setHtml] = useState('');
+    const [html, setHtml] = useState("");
+    const iframeRef = useRef<HTMLIFrameElement>(null);
+    const [selectedText, setSelectedText] = useState<string>("");
 
     useEffect(() => {
-        const url = 'http://localhost:3002/'
+        const handleIframeLoad = () => {
+            const iframeDocument = iframeRef.current?.contentDocument;
+            if (!iframeDocument) return;
+
+            const handleMouseUp = () => {
+                const selection = iframeDocument.getSelection();
+                const selectedString = selection?.toString();
+                if (selectedString && selection) {
+                    const range = selection.getRangeAt(0);
+                    const serializedRange = JSON.stringify(
+                        serializeRange(range)
+                    );
+                    saveHighlight(selectedString, serializedRange);
+                    setSelectedText(selectedString);
+                    highlightSelection(range);
+
+                    selection.removeAllRanges();
+                }
+            };
+
+            iframeDocument.addEventListener("mouseup", handleMouseUp);
+
+            return () => {
+                iframeDocument.removeEventListener("mouseup", handleMouseUp);
+            };
+        };
+
+        const iframe = iframeRef.current;
+        iframe?.addEventListener("load", handleIframeLoad);
+
+        return () => {
+            iframe?.removeEventListener("load", handleIframeLoad);
+        };
+    }, []);
+
+    //   useEffect(() => {
+    //     // loadHighlights();
+    //   }, []);
+
+    useEffect(() => {
+        if (html) {
+            const iframe = iframeRef.current;
+            iframe?.addEventListener("load", loadHighlights);
+
+            return () => {
+                iframe?.removeEventListener("load", loadHighlights);
+            };
+        }
+    }, [html]);
+
+    useEffect(() => {
+        const url = "http://localhost:3002/";
         const fetchData = async () => {
             const response = await fetch(url);
             const htmly = await response.text();
@@ -205,23 +99,380 @@ export function HtmlViewer() {
         fetchData();
     }, [setHtml]);
 
+    const serializeRange = (range: Range) => {
+        const { startContainer, startOffset, endContainer, endOffset } = range;
+        return {
+            startContainerPath: getNodePath(startContainer),
+            startOffset,
+            endContainerPath: getNodePath(endContainer),
+            endOffset,
+        };
+    };
 
-    const onMouseUpCb = useCallback((evnt: SyntheticEvent) => {
-        console.log('event mouse up', evnt);
-        highlightSelected();
-    }, []);
+    const getNodePath = (node: Node) => {
+        if (!node) {
+            throw new Error("Node is null");
+        }
+        const path: number[] = [];
+        while (node) {
+            const parentNode = node.parentNode;
+            if (!parentNode) break;
+            path.unshift(
+                Array.prototype.indexOf.call(parentNode.childNodes, node)
+            );
+            node = parentNode;
+        }
+        return path;
+    };
+
+    const loadHighlights = async () => {
+        try {
+            const responseStr = localStorage.getItem("10k:highlights");
+            if (!responseStr) {
+                return;
+            }
+            const response = JSON.parse(responseStr);
+            const iframeDocument = iframeRef.current?.contentDocument;
+            if (!iframeDocument) return;
+            response.forEach((highlight) => {
+                const range = deserializeRange(
+                    iframeDocument,
+                    JSON.parse(highlight.range)
+                );
+                highlightSelection(range);
+            });
+        } catch (error) {
+            console.error("Error loading highlights", error);
+        }
+    };
+
+    const deserializeRange = (document: Document, serializedRange: any) => {
+        const { startContainerPath, startOffset, endContainerPath, endOffset } =
+            serializedRange;
+        const startContainer = getNodeFromPath(document, startContainerPath);
+        const endContainer = getNodeFromPath(document, endContainerPath);
+        const range = document.createRange();
+        range.setStart(startContainer, startOffset);
+        range.setEnd(endContainer, endOffset);
+        return range;
+    };
+
+    const getNodeFromPath = (document: Document, path: number[]) => {
+        let node: Node | null = document;
+        path.forEach((index) => {
+            if (node) {
+                node = node.childNodes[index];
+            }
+        });
+        return node;
+    };
+
+    const saveHighlight = async (text: string, range: string) => {
+        try {
+            const payload = { text, range };
+            const existingStr = localStorage.getItem("10k:highlights");
+            const existing = existingStr ? JSON.parse(existingStr) : [];
+            existing.push(payload);
+            localStorage.setItem("10k:highlights", JSON.stringify(existing));
+            //   await axios.post('http://localhost:5000/save-highlight', { text, range });
+        } catch (error) {
+            console.error("Error saving highlight", error);
+        }
+    };
+
+    const highlightSelection = (range: Range) => {
+        const startContainer = range.startContainer;
+        const endContainer = range.endContainer;
+
+        const highlightNode = (
+            node: Node,
+            startOffset?: number,
+            endOffset?: number
+        ) => {
+            const span = document.createElement("span");
+            span.style.backgroundColor = "yellow";
+            const rangePart = document.createRange();
+            if (startOffset !== undefined && endOffset !== undefined) {
+                rangePart.setStart(node, startOffset);
+                rangePart.setEnd(node, endOffset);
+            } else {
+                rangePart.selectNodeContents(node);
+            }
+            rangePart.surroundContents(span);
+        };
+
+        if (startContainer === endContainer) {
+            highlightNode(startContainer, range.startOffset, range.endOffset);
+        } else {
+            // Walk Through Nodes Between The Start and End Containers
+            const walker = document.createTreeWalker(
+                range.commonAncestorContainer,
+                NodeFilter.SHOW_TEXT,
+                {
+                    acceptNode(node) {
+                        return range.intersectsNode(node) &&
+                            node !== startContainer &&
+                            node !== endContainer
+                            ? NodeFilter.FILTER_ACCEPT
+                            : NodeFilter.FILTER_REJECT;
+                    },
+                }
+            );
+
+            // Highlight The Inter-Nodes
+            const textNodes = [...iterateWalker(walker)].filter(hasText);
+            textNodes.forEach((node) => {
+                highlightNode(node);
+            });
+
+            // Highlight The Start and End Containers
+            highlightNode(
+                startContainer,
+                range.startOffset,
+                startContainer.textContent?.length ?? 0
+            );
+            highlightNode(endContainer, 0, range.endOffset);
+        }
+    };
 
     return (
-        <>
-            <div className='bg-white overflow-x-hidden overflow-y-scroll h-full'>
-                <div className="px-2"
-                    onMouseUp={onMouseUpCb}
-                    dangerouslySetInnerHTML={{ __html: html }}
-                />
-            </div>
-
-        </>
-    )
+        <div style={{ position: "relative", width: "100%", height: "100%" }}>
+            <iframe
+                ref={iframeRef}
+                srcDoc={html}
+                style={{ width: "100%", height: "100%", border: "none" }}
+                title="Selectable Content"
+            />
+            <p>Selected Text: {selectedText}</p>
+        </div>
+    );
 }
 
+// import React, {
+//     useRef,
+//     useEffect,
+//     useState
+// } from 'react';
 
+// interface Tooltip {
+//     style: React.CSSProperties;
+//     onHighlightClick: () => void;
+// }
+
+// const Tooltip: React.FC<Tooltip> = ({ style, onHighlightClick }) => {
+//     return (
+//         <div className="test-tooltip" style={style}>
+//             <button onClick={onHighlightClick}>Highlight</button>
+//         </div>
+//     );
+// };
+
+// interface Highlight {
+//     text: string;
+//     range: string;
+// }
+
+// export function HtmlViewer() {
+//     const iframeRef = useRef<HTMLIFrameElement>(null);
+//     const [html, setHtml] = useState('');
+//     const [selectedText, setSelectedText] = useState<string>('');
+//     const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({ display: 'none' });
+//     const [height, setHeight] = useState("0px");
+
+//     useEffect(() => {
+//         const handleIframeLoad = () => {
+//             const iframeDocument = iframeRef.current?.contentDocument;
+//             if (!iframeDocument) return;
+
+//             const handleMouseUp = () => {
+//                 const selection = iframeDocument.getSelection();
+//                 const selectedString = selection?.toString();
+//                 if (selectedString && selection) {
+//                     const range = selection.getRangeAt(0);
+//                     setSelectedText(selectedString);
+//                     const rect = range.getBoundingClientRect();
+//                         setTooltipStyle({
+//                         display: 'block',
+//                         position: 'absolute',
+//                         top: `${rect.top + iframeDocument.documentElement.scrollTop}px`,
+//                         left: `${rect.left + iframeDocument.documentElement.scrollLeft}px`,
+//                         });
+
+//                 } else {
+//                     setTooltipStyle({ display: 'none' });
+//                 }
+//             };
+
+//             iframeDocument.addEventListener('mouseup', handleMouseUp);
+
+//             return () => {
+//                 iframeDocument.removeEventListener('mouseup', handleMouseUp);
+//             };
+//         };
+
+//         const iframe = iframeRef.current;
+//         iframe?.addEventListener('load', handleIframeLoad);
+
+//         return () => {
+//             iframe?.removeEventListener('load', handleIframeLoad);
+//         };
+//     }, []);
+
+//     useEffect(() => {
+//         // loadHighlights();
+//     }, []);
+
+//     useEffect(() => {
+//         const url = 'http://localhost:3002/'
+//         const fetchData = async () => {
+//             const response = await fetch(url);
+//             const htmly = await response.text();
+//             setHtml(htmly);
+//         };
+//         fetchData();
+//     }, [setHtml]);
+
+//     const serializeRange = (range: Range) => {
+//         const { startContainer, startOffset, endContainer, endOffset } = range;
+//         return {
+//             startContainerPath: getNodePath(startContainer),
+//             startOffset,
+//             endContainerPath: getNodePath(endContainer),
+//             endOffset,
+//         };
+//     };
+
+//     const getNodePath = (node: Node) => {
+//         if (!node) {
+//             throw new Error('Node is null');
+//         }
+//         const path: number[] = [];
+//         while (node) {
+//             const parentNode = node.parentNode;
+//             if (!parentNode) break;
+//             path.unshift(Array.prototype.indexOf.call(parentNode.childNodes, node));
+//             node = parentNode;
+//         }
+//         return path;
+//     };
+
+//     //   const loadHighlights = async () => {
+//     //     try {
+//     //       const response = await axios.get<Highlight[]>('http://localhost:5000/load-highlights');
+//     //       const iframeDocument = iframeRef.current?.contentDocument;
+//     //       if (!iframeDocument) return;
+//     //       response.data.forEach((highlight) => {
+//     //         const range = deserializeRange(iframeDocument, JSON.parse(highlight.range));
+//     //         highlightSelection(range);
+//     //       });
+//     //     } catch (error) {
+//     //       console.error('Error loading highlights', error);
+//     //     }
+//     //   };
+
+//     const deserializeRange = (document: Document, serializedRange: any) => {
+//         const { startContainerPath, startOffset, endContainerPath, endOffset } = serializedRange;
+//         const startContainer = getNodeFromPath(document, startContainerPath);
+//         const endContainer = getNodeFromPath(document, endContainerPath);
+//         const range = document.createRange();
+//         range.setStart(startContainer, startOffset);
+//         range.setEnd(endContainer, endOffset);
+//         return range;
+//     };
+
+//     const getNodeFromPath = (document: Document, path: number[]) => {
+//         let node: Node | null = document;
+//         path.forEach((index) => {
+//             if (node) {
+//                 node = node.childNodes[index];
+//             }
+//         });
+//         return node;
+//     };
+
+//     const saveHighlight = async (text: string, range: string) => {
+//         try {
+//             console.log('highlight', { text, range });
+//             //   await axios.post('http://localhost:5000/save-highlight', { text, range });
+//         } catch (error) {
+//             console.error('Error saving highlight', error);
+//         }
+//     };
+
+//     const highlightSelection = (range: Range) => {
+//         const startContainer = range.startContainer;
+//         const endContainer = range.endContainer;
+//         const commonAncestor = range.commonAncestorContainer;
+
+//         if (startContainer === endContainer) {
+//             const span = document.createElement('span');
+//             span.style.backgroundColor = 'yellow';
+//             range.surroundContents(span);
+//         } else {
+//             const walker = document.createTreeWalker(commonAncestor, NodeFilter.SHOW_TEXT, null, false);
+//             let node = walker.nextNode();
+//             while (node) {
+//                 if (
+//                     node === startContainer ||
+//                     node === endContainer ||
+//                     (walker.currentNode.compareDocumentPosition(startContainer) & Node.DOCUMENT_POSITION_FOLLOWING &&
+//                         walker.currentNode.compareDocumentPosition(endContainer) & Node.DOCUMENT_POSITION_PRECEDING)
+//                 ) {
+//                     const span = document.createElement('span');
+//                     span.style.backgroundColor = 'yellow';
+//                     const rangePart = document.createRange();
+//                     if (node === startContainer) {
+//                         rangePart.setStart(node, range.startOffset);
+//                         rangePart.setEnd(node, node.textContent?.length ?? 0);
+//                     } else if (node === endContainer) {
+//                         rangePart.setStart(node, 0);
+//                         rangePart.setEnd(node, range.endOffset);
+//                     } else {
+//                         rangePart.setStart(node, 0);
+//                         rangePart.setEnd(node, node.textContent?.length ?? 0);
+//                     }
+//                     rangePart.surroundContents(span);
+//                     node = span.nextSibling;
+//                 }
+//                 node = walker.nextNode();
+//             }
+//         }
+//     };
+
+//     const handleHighlightClick = () => {
+//         const iframeDocument = iframeRef.current?.contentDocument;
+//         const selection = iframeDocument?.getSelection();
+//         if (selection && selection.rangeCount > 0) {
+//             const range = selection.getRangeAt(0);
+//             const serializedRange = JSON.stringify(serializeRange(range));
+//             setSelectedText(selection.toString());
+//             saveHighlight(selection.toString(), serializedRange);
+//             highlightSelection(range);
+//             selection.removeAllRanges();
+//             setTooltipStyle({ display: 'none' });
+//         }
+//     };
+
+//     // const onLoad = () => {
+//     //     setHeight(iframeRef.current.contentWindow.document.body.scrollHeight + "px");
+//     //   };
+
+//     return (
+//         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+//             <Tooltip style={tooltipStyle} onHighlightClick={handleHighlightClick} />
+//             <iframe
+//                 ref={iframeRef}
+//                 srcDoc={html}
+//                 // onLoad={onLoad}
+//                 width="100%"
+//                 // scrolling="no"
+//                 // height={height}
+//                 style={{ width: '100%', height: '100%', border: 'none', position: 'relative' }}
+//                 title="HTML Document Viewer"
+//             >
+//                 <Tooltip style={tooltipStyle} onHighlightClick={handleHighlightClick} />
+//                 </iframe>
+
+//         </div>
+//     );
+// };

@@ -26,6 +26,7 @@
         "date-fns": "^3.6.0",
         "eventemitter3": "^5.0.1",
         "graphql": "^16.9.0",
+        "html-react-parser": "^5.1.12",
         "lodash": "^4.17.21",
         "next": "14.2.5",
         "pdfjs-dist": "^3.4.120",
@@ -33,6 +34,7 @@
         "react-dom": "^18",
         "react-resizable-panels": "^2.0.22",
         "uuid": "^10.0.0",
+        "xpath-range": "^1.1.1",
         "zustand": "^4.5.4"
     },
     "devDependencies": {

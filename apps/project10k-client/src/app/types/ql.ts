@@ -1,25 +1,24 @@
 import { ApolloError } from "@apollo/client";
-import {
-    IAccount,
-    IWorkspace,
-    IJournalEntry
-} from './entities';
+import { IAccount, IWorkspace, IJournalEntry, ICompany } from "./entities";
 
-export interface IQueryLanguage {
-}
+export interface IQueryLanguage {}
 
 export interface IAccountQL extends IQueryLanguage {
-    account: IAccount
+    account: IAccount;
 }
 
 export interface IWorkspacesQL extends IQueryLanguage {
-    workspaces: IWorkspace[]
+    workspaces: IWorkspace[];
 }
 
 export interface IWorkspaceQL extends IQueryLanguage {
-    workspace: IWorkspace
+    workspace: IWorkspace;
 }
 
 export interface IJournalEntryQL extends IQueryLanguage {
-    journalEntry: IJournalEntry
+    journalEntry: IJournalEntry;
+}
+
+export interface ICompaniesSearchQL extends IQueryLanguage {
+    companySearch: ICompany[];
 }

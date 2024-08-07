@@ -22,6 +22,15 @@ body {
     background: linear-gradient(to bottom,
             transparent,
             rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+
+    
+    .tooltip {
+        background-color: black;
+        border: 1px solid #ccc;
+        padding: 5px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+    }
 }
 
 @layer utilities {
