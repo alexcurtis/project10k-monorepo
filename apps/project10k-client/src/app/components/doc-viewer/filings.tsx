@@ -47,7 +47,7 @@ function FilingTable({
 }: {
     title: string;
     filings: ICompanyFiling[];
-    onClick: (id: string) => void;
+    onClick: (filing: ICompanyFiling) => void;
 }) {
     // Column Definitions: Defines the columns to be displayed.
     const [colDefs, setColDefs] = useState([
@@ -64,7 +64,7 @@ function FilingTable({
     const onRowClickedCb = useCallback(
         (event: RowClickedEvent<ICompanyFiling>) => {
             if (event.data) {
-                return onClick(event.data._id);
+                return onClick(event.data);
             }
         },
         [onClick]
@@ -96,7 +96,7 @@ function CompanyFilingsGroup({
 }: {
     title: string;
     forms: string[];
-    onClick: (id: string) => void;
+    onClick: (filing: ICompanyFiling) => void;
 }) {
     // Company Group Query
     const { loading, error, data } = useQuery<ICompanyFilingsQL>(Q_COMPANY_FILINGS, {
@@ -130,18 +130,18 @@ function Header() {
 
 export function CompanyFilings() {
     const { docViewerQuery, setDocViewerQuery } = useContext(DocViewerContext);
-    const { companyId } = docViewerQuery;
+    const { company } = docViewerQuery;
 
     // Update The Context And Move To The Document Page
     const onFilingClicked = useCallback(
-        (id: string) => {
+        (filing: ICompanyFiling) => {
             setDocViewerQuery({
                 page: DocViewerPage.Document,
-                companyId: companyId,
-                filingId: id,
+                company,
+                filing,
             });
         },
-        [companyId, setDocViewerQuery]
+        [company, setDocViewerQuery]
     );
 
     return (

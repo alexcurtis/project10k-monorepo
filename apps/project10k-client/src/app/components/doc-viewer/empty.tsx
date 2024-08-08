@@ -9,13 +9,13 @@ import { id } from "date-fns/locale";
 export function EmptyDocViewer() {
     const { setDocViewerQuery } = useContext(DocViewerContext);
 
-    // Trigger The Context
+    // Update The Context And Move To The Filings Page
     const onCompanyClicked = useCallback(
         (company: ICompany) => {
             setDocViewerQuery({
                 page: DocViewerPage.Filings,
-                companyId: company._id,
-                filingId: "",
+                company,
+                filing: null,
             });
         },
         [setDocViewerQuery]
