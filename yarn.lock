@@ -3929,6 +3929,7 @@ __metadata:
     "@vspark/block-editor": "workspace:^"
     "@vspark/catalyst": "workspace:^"
     "@xyflow/react": "npm:^12.0.2"
+    ag-grid-react: "npm:^32.1.0"
     date-fns: "npm:^3.6.0"
     eslint: "npm:^8"
     eslint-config-next: "npm:14.2.5"
@@ -4054,6 +4055,35 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10c0/51fb26cd678f914e13287e886da2d7021f8c2bc0ccc95e03d3e0447ee278dd3b40b9c57dc222acd5881adcf26f3edc40901a4953403232129e3876793cd17386
+  languageName: node
+  linkType: hard
+
+"ag-charts-types@npm:10.1.0":
+  version: 10.1.0
+  resolution: "ag-charts-types@npm:10.1.0"
+  checksum: 10c0/d557036b22fbf88d79811f5383ae8dc169bebf2cb6104bfc482cc0b7c5c38e0449a34c164ea5cc4f69561995733023ad9db340ed7eb08ac9257ee73d61d8fde7
+  languageName: node
+  linkType: hard
+
+"ag-grid-community@npm:32.1.0":
+  version: 32.1.0
+  resolution: "ag-grid-community@npm:32.1.0"
+  dependencies:
+    ag-charts-types: "npm:10.1.0"
+  checksum: 10c0/14e01a7af22b6cbae3ac559e3d66bd06baf1e7a786040f5680302d6e41a91e40dc51b79ef5c451874bcf8047279d0d24c03045f3f39da1199d02618803b2288a
+  languageName: node
+  linkType: hard
+
+"ag-grid-react@npm:^32.1.0":
+  version: 32.1.0
+  resolution: "ag-grid-react@npm:32.1.0"
+  dependencies:
+    ag-grid-community: "npm:32.1.0"
+    prop-types: "npm:^15.8.1"
+  peerDependencies:
+    react: ^16.3.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.3.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/c8f8d6bee067423445c97750d5d3f12df2a51e9997ba8249d28f0cf4b47da5ab57caf5c758247ea2ff1dcdb33d8023d8feb13b2770c06ecad23e6c19970ee6ac
   languageName: node
   linkType: hard
 

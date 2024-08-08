@@ -56,3 +56,13 @@ export type ICompany = {
     ticker: string;
     title: string;
 };
+
+export type ICompanyFiling = {
+    _id: string;
+    form: string;
+    name: string;
+    period: string;
+    filedOn: string;
+    format: string;
+    location: string;
+};
