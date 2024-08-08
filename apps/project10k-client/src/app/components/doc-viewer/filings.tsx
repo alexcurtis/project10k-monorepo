@@ -9,13 +9,15 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
 import { ICompanyFilingsQL } from "@/app/types/ql";
-import { DocViewerPage, ICompanyFiling } from "@/app/types/entities";
+import { DocViewerPage, ICompany, ICompanyFiling } from "@/app/types/entities";
 import { DocViewerContext } from "./context";
 
 const FINANCIAL_FORMS = ["10-K", "10-Q", "10-K/A", "10-Q/A", "NT 10-K", "NT 10-Q", "10-K405"];
 const NEWS_FORMS = ["8-K", "8-K/A"];
 const PROXY_FORMS = ["PX14A6G", "PX14A6N", "DEFA14A", "DEF 14A"];
 const OWNERSHIP_FORMS = ["4", "4/A", "144", "3", "3/A", "SC 13G", "SC 13G/A"];
+
+const CONTENT_HEIGHT = 519;
 
 // Company Documents Query
 const Q_COMPANY_FILINGS = gql`
@@ -34,21 +36,13 @@ const Q_COMPANY_FILINGS = gql`
 
 function DocumentsLoader() {
     return (
-        <div className="mx-5">
+        <div className="border" style={{ height: CONTENT_HEIGHT }}>
             <Loader />
         </div>
     );
 }
 
-function FilingTable({
-    title,
-    filings,
-    onClick,
-}: {
-    title: string;
-    filings: ICompanyFiling[];
-    onClick: (filing: ICompanyFiling) => void;
-}) {
+function FilingTable({ filings, onClick }: { filings: ICompanyFiling[]; onClick: (filing: ICompanyFiling) => void }) {
     // Column Definitions: Defines the columns to be displayed.
     const [colDefs, setColDefs] = useState([
         { field: "form" },
@@ -71,20 +65,17 @@ function FilingTable({
     );
 
     return (
-        <div className="mb-10">
-            <h2 className="text-xl mb-4">{title}</h2>
-            <div className="ag-theme-alpine-dark" style={{ height: 519 }}>
-                <AgGridReact
-                    rowData={filings}
-                    columnDefs={colDefs}
-                    pagination={pagination}
-                    paginationPageSize={paginationPageSize}
-                    paginationPageSizeSelector={paginationPageSizeSelector}
-                    rowSelection="single"
-                    onRowClicked={onRowClickedCb}
-                    suppressCellFocus={true}
-                />
-            </div>
+        <div className="ag-theme-alpine-dark" style={{ height: CONTENT_HEIGHT }}>
+            <AgGridReact
+                rowData={filings}
+                columnDefs={colDefs}
+                pagination={pagination}
+                paginationPageSize={paginationPageSize}
+                paginationPageSizeSelector={paginationPageSizeSelector}
+                rowSelection="single"
+                onRowClicked={onRowClickedCb}
+                suppressCellFocus={true}
+            />
         </div>
     );
 }
@@ -92,37 +83,43 @@ function FilingTable({
 function CompanyFilingsGroup({
     title,
     forms,
+    company,
     onClick,
 }: {
     title: string;
     forms: string[];
+    company: ICompany;
     onClick: (filing: ICompanyFiling) => void;
 }) {
     // Company Group Query
     const { loading, error, data } = useQuery<ICompanyFilingsQL>(Q_COMPANY_FILINGS, {
         variables: {
-            companyId: "66b281d563f0188007a263c0",
+            companyId: company._id,
             forms,
         },
     });
 
     const companyFilings = data?.companyFilings;
-    if (loading || !data || !companyFilings) {
-        return <DocumentsLoader />;
-    }
 
     return (
         <>
-            <FilingTable title={title} filings={companyFilings} onClick={onClick} />
+            <div className="mb-10">
+                <h2 className="text-xl mb-4">{title}</h2>
+                {loading || !data || !companyFilings ? (
+                    <DocumentsLoader />
+                ) : (
+                    <FilingTable filings={companyFilings} onClick={onClick} />
+                )}
+            </div>
         </>
     );
 }
 
-function Header() {
+function Header({ title, ticker }: { title: string; ticker: string }) {
     return (
         <>
             <h1 className="text-2xl flex-none mb-5">
-                Apple <span className="text-zinc-400">(AAPL)</span>
+                {title} <span className="text-zinc-400">({ticker})</span>
             </h1>
         </>
     );
@@ -131,6 +128,9 @@ function Header() {
 export function CompanyFilings() {
     const { docViewerQuery, setDocViewerQuery } = useContext(DocViewerContext);
     const { company } = docViewerQuery;
+    if (!company) {
+        return;
+    }
 
     // Update The Context And Move To The Document Page
     const onFilingClicked = useCallback(
@@ -146,12 +146,22 @@ export function CompanyFilings() {
 
     return (
         <div className="p-4 h-full w-full flex flex-col">
-            <Header />
+            <Header title={company.title} ticker={company.ticker} />
             <div className="overflow-auto flex-grow">
-                <CompanyFilingsGroup title="Financials" forms={FINANCIAL_FORMS} onClick={onFilingClicked} />
-                <CompanyFilingsGroup title="News" forms={NEWS_FORMS} onClick={onFilingClicked} />
-                <CompanyFilingsGroup title="Proxies" forms={PROXY_FORMS} onClick={onFilingClicked} />
-                <CompanyFilingsGroup title="Ownership" forms={OWNERSHIP_FORMS} onClick={onFilingClicked} />
+                <CompanyFilingsGroup
+                    title="Financials"
+                    forms={FINANCIAL_FORMS}
+                    company={company}
+                    onClick={onFilingClicked}
+                />
+                <CompanyFilingsGroup title="News" forms={NEWS_FORMS} company={company} onClick={onFilingClicked} />
+                <CompanyFilingsGroup title="Proxies" forms={PROXY_FORMS} company={company} onClick={onFilingClicked} />
+                <CompanyFilingsGroup
+                    title="Ownership"
+                    forms={OWNERSHIP_FORMS}
+                    company={company}
+                    onClick={onFilingClicked}
+                />
             </div>
         </div>
     );
