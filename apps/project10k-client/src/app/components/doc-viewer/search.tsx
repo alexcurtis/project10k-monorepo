@@ -27,9 +27,12 @@ function SearchLoader() {
     return <Loader text="Searching..." />;
 }
 
-function SearchResult({ company }: { company: ICompany }) {
+function SearchResult({ company, onClick }: { company: ICompany; onClick: (company: ICompany) => void }) {
+    const onClickCb = useCallback(() => {
+        onClick(company);
+    }, [company, onClick]);
     return (
-        <li className="p-3 hover:bg-white/5 hover:cursor-pointer flex">
+        <li className="p-3 hover:bg-white/5 hover:cursor-pointer flex" onClick={onClickCb}>
             <p className="text-sm font-semibold text-white flex-none">{company.title}</p>
             <p className="text-sm font-semibold text-zinc-400 flex-auto ml-2">{company.ticker}</p>
             <ChevronRightIcon aria-hidden="true" className="h-5 w-5 flex-none text-gray-400" />
@@ -37,13 +40,21 @@ function SearchResult({ company }: { company: ICompany }) {
     );
 }
 
-function SearchResults({ loading, results }: { loading: boolean; results: ICompany[] }) {
+function SearchResults({
+    loading,
+    results,
+    onResultClicked,
+}: {
+    loading: boolean;
+    results: ICompany[];
+    onResultClicked: (company: ICompany) => void;
+}) {
     return (
         <div className="rounded-lg text-white border border-white/10 bg-white/5 focus:outline-none p-6 mt-2">
             {!loading ? (
                 <ul role="list" className="divide-y divide-white/10">
                     {results.map((company: ICompany) => (
-                        <SearchResult key={company._id} company={company} />
+                        <SearchResult key={company._id} company={company} onClick={onResultClicked} />
                     ))}
                 </ul>
             ) : (
@@ -53,7 +64,7 @@ function SearchResults({ loading, results }: { loading: boolean; results: ICompa
     );
 }
 
-export function CompanySearch() {
+export function CompanySearch({ onCompanyClicked }: { onCompanyClicked: (company: ICompany) => void }) {
     const [search, setSearch] = useState("");
 
     // Company Search Query
@@ -83,7 +94,9 @@ export function CompanySearch() {
                     onChange={onSearchChangeCb}
                 />
             </form>
-            {data && data.companySearch ? <SearchResults loading={loading} results={data.companySearch} /> : null}
+            {data && data.companySearch ? (
+                <SearchResults loading={loading} results={data.companySearch} onResultClicked={onCompanyClicked} />
+            ) : null}
         </>
     );
 }

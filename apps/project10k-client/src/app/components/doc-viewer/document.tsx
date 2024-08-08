@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
+import { DocViewerContext } from "./context";
 // import axios from 'axios';
 // import './HighlightIframe.css';
 
@@ -48,9 +49,7 @@ export function HtmlViewer() {
                 const selectedString = selection?.toString();
                 if (selectedString && selection) {
                     const range = selection.getRangeAt(0);
-                    const serializedRange = JSON.stringify(
-                        serializeRange(range)
-                    );
+                    const serializedRange = JSON.stringify(serializeRange(range));
                     saveHighlight(selectedString, serializedRange);
                     setSelectedText(selectedString);
                     highlightSelection(range);
@@ -117,9 +116,7 @@ export function HtmlViewer() {
         while (node) {
             const parentNode = node.parentNode;
             if (!parentNode) break;
-            path.unshift(
-                Array.prototype.indexOf.call(parentNode.childNodes, node)
-            );
+            path.unshift(Array.prototype.indexOf.call(parentNode.childNodes, node));
             node = parentNode;
         }
         return path;
@@ -135,10 +132,7 @@ export function HtmlViewer() {
             const iframeDocument = iframeRef.current?.contentDocument;
             if (!iframeDocument) return;
             response.forEach((highlight) => {
-                const range = deserializeRange(
-                    iframeDocument,
-                    JSON.parse(highlight.range)
-                );
+                const range = deserializeRange(iframeDocument, JSON.parse(highlight.range));
                 highlightSelection(range);
             });
         } catch (error) {
@@ -147,8 +141,7 @@ export function HtmlViewer() {
     };
 
     const deserializeRange = (document: Document, serializedRange: any) => {
-        const { startContainerPath, startOffset, endContainerPath, endOffset } =
-            serializedRange;
+        const { startContainerPath, startOffset, endContainerPath, endOffset } = serializedRange;
         const startContainer = getNodeFromPath(document, startContainerPath);
         const endContainer = getNodeFromPath(document, endContainerPath);
         const range = document.createRange();
@@ -184,11 +177,7 @@ export function HtmlViewer() {
         const startContainer = range.startContainer;
         const endContainer = range.endContainer;
 
-        const highlightNode = (
-            node: Node,
-            startOffset?: number,
-            endOffset?: number
-        ) => {
+        const highlightNode = (node: Node, startOffset?: number, endOffset?: number) => {
             const span = document.createElement("span");
             span.style.backgroundColor = "yellow";
             const rangePart = document.createRange();
@@ -205,19 +194,13 @@ export function HtmlViewer() {
             highlightNode(startContainer, range.startOffset, range.endOffset);
         } else {
             // Walk Through Nodes Between The Start and End Containers
-            const walker = document.createTreeWalker(
-                range.commonAncestorContainer,
-                NodeFilter.SHOW_TEXT,
-                {
-                    acceptNode(node) {
-                        return range.intersectsNode(node) &&
-                            node !== startContainer &&
-                            node !== endContainer
-                            ? NodeFilter.FILTER_ACCEPT
-                            : NodeFilter.FILTER_REJECT;
-                    },
-                }
-            );
+            const walker = document.createTreeWalker(range.commonAncestorContainer, NodeFilter.SHOW_TEXT, {
+                acceptNode(node) {
+                    return range.intersectsNode(node) && node !== startContainer && node !== endContainer
+                        ? NodeFilter.FILTER_ACCEPT
+                        : NodeFilter.FILTER_REJECT;
+                },
+            });
 
             // Highlight The Inter-Nodes
             const textNodes = [...iterateWalker(walker)].filter(hasText);
@@ -226,11 +209,7 @@ export function HtmlViewer() {
             });
 
             // Highlight The Start and End Containers
-            highlightNode(
-                startContainer,
-                range.startOffset,
-                startContainer.textContent?.length ?? 0
-            );
+            highlightNode(startContainer, range.startOffset, startContainer.textContent?.length ?? 0);
             highlightNode(endContainer, 0, range.endOffset);
         }
     };
@@ -245,6 +224,15 @@ export function HtmlViewer() {
             />
             <p>Selected Text: {selectedText}</p>
         </div>
+    );
+}
+
+export function CompanyDocument() {
+    const { docViewerQuery, setDocViewerQuery } = useContext(DocViewerContext);
+    return (
+        <>
+            Document Here {docViewerQuery.companyId} {docViewerQuery.filingId}
+        </>
     );
 }
 

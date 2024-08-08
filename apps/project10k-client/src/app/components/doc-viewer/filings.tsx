@@ -1,4 +1,4 @@
-import { useCallback, useState, ChangeEvent } from "react";
+import { useCallback, useState, ChangeEvent, useContext } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { AgGridReact } from "ag-grid-react";
 import { RowClickedEvent } from "ag-grid-community";
@@ -9,7 +9,8 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
 import { ICompanyFilingsQL } from "@/app/types/ql";
-import { ICompanyFiling } from "@/app/types/entities";
+import { DocViewerPage, ICompanyFiling } from "@/app/types/entities";
+import { DocViewerContext } from "./context";
 
 const FINANCIAL_FORMS = ["10-K", "10-Q", "10-K/A", "10-Q/A", "NT 10-K", "NT 10-Q", "10-K405"];
 const NEWS_FORMS = ["8-K", "8-K/A"];
@@ -127,10 +128,21 @@ function Header() {
     );
 }
 
-export function CompanyDocuments() {
-    const onFilingClicked = useCallback((id: string) => {
-        console.log("filing clicked", id);
-    }, []);
+export function CompanyFilings() {
+    const { docViewerQuery, setDocViewerQuery } = useContext(DocViewerContext);
+    const { companyId } = docViewerQuery;
+
+    // Update The Context And Move To The Document Page
+    const onFilingClicked = useCallback(
+        (id: string) => {
+            setDocViewerQuery({
+                page: DocViewerPage.Document,
+                companyId: companyId,
+                filingId: id,
+            });
+        },
+        [companyId, setDocViewerQuery]
+    );
 
     return (
         <div className="p-4 h-full w-full flex flex-col">

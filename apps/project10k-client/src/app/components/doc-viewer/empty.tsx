@@ -1,29 +1,28 @@
-import { Input } from "@vspark/catalyst/input";
-import { PlusIcon, DocumentPlusIcon } from "@heroicons/react/20/solid";
-import { CompanySearch } from "./search";
+import { DocumentPlusIcon } from "@heroicons/react/20/solid";
+import { DocViewerPage, ICompany } from "@/app/types/entities";
 
-const people = [
-    {
-        name: "Lindsay Walton",
-        role: "Front-end Developer",
-        imageUrl:
-            "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    {
-        name: "Courtney Henry",
-        role: "Designer",
-        imageUrl:
-            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    {
-        name: "Tom Cook",
-        role: "Director of Product",
-        imageUrl:
-            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-];
+import { CompanySearch } from "./search";
+import { DocViewerContext } from "./context";
+import { useCallback, useContext } from "react";
+import { id } from "date-fns/locale";
 
 export function EmptyDocViewer() {
+    const { setDocViewerQuery } = useContext(DocViewerContext);
+
+    // Trigger The Context
+    const onCompanyClicked = useCallback(
+        (company: ICompany) => {
+            setDocViewerQuery({
+                page: DocViewerPage.Filings,
+                companyId: company._id,
+                filingId: "",
+            });
+        },
+        [setDocViewerQuery]
+    );
+
+    // I Need to pass attributes like the selected company, etc.
+
     return (
         <div className="mx-auto max-w-lg pt-10">
             <div>
@@ -35,7 +34,7 @@ export function EmptyDocViewer() {
                         a company below.
                     </p>
                 </div>
-                <CompanySearch />
+                <CompanySearch onCompanyClicked={onCompanyClicked} />
             </div>
         </div>
     );

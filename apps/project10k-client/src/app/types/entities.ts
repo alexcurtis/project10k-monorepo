@@ -1,4 +1,4 @@
-import { Dispatch } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 export type IMindMapNodePosition = {
     x: number;
@@ -43,13 +43,6 @@ export type IAccount = {
     workspaces: IWorkspace[];
 };
 
-// Context For Workspaces
-export type IWorkspaceContext = {
-    workspace: IWorkspace;
-    activeJournal: string | undefined;
-    setActiveJournal: Dispatch<string>;
-};
-
 export type ICompany = {
     _id: string;
     externalId: string;
@@ -65,4 +58,29 @@ export type ICompanyFiling = {
     filedOn: string;
     format: string;
     location: string;
+};
+
+// Context For Workspaces
+export type IWorkspaceContext = {
+    workspace: IWorkspace;
+    activeJournal: string | undefined;
+    setActiveJournal: Dispatch<string>;
+};
+
+// Context For Doc Viewer
+export enum DocViewerPage {
+    Empty,
+    Filings,
+    Document,
+}
+
+export type IDocViewerQuery = {
+    page: DocViewerPage;
+    companyId: string;
+    filingId: string;
+};
+
+export type IDocViewerContext = {
+    docViewerQuery: IDocViewerQuery;
+    setDocViewerQuery: Dispatch<SetStateAction<IDocViewerQuery>>;
 };
