@@ -232,8 +232,7 @@ export function CompanyDocument() {
     const [html, setHtml] = useState("");
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const [selectedText, setSelectedText] = useState<string>("");
-
-    const location = docViewerQuery.filing?.location;
+    const { path, filename } = docViewerQuery.filing;
 
     useEffect(() => {
         const handleIframeLoad = () => {
@@ -273,30 +272,26 @@ export function CompanyDocument() {
     //     // loadHighlights();
     //   }, []);
 
+    // useEffect(() => {
+    //     if (html) {
+    //         const iframe = iframeRef.current;
+    //         iframe?.addEventListener("load", loadHighlights);
+
+    //         return () => {
+    //             iframe?.removeEventListener("load", loadHighlights);
+    //         };
+    //     }
+    // }, [html]);
+
     useEffect(() => {
-        if (html) {
-            const iframe = iframeRef.current;
-            iframe?.addEventListener("load", loadHighlights);
-
-            return () => {
-                iframe?.removeEventListener("load", loadHighlights);
-            };
-        }
-    }, [html]);
-
-    useEffect(() => {
-        // const url = "http://localhost:3002/";
-
-        // todo - fire to ussec proxy or something to remove cors problem....
-
-        console.log("trying to fetch ", location);
+        const url = `http://localhost:3005/apidbdocproxy/document?path=${path}&filename=${filename}`;
         const fetchData = async () => {
-            const response = await fetch(location);
+            const response = await fetch(url);
             const htmly = await response.text();
             setHtml(htmly);
         };
         fetchData();
-    }, [setHtml]);
+    }, [path, setHtml]);
 
     const serializeRange = (range: Range) => {
         const { startContainer, startOffset, endContainer, endOffset } = range;

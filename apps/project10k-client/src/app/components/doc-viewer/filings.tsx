@@ -29,7 +29,8 @@ const Q_COMPANY_FILINGS = gql`
             period
             filedOn
             format
-            location
+            path
+            filename
         }
     }
 `;
@@ -147,7 +148,7 @@ export function CompanyFilings() {
     return (
         <div className="p-4 h-full w-full flex flex-col">
             <Header title={company.title} ticker={company.ticker} />
-            <div className="overflow-auto flex-grow">
+            <div className="overflow-hidden flex-grow">
                 <CompanyFilingsGroup
                     title="Financials"
                     forms={FINANCIAL_FORMS}
