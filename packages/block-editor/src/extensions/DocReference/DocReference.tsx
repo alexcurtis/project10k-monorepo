@@ -1,14 +1,17 @@
-import { Node, NodeViewRendererProps } from '@tiptap/core'
+import { mergeAttributes, Node, NodeViewRendererProps } from '@tiptap/core'
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
-import { DocumentReference } from '@/components/DocumentReference'
+import { Citation } from './Citation'
+import { Figure } from '../Figure'
+
+// import { Citation } from '@/components/Citation'
 
 const DocReferenceContent = (props: NodeViewRendererProps) => {
-  const { editor } = props
+  const { node } = props
 
   return (
     <NodeViewWrapper>
       <div className="p-2 -m-2 rounded-lg" contentEditable={false}>
-        <DocumentReference editor={editor} />
+        {/* <Citation content={node.content} /> */}
       </div>
     </NodeViewWrapper>
   )
@@ -17,44 +20,51 @@ const DocReferenceContent = (props: NodeViewRendererProps) => {
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     docReference: {
-        insertDocReference: () => ReturnType
+      insertDocReference: () => ReturnType
     }
   }
 }
 
-export const DocReference = Node.create({
+export const DocReference = Figure.extend({
   name: 'docReference',
   group: 'block',
-  atom: true,
-  selectable: true,
-  draggable: true,
-  inline: false,
-
-  parseHTML() {
-    return [
-      {
-        tag: 'div[data-type="doc-reference"]',
-      },
-    ]
+  content: 'citation',
+  isolating: true,
+  addExtensions() {
+    return [Citation]
   },
+
+  //   parseHTML() {
+  //     return [
+  //       {
+  //         tag: 'div[data-type="doc-reference"]',
+  //       },
+  //     ]
+  //   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', { ...HTMLAttributes, 'data-type': 'doc-reference' }]
+    return ['figure', mergeAttributes(HTMLAttributes, { 'data-type': this.name }), ['div', {}, 0]]
   },
 
-  addNodeView() {
-    return ReactNodeViewRenderer(DocReferenceContent)
-  },
-
-  addCommands() {
+  addAttributes() {
     return {
-      insertDocReference:
-        () =>
-        ({ commands }) => {
-          return commands.insertContent({
-            type: this.name,
-          })
-        },
+      ...this.parent?.(),
     }
   },
+
+  //   addNodeView() {
+  //     return ReactNodeViewRenderer(DocReferenceContent)
+  //   },
+
+  //   addCommands() {
+  //     return {
+  //       insertDocReference:
+  //         () =>
+  //         ({ commands }) => {
+  //           return commands.insertContent({
+  //             type: this.name,
+  //           })
+  //         },
+  //     }
+  //   },
 })

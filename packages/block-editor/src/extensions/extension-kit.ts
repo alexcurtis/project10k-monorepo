@@ -41,7 +41,7 @@ import {
 } from '.'
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight'
 import { TableOfContentsNode } from './TableOfContentsNode'
-import { DocReference } from './DocReference';
+import { DocReference } from './DocReference'
 import { lowlight } from 'lowlight'
 
 interface ExtensionKitProps {
@@ -50,7 +50,7 @@ interface ExtensionKitProps {
   userColor?: string
 }
 
-export const ExtensionKit = ( {}: ExtensionKitProps) => [
+export const ExtensionKit = ({}: ExtensionKitProps) => [
   Document,
   Columns,
   TaskList,
