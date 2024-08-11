@@ -9,7 +9,7 @@ import { ApolloAppProvider } from "@/app/graphql";
 import { IWorkspaceQL } from "@/app/types/ql";
 
 import { WorkspaceContext } from "@/app/context";
-import { Journal } from "@/app/components/journal";
+import { Journal } from "@/app/components/research/journal";
 import { MindMap } from "@/app/components/mindmap/mindmap";
 import { DocViewer } from "@/app/components/doc-viewer/viewer";
 import { WORKSPACE_QL_RESPONSE } from "@/app/graphql";

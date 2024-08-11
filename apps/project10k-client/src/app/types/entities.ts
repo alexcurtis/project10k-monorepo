@@ -27,6 +27,7 @@ export type ICitation = {
     range: object;
     company: string;
     filing: string;
+    updatedAt: Date;
 };
 
 export type IJournal = {

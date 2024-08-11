@@ -8,7 +8,8 @@ import { BlockEditor } from "@vspark/block-editor/src/components/BlockEditor";
 import { EditableText, EditableTextSubmitEvent } from "@vspark/catalyst/editable-text";
 
 import { WorkspaceContext } from "@/app/context";
-import { IWorkspaceQL, IJournalML, IJournalEntryQL } from "@/app/types/ql";
+import { IJournalEntryQL } from "@/app/types/ql";
+import { Citations } from "./citations";
 
 import "@vspark/block-editor/src/app/editor.css";
 
@@ -137,6 +138,7 @@ export function Journal() {
         <>
             <div className="flex flex-col h-full max-h-full">
                 <JournalHeader name={activeJournal.name} onNameChange={onNameChangeCb} />
+                <Citations citations={activeJournal.citations} />
                 <BlockEditor content={data.journalEntry.content} onUpdate={updateJournalEntryCb} />
             </div>
         </>

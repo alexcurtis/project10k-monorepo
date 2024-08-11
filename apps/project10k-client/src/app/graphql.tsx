@@ -32,6 +32,7 @@ export const CITATIONS_QL_RESPONSE = `
         range
         company
         filing
+        updatedAt
     }
 `;
 
