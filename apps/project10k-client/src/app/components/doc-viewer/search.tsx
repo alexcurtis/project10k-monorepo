@@ -50,7 +50,7 @@ function SearchResults({
     onResultClicked: (company: ICompany) => void;
 }) {
     return (
-        <div className="rounded-lg text-white border border-white/10 bg-white/5 focus:outline-none p-6 mt-2">
+        <div className="rounded-lg text-white border border-white/10 bg-zinc-900 focus:outline-none p-6 mt-2 absolute z-50 w-full">
             {!loading ? (
                 <ul role="list" className="divide-y divide-white/10">
                     {results.map((company: ICompany) => (
@@ -80,9 +80,21 @@ export function CompanySearch({ onCompanyClicked }: { onCompanyClicked: (company
         [setSearch]
     );
 
+    const onCompanyClickedCb = useCallback(
+        (company: ICompany) => {
+            // Close The Search Results
+            setSearch("");
+            // Bubble Up Event
+            if (onCompanyClicked) {
+                onCompanyClicked(company);
+            }
+        },
+        [setSearch, onCompanyClicked]
+    );
+
     return (
-        <>
-            <form action="#" className="mt-6 flex">
+        <div className="relative">
+            <form action="#" className="flex">
                 <label htmlFor="compsearch" className="sr-only">
                     Company Search
                 </label>
@@ -95,8 +107,8 @@ export function CompanySearch({ onCompanyClicked }: { onCompanyClicked: (company
                 />
             </form>
             {data && data.companySearch ? (
-                <SearchResults loading={loading} results={data.companySearch} onResultClicked={onCompanyClicked} />
+                <SearchResults loading={loading} results={data.companySearch} onResultClicked={onCompanyClickedCb} />
             ) : null}
-        </>
+        </div>
     );
 }

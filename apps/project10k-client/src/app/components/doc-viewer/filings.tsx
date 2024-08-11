@@ -11,6 +11,7 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ICompanyFilingsQL } from "@/app/types/ql";
 import { DocViewerPage, ICompany, ICompanyFiling } from "@/app/types/entities";
 import { DocViewerContext } from "./context";
+import { DocViewerHeader } from "./header";
 
 const FINANCIAL_FORMS = ["10-K", "10-Q", "10-K/A", "10-Q/A", "NT 10-K", "NT 10-Q", "10-K405"];
 const NEWS_FORMS = ["8-K", "8-K/A"];
@@ -119,7 +120,7 @@ function CompanyFilingsGroup({
 function Header({ title, ticker }: { title: string; ticker: string }) {
     return (
         <>
-            <h1 className="text-2xl flex-none mb-5">
+            <h1 className="text-2xl mb-5">
                 {title} <span className="text-zinc-400">({ticker})</span>
             </h1>
         </>
@@ -146,23 +147,31 @@ export function CompanyFilings() {
     );
 
     return (
-        <div className="p-4 h-full w-full flex flex-col">
+        <div className="pl-4 pb-4 flex flex-col h-full max-h-full">
+            <DocViewerHeader />
             <Header title={company.title} ticker={company.ticker} />
-            <div className="overflow-hidden flex-grow">
-                <CompanyFilingsGroup
-                    title="Financials"
-                    forms={FINANCIAL_FORMS}
-                    company={company}
-                    onClick={onFilingClicked}
-                />
-                <CompanyFilingsGroup title="News" forms={NEWS_FORMS} company={company} onClick={onFilingClicked} />
-                <CompanyFilingsGroup title="Proxies" forms={PROXY_FORMS} company={company} onClick={onFilingClicked} />
-                <CompanyFilingsGroup
-                    title="Ownership"
-                    forms={OWNERSHIP_FORMS}
-                    company={company}
-                    onClick={onFilingClicked}
-                />
+            <div className="overflow-y-scroll flex-grow pr-4">
+                <div className="relative">
+                    <CompanyFilingsGroup
+                        title="Financials"
+                        forms={FINANCIAL_FORMS}
+                        company={company}
+                        onClick={onFilingClicked}
+                    />
+                    <CompanyFilingsGroup title="News" forms={NEWS_FORMS} company={company} onClick={onFilingClicked} />
+                    <CompanyFilingsGroup
+                        title="Proxies"
+                        forms={PROXY_FORMS}
+                        company={company}
+                        onClick={onFilingClicked}
+                    />
+                    <CompanyFilingsGroup
+                        title="Ownership"
+                        forms={OWNERSHIP_FORMS}
+                        company={company}
+                        onClick={onFilingClicked}
+                    />
+                </div>
             </div>
         </div>
     );

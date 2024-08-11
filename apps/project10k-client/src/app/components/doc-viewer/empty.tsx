@@ -34,7 +34,9 @@ export function EmptyDocViewer() {
                         a company below.
                     </p>
                 </div>
-                <CompanySearch onCompanyClicked={onCompanyClicked} />
+                <div className="mt-6 ">
+                    <CompanySearch onCompanyClicked={onCompanyClicked} />
+                </div>
             </div>
         </div>
     );

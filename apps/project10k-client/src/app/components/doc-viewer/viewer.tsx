@@ -26,8 +26,8 @@ function DocViewerLayout() {
 export function DocViewer() {
     const [docViewerQuery, setDocViewerQuery] = useState<IDocViewerQuery>({
         page: DocViewerPage.Empty,
-        companyId: "",
-        filingId: "",
+        company: null,
+        filing: null,
     });
     return (
         <>

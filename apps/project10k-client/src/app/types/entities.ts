@@ -77,8 +77,8 @@ export enum DocViewerPage {
 
 export type IDocViewerQuery = {
     page: DocViewerPage;
-    company: ICompany | null;
-    filing: ICompanyFiling | null;
+    company: ICompany;
+    filing: ICompanyFiling;
 };
 
 export type IDocViewerContext = {
