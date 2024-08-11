@@ -1,19 +1,15 @@
-import React from 'react';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import React from "react";
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
     uri: "http://localhost:3000/graphql",
-    name: 'Project10k',
-    version: '1.0'
+    name: "Project10k",
+    version: "1.0",
 });
 
 export const ApolloAppProvider = ({ children }: { children: any }) => {
-    return (
-        <ApolloProvider client={client}>
-            {children}
-        </ApolloProvider>
-    );
+    return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
 
 export const MINDMAP_NODE_QL_RESPONSE = `
@@ -29,12 +25,23 @@ export const MINDMAP_NODE_QL_RESPONSE = `
     }
 `;
 
+export const CITATIONS_QL_RESPONSE = `
+    citations {
+        _id
+        text
+        range
+        company
+        filing
+    }
+`;
+
 export const WORKSPACE_JOURNALS_QL_RESPONSE = `
     journals {
         _id
         name
         ${MINDMAP_NODE_QL_RESPONSE}
         journalEntry
+        ${CITATIONS_QL_RESPONSE}
     }
 `;
 

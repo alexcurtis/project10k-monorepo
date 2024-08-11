@@ -2,12 +2,31 @@ import React, { useRef, useEffect, useState, useContext } from "react";
 import { DocViewerContext } from "./context";
 import { DocViewerHeader } from "./header";
 import { Loader } from "@vspark/catalyst/loader";
+import { gql, useMutation } from "@apollo/client";
+import { WorkspaceContext } from "@/app/context";
 
-interface Highlight {
-    text: string;
-    range: string;
-}
+// interface Highlight {
+//     text: string;
+//     range: string;
+// }
 
+// Journal Update Mutation
+const M_ADD_CITATION_TO_JOURNAL = gql`
+    mutation AddCitationToJournal($id: ID!, $citation: InputCitation!) {
+        addCitationToJournal(id: $id, citation: $citation) {
+            _id
+            citations {
+                _id
+                text
+                range
+                company
+                filing
+            }
+        }
+    }
+`;
+
+// Tree Walker Iterator
 function iterateWalker(walker: TreeWalker) {
     return {
         [Symbol.iterator]() {
@@ -20,16 +39,28 @@ function iterateWalker(walker: TreeWalker) {
     };
 }
 
-function hasText(node) {
+// Test If Node Is Text Or Not
+function hasText(node: { textContent: string }) {
     return /\S/.test(node.textContent);
 }
 
 export function CompanyDocument() {
-    const { docViewerQuery, setDocViewerQuery } = useContext(DocViewerContext);
+    const { docViewerQuery } = useContext(DocViewerContext);
     const [html, setHtml] = useState("");
     const iframeRef = useRef<HTMLIFrameElement>(null);
-    const [selectedText, setSelectedText] = useState<string>("");
-    const { path, filename } = docViewerQuery.filing;
+
+    const workspaceContext = useContext(WorkspaceContext);
+
+    // Mutators
+    const [addCitationToJournal, {}] = useMutation(M_ADD_CITATION_TO_JOURNAL);
+
+    const { filing } = docViewerQuery;
+    const { company } = docViewerQuery;
+    const activeJournal = workspaceContext.activeJournal;
+    // If For Some (Strange) Reason No Active Journal. TODO - Make This An Error Gate
+    if (!activeJournal) {
+        return;
+    }
 
     useEffect(() => {
         const handleIframeLoad = () => {
@@ -41,9 +72,33 @@ export function CompanyDocument() {
                 const selectedString = selection?.toString();
                 if (selectedString && selection) {
                     const range = selection.getRangeAt(0);
-                    const serializedRange = JSON.stringify(serializeRange(range));
-                    saveHighlight(selectedString, serializedRange);
-                    setSelectedText(selectedString);
+                    const serialisedRange = serialiseRange(range);
+                    // saveHighlight(selectedString, serializedRange);
+
+                    console.log("GONNA SAVE THIS HIGHLIGHT AS A CITATION", {
+                        variables: {
+                            id: activeJournal,
+                            citation: {
+                                text: selectedString,
+                                range: serialisedRange,
+                                company: company._id,
+                                filing: filing._id,
+                            },
+                        },
+                    });
+
+                    addCitationToJournal({
+                        variables: {
+                            id: activeJournal,
+                            citation: {
+                                text: selectedString,
+                                range: serialisedRange,
+                                company: company._id,
+                                filing: filing._id,
+                            },
+                        },
+                    });
+
                     highlightSelection(range);
 
                     selection.removeAllRanges();
@@ -63,7 +118,7 @@ export function CompanyDocument() {
         return () => {
             iframe?.removeEventListener("load", handleIframeLoad);
         };
-    }, []);
+    }, [addCitationToJournal, activeJournal, company, filing]);
 
     //   useEffect(() => {
     //     // loadHighlights();
@@ -81,16 +136,16 @@ export function CompanyDocument() {
     // }, [html]);
 
     useEffect(() => {
-        const url = `http://localhost:3005/apidbdocproxy/document?path=${path}&filename=${filename}`;
+        const url = `http://localhost:3005/apidbdocproxy/document?path=${filing.path}&filename=${filing.filename}`;
         const fetchData = async () => {
             const response = await fetch(url);
             const htmly = await response.text();
             setHtml(htmly);
         };
         fetchData();
-    }, [path, setHtml]);
+    }, [filing, setHtml]);
 
-    const serializeRange = (range: Range) => {
+    const serialiseRange = (range: Range) => {
         const { startContainer, startOffset, endContainer, endOffset } = range;
         return {
             startContainerPath: getNodePath(startContainer),
@@ -152,18 +207,18 @@ export function CompanyDocument() {
         return node;
     };
 
-    const saveHighlight = async (text: string, range: string) => {
-        try {
-            const payload = { text, range };
-            const existingStr = localStorage.getItem("10k:highlights");
-            const existing = existingStr ? JSON.parse(existingStr) : [];
-            existing.push(payload);
-            localStorage.setItem("10k:highlights", JSON.stringify(existing));
-            //   await axios.post('http://localhost:5000/save-highlight', { text, range });
-        } catch (error) {
-            console.error("Error saving highlight", error);
-        }
-    };
+    // const saveHighlight = async (text: string, range: string) => {
+    //     try {
+    //         const payload = { text, range };
+    //         const existingStr = localStorage.getItem("10k:highlights");
+    //         const existing = existingStr ? JSON.parse(existingStr) : [];
+    //         existing.push(payload);
+    //         localStorage.setItem("10k:highlights", JSON.stringify(existing));
+    //         //   await axios.post('http://localhost:5000/save-highlight', { text, range });
+    //     } catch (error) {
+    //         console.error("Error saving highlight", error);
+    //     }
+    // };
 
     const highlightSelection = (range: Range) => {
         const startContainer = range.startContainer;

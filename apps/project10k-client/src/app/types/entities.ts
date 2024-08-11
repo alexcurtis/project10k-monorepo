@@ -21,11 +21,20 @@ export type IJournalEntry = {
     content: object;
 };
 
+export type ICitation = {
+    _id: string;
+    text: string;
+    range: object;
+    company: string;
+    filing: string;
+};
+
 export type IJournal = {
     _id: string;
     name: string;
     mindMapNode: IMindMapNode;
     journalEntry: string;
+    citations: ICitation[];
 };
 
 export type IWorkspace = {
