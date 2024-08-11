@@ -56,7 +56,17 @@ export function CompanyDocument() {
 
     const { filing } = docViewerQuery;
     const { company } = docViewerQuery;
-    const activeJournal = workspaceContext.activeJournal;
+    const { activeJournal, workspace } = workspaceContext;
+
+    // Get All Citations From Workspace That Relate To This Filing
+    const citations = workspace.journals.flatMap((workspace) => {
+        return workspace.citations.flatMap((citation) => {
+            return citation.filing === filing._id ? citation : [];
+        });
+    });
+
+    console.log("CITATIONS FOUND: ", citations);
+
     // If For Some (Strange) Reason No Active Journal. TODO - Make This An Error Gate
     if (!activeJournal) {
         return;
@@ -121,19 +131,19 @@ export function CompanyDocument() {
     }, [addCitationToJournal, activeJournal, company, filing]);
 
     //   useEffect(() => {
-    //     // loadHighlights();
+    //     // loadCitations();
     //   }, []);
 
-    // useEffect(() => {
-    //     if (html) {
-    //         const iframe = iframeRef.current;
-    //         iframe?.addEventListener("load", loadHighlights);
+    useEffect(() => {
+        if (html) {
+            const iframe = iframeRef.current;
+            iframe?.addEventListener("load", loadCitations);
 
-    //         return () => {
-    //             iframe?.removeEventListener("load", loadHighlights);
-    //         };
-    //     }
-    // }, [html]);
+            return () => {
+                iframe?.removeEventListener("load", loadCitations);
+            };
+        }
+    }, [html]);
 
     useEffect(() => {
         const url = `http://localhost:3005/apidbdocproxy/document?path=${filing.path}&filename=${filing.filename}`;
@@ -169,25 +179,37 @@ export function CompanyDocument() {
         return path;
     };
 
-    const loadHighlights = async () => {
-        try {
-            const responseStr = localStorage.getItem("10k:highlights");
-            if (!responseStr) {
-                return;
-            }
-            const response = JSON.parse(responseStr);
-            const iframeDocument = iframeRef.current?.contentDocument;
-            if (!iframeDocument) return;
-            response.forEach((highlight) => {
-                const range = deserializeRange(iframeDocument, JSON.parse(highlight.range));
+    const loadCitations = async () => {
+        const iframeDocument = iframeRef.current?.contentDocument;
+        if (!iframeDocument) return;
+
+        citations.forEach((citation) => {
+            try {
+                const range = deserialiseRange(iframeDocument, citation.range);
                 highlightSelection(range);
-            });
-        } catch (error) {
-            console.error("Error loading highlights", error);
-        }
+            } catch (error) {
+                console.error("Error loading highlights", error);
+            }
+        });
+
+        // try {
+        //     const responseStr = localStorage.getItem("10k:highlights");
+        //     if (!responseStr) {
+        //         return;
+        //     }
+        //     const response = JSON.parse(responseStr);
+        //     const iframeDocument = iframeRef.current?.contentDocument;
+        //     if (!iframeDocument) return;
+        //     response.forEach((highlight) => {
+        //         const range = deserialiseRange(iframeDocument, JSON.parse(highlight.range));
+        //         highlightSelection(range);
+        //     });
+        // } catch (error) {
+        //     console.error("Error loading highlights", error);
+        // }
     };
 
-    const deserializeRange = (document: Document, serializedRange: any) => {
+    const deserialiseRange = (document: Document, serializedRange: any) => {
         const { startContainerPath, startOffset, endContainerPath, endOffset } = serializedRange;
         const startContainer = getNodeFromPath(document, startContainerPath);
         const endContainer = getNodeFromPath(document, endContainerPath);

@@ -1,13 +1,4 @@
-import {
-    useEffect,
-    useState,
-    useContext,
-    useCallback,
-    MouseEvent,
-    Dispatch,
-    SetStateAction,
-    memo
-} from 'react';
+import { useEffect, useState, useContext, useCallback, MouseEvent, Dispatch, SetStateAction, memo } from "react";
 
 import {
     ReactFlow,
@@ -27,56 +18,44 @@ import {
     Node,
     Edge,
     Connection,
-    EdgeChange
-} from '@xyflow/react';
+    EdgeChange,
+} from "@xyflow/react";
 
-import {
-    Dialog,
-    DialogActions,
-    DialogBody,
-    DialogDescription,
-    DialogTitle
-} from '@vspark/catalyst/dialog';
+import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from "@vspark/catalyst/dialog";
 
-import { Button } from '@vspark/catalyst/button';
-import { PlusIcon } from '@heroicons/react/16/solid';
+import { Button } from "@vspark/catalyst/button";
+import { PlusIcon } from "@heroicons/react/16/solid";
 
-import { useMutation, gql } from '@apollo/client';
-import { useShallow } from 'zustand/react/shallow';
+import { useMutation, gql } from "@apollo/client";
+import { useShallow } from "zustand/react/shallow";
 
-import { WorkspaceContext } from '@/app/context';
-import { IJournal } from '@/app/types/entities';
+import { WorkspaceContext } from "@/app/context";
+import { IJournal } from "@/app/types/entities";
 
-import {
-    MindMapInteractivityStore,
-    useMindMapInteractivityStore
-} from './store';
-import { DefaultNode } from './node';
-import {
-    MINDMAP_NODE_QL_RESPONSE,
-    WORKSPACE_QL_RESPONSE
-} from '@/app/graphql';
+import { MindMapInteractivityStore, useMindMapInteractivityStore } from "./store";
+import { DefaultNode } from "./node";
+import { MINDMAP_NODE_QL_RESPONSE, WORKSPACE_QL_RESPONSE } from "@/app/graphql";
 
-import '@xyflow/react/dist/style.css';
-import './mindmap.css';
+import "@xyflow/react/dist/style.css";
+import "./mindmap.css";
 
 // MindMap Background Colour ()
-const BACKGROUND_COLOUR = '#09090b';
+const BACKGROUND_COLOUR = "#09090b";
 
 // Flow Node Types
 const nodeTypes = {
-    default: DefaultNode
+    default: DefaultNode,
 };
 
 interface IDeleteJournalGateway {
-    isOpen: boolean,
-    deleteAction: () => void | null,
-    name: string
+    isOpen: boolean;
+    deleteAction: () => void | null;
+    name: string;
 }
 
 interface IDeleteJournalGatewayProps {
-    gateway: IDeleteJournalGateway,
-    setDeleteJournalGateway: Dispatch<SetStateAction<IDeleteJournalGateway>>
+    gateway: IDeleteJournalGateway;
+    setDeleteJournalGateway: Dispatch<SetStateAction<IDeleteJournalGateway>>;
 }
 
 // Local Interactivity Store Selector
@@ -86,7 +65,7 @@ const selector = (state: MindMapInteractivityStore) => ({
     onNodesChange: state.onNodesChange,
     onEdgesChange: state.onEdgesChange,
     onConnect: state.onConnect,
-    setNodesAndEdges: state.setNodesAndEdges
+    setNodesAndEdges: state.setNodesAndEdges,
 });
 
 const M_UPDATE_MINDMAPNODE = gql`mutation UpdateJournalMindMapNode($journalId: ID!, $mindMapNode: MindMapNodeInput!) {
@@ -102,16 +81,15 @@ const M_UPDATE_MINDMAPNODE = gql`mutation UpdateJournalMindMapNode($journalId: I
 `;
 
 // Journal Update Mutation For Mind Map Node
-const M_DELETE_JOURNAL_FROM_WORKSPACE = gql`mutation DeleteJournalOnWorkspace($id: ID!, $journalId: ID!) {
-	deleteJournalOnWorkspace(
-    id: $id,
-  	journalId: $journalId) {
-        _id
-        journals {
+const M_DELETE_JOURNAL_FROM_WORKSPACE = gql`
+    mutation DeleteJournalOnWorkspace($id: ID!, $journalId: ID!) {
+        deleteJournalOnWorkspace(id: $id, journalId: $journalId) {
             _id
+            journals {
+                _id
+            }
         }
-  	}
-}
+    }
 `;
 
 const M_CREATE_NEW_JOURNAL_ON_WORKSPACE = gql`mutation CreateNewJournalOnWorkspace($id: ID!) {
@@ -130,9 +108,10 @@ function buildNodesFromJournals(journals: IJournal[], onNodeDeleteCb: (id: strin
             data: {
                 label: journal.name,
                 journalId: journal._id,
-                onNodeDeleteCb
-            }
-        }
+                citations: journal.citations.length,
+                onNodeDeleteCb,
+            },
+        };
     });
 }
 
@@ -145,8 +124,8 @@ function buildEdgesFromJournals(journals: IJournal[]): Edge[] {
             return {
                 id: edge._id,
                 source,
-                target
-            }
+                target,
+            };
         });
     });
 }
@@ -156,7 +135,7 @@ function buildEdgeFromConnection(connection: Connection): Edge {
     return {
         id: `e${source}-${target}`,
         source: source,
-        target: target
+        target: target,
     };
 }
 
@@ -166,7 +145,7 @@ function createMindMapNodeUpdateFromFlowNode(node: Node, edges: Edge[]) {
         .map((edge) => {
             return {
                 _id: edge.id,
-                target: edge.target
+                target: edge.target,
             };
         });
     return {
@@ -176,18 +155,20 @@ function createMindMapNodeUpdateFromFlowNode(node: Node, edges: Edge[]) {
                 _id: node.id,
                 position: {
                     x: node.position.x,
-                    y: node.position.y
+                    y: node.position.y,
                 },
-                edges: mindMapNodeEdges
-            }
-        }
+                edges: mindMapNodeEdges,
+            },
+        },
     };
 }
 
 function findSourceNodeFromEdgeId(id: string, edges: Edge[], nodes: Node[]) {
     // Find The Edge
     const edge = edges.find((e) => e.id === id);
-    if (!edge) { return; }
+    if (!edge) {
+        return;
+    }
     const { source } = edge;
     // Find The Node From The Source ID
     return nodes.find((node) => node.id === source);
@@ -198,72 +179,70 @@ const DeleteJournalGateway = memo(function ({ gateway, setDeleteJournalGateway }
     const triggerDeleteAction = () => {
         gateway.deleteAction();
         closeDeleteJournalGatewayCb();
-    }
+    };
     return (
         <>
             <Dialog open={gateway.isOpen} onClose={closeDeleteJournalGatewayCb}>
                 <DialogTitle>Delete Journal</DialogTitle>
-                <DialogDescription>
-                    Are you sure you want to delete the journal {gateway.name}?
-                </DialogDescription>
+                <DialogDescription>Are you sure you want to delete the journal {gateway.name}?</DialogDescription>
                 <DialogActions>
-                    <Button
-                        plain
-                        onClick={closeDeleteJournalGatewayCb}
-                    >
+                    <Button plain onClick={closeDeleteJournalGatewayCb}>
                         Cancel
                     </Button>
-                    <Button
-                        color="red"
-                        onClick={triggerDeleteAction}
-                    >
-                        Delete</Button>
+                    <Button color="red" onClick={triggerDeleteAction}>
+                        Delete
+                    </Button>
                 </DialogActions>
             </Dialog>
         </>
     );
 });
 
-
-export function FlowGraph({ onNodeDeleteAction }: { onNodeDeleteAction: (name: string, deleteAction: () => void) => void }) {
-    console.log('rendering flow graph');
+export function FlowGraph({
+    onNodeDeleteAction,
+}: {
+    onNodeDeleteAction: (name: string, deleteAction: () => void) => void;
+}) {
+    console.log("rendering flow graph");
     const workspaceContext = useContext(WorkspaceContext);
-    if (!workspaceContext) { return; }
+    if (!workspaceContext) {
+        return;
+    }
     const { setActiveJournal } = workspaceContext;
     const workspace = workspaceContext.workspace;
     const { journals } = workspace;
 
     // Mutators
-    const [updateMindMapNode, { }] = useMutation(M_UPDATE_MINDMAPNODE);
+    const [updateMindMapNode, {}] = useMutation(M_UPDATE_MINDMAPNODE);
     // TODO - Move These Up The Hierachy If Need A Delete Else Where
-    const [deleteJournalFromWorkspace, { }] = useMutation(M_DELETE_JOURNAL_FROM_WORKSPACE);
+    const [deleteJournalFromWorkspace, {}] = useMutation(M_DELETE_JOURNAL_FROM_WORKSPACE);
 
     // MindMap Interactivity Store
-    const {
-        nodes,
-        edges,
-        onNodesChange,
-        onEdgesChange,
-        onConnect,
-        setNodesAndEdges
-    } = useMindMapInteractivityStore(useShallow(selector));
+    const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodesAndEdges } = useMindMapInteractivityStore(
+        useShallow(selector)
+    );
 
     // On Node Delete
-    const onNodeDeleteCb = useCallback((id: string) => {
-        // Get The Node Name (For The Dialog)
-        const journal = journals.find((j) => j._id === id);
-        if (!journal) { return; }
-        const { name } = journal;
-        // Trigger Dialog Action
-        onNodeDeleteAction(name, () => {
-            deleteJournalFromWorkspace({
-                variables: {
-                    id: workspace._id,
-                    journalId: id
-                }
+    const onNodeDeleteCb = useCallback(
+        (id: string) => {
+            // Get The Node Name (For The Dialog)
+            const journal = journals.find((j) => j._id === id);
+            if (!journal) {
+                return;
+            }
+            const { name } = journal;
+            // Trigger Dialog Action
+            onNodeDeleteAction(name, () => {
+                deleteJournalFromWorkspace({
+                    variables: {
+                        id: workspace._id,
+                        journalId: id,
+                    },
+                });
             });
-        });
-    }, [workspace, journals, onNodeDeleteAction]);
+        },
+        [workspace, journals, onNodeDeleteAction]
+    );
 
     // MindMap Builder
     useEffect(() => {
@@ -275,48 +254,61 @@ export function FlowGraph({ onNodeDeleteAction }: { onNodeDeleteAction: (name: s
     }, [journals, onNodeDeleteCb, setNodesAndEdges]);
 
     // Set The Active Journal When A Node Is Clicked
-    const setActiveJournalCb = useCallback<NodeMouseHandler>((_, node) => {
-        const selectedJournalId = node.data.journalId;
-        setActiveJournal(selectedJournalId);
-    }, [setActiveJournal]);
+    const setActiveJournalCb = useCallback<NodeMouseHandler>(
+        (_, node) => {
+            const selectedJournalId = node.data.journalId;
+            setActiveJournal(selectedJournalId);
+        },
+        [setActiveJournal]
+    );
 
     // After Drag Event Ended. Persist To GraphQL
-    const onNodeDragStopCb = useCallback((_evnt: MouseEvent, node: Node) => {
-        updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, edges));
-    }, [updateMindMapNode, edges]);
+    const onNodeDragStopCb = useCallback(
+        (_evnt: MouseEvent, node: Node) => {
+            updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, edges));
+        },
+        [updateMindMapNode, edges]
+    );
 
     // On Connection Made
-    const onConnection = useCallback((connection: Connection) => {
-        const updatedEdges = [...edges, buildEdgeFromConnection(connection)];
-        // Update The Interactivity Store
-        onConnect(connection);
-        // Persist The Connection To GraphQL
-        const { source } = connection;
-        const node = nodes.find((node) => node.id === source);
-        if (!node) { return; }
-        updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
-    }, [updateMindMapNode, nodes, edges]);
+    const onConnection = useCallback(
+        (connection: Connection) => {
+            const updatedEdges = [...edges, buildEdgeFromConnection(connection)];
+            // Update The Interactivity Store
+            onConnect(connection);
+            // Persist The Connection To GraphQL
+            const { source } = connection;
+            const node = nodes.find((node) => node.id === source);
+            if (!node) {
+                return;
+            }
+            updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
+        },
+        [updateMindMapNode, nodes, edges]
+    );
 
     // When An Edge Is Removed
-    const onEdgesChangeCb = useCallback((changes: EdgeChange[]) => {
-        // Check If Edge Removed. If So. Update GraphQL
-        const change = changes[0];
-        if (change.type === 'remove') {
-            const node = findSourceNodeFromEdgeId(change.id, edges, nodes);
-            if (node) {
-                // Remove The Edge So We Can Use New Edge State To Build Node For Graph QL
-                const updatedEdges = edges.filter(edge => edge.id !== change.id);
-                updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
+    const onEdgesChangeCb = useCallback(
+        (changes: EdgeChange[]) => {
+            // Check If Edge Removed. If So. Update GraphQL
+            const change = changes[0];
+            if (change.type === "remove") {
+                const node = findSourceNodeFromEdgeId(change.id, edges, nodes);
+                if (node) {
+                    // Remove The Edge So We Can Use New Edge State To Build Node For Graph QL
+                    const updatedEdges = edges.filter((edge) => edge.id !== change.id);
+                    updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
+                }
             }
-        }
-        // Pass Everything To Interactivity Store
-        onEdgesChange(changes);
-    }, [updateMindMapNode, nodes, edges]);
-
+            // Pass Everything To Interactivity Store
+            onEdgesChange(changes);
+        },
+        [updateMindMapNode, nodes, edges]
+    );
 
     return (
         <>
-            <div style={{ height: '100%', width: '100%' }}>
+            <div style={{ height: "100%", width: "100%" }}>
                 <ReactFlow
                     className="mindmap-flow"
                     style={{ backgroundColor: BACKGROUND_COLOUR }}
@@ -354,22 +346,20 @@ export function FlowGraph({ onNodeDeleteAction }: { onNodeDeleteAction: (name: s
 function ToolBar() {
     const workspaceContext = useContext(WorkspaceContext);
     // Mutators
-    const [createNewJournalOnWorkspace, { }] = useMutation(M_CREATE_NEW_JOURNAL_ON_WORKSPACE);
+    const [createNewJournalOnWorkspace, {}] = useMutation(M_CREATE_NEW_JOURNAL_ON_WORKSPACE);
 
     // On Add Journal Callback
     const onAddJournal = useCallback(() => {
         createNewJournalOnWorkspace({
             variables: {
-                id: workspaceContext.workspace._id
-            }
-    });
+                id: workspaceContext.workspace._id,
+            },
+        });
     }, [workspaceContext, createNewJournalOnWorkspace]);
 
     return (
         <div className="absolute top-0 right-0 z-10 p-4">
-            <Button
-                color="blue"
-                onClick={onAddJournal}>
+            <Button color="blue" onClick={onAddJournal}>
                 <PlusIcon />
                 Add Journal
             </Button>
@@ -377,29 +367,27 @@ function ToolBar() {
     );
 }
 
-
 export function MindMap() {
-    console.log('rendering Mind Map');
+    console.log("rendering Mind Map");
     const [deleteJournalGateway, setDeleteJournalGateway] = useState<IDeleteJournalGateway>({
-        name: '', isOpen: false, deleteAction: () => { }
+        name: "",
+        isOpen: false,
+        deleteAction: () => {},
     });
 
-    const openDeleteJournalGatewayCb = useCallback((name: string, deleteAction: () => void) => {
-        setDeleteJournalGateway({ name, isOpen: true, deleteAction });
-    }, [setDeleteJournalGateway]);
-
+    const openDeleteJournalGatewayCb = useCallback(
+        (name: string, deleteAction: () => void) => {
+            setDeleteJournalGateway({ name, isOpen: true, deleteAction });
+        },
+        [setDeleteJournalGateway]
+    );
 
     return (
         <div className="relative w-full h-full">
-            <ToolBar/>
-            <DeleteJournalGateway
-                gateway={deleteJournalGateway}
-                setDeleteJournalGateway={setDeleteJournalGateway}
-            />
+            <ToolBar />
+            <DeleteJournalGateway gateway={deleteJournalGateway} setDeleteJournalGateway={setDeleteJournalGateway} />
             <ReactFlowProvider>
-                <FlowGraph
-                    onNodeDeleteAction={openDeleteJournalGatewayCb}
-                />
+                <FlowGraph onNodeDeleteAction={openDeleteJournalGatewayCb} />
             </ReactFlowProvider>
         </div>
     );
