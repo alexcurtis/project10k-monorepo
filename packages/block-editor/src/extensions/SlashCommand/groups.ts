@@ -147,17 +147,6 @@ export const GROUPS: Group[] = [
           editor.chain().focus().insertTableOfContents().run()
         },
       },
-      {
-        name: 'toc',
-        label: 'Document Reference',
-        iconName: 'Book',
-        aliases: ['outline'],
-        description: 'Insert a Document Reference',
-        shouldBeHidden: editor => editor.isActive('columns'),
-        action: editor => {
-          editor.chain().focus().insertDocReference().run()
-        }
-       }
     ],
   },
 ]
