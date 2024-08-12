@@ -2,11 +2,12 @@
     width: 10px;
     height: 10px;
     border-radius: 3px;
-    background-color: #2563eb;
-  }
+    /* Indigo-400 */
+    background-color: #818cf8;
+}
 
 .react-flow.mindmap-flow {
     .react-flow__node.selected {
         box-shadow: 0 0 0 0.5px #fff;
     }
-  }
+}

@@ -1,4 +1,4 @@
-import { DragEvent, useCallback } from "react";
+import { DragEvent, useCallback, useState } from "react";
 import { format } from "date-fns";
 import { ICitation } from "@/app/types/entities";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -28,7 +28,12 @@ export function Citation({ citation, onDragged }: { citation: ICitation; onDragg
     );
 
     return (
-        <div className="bg-white mb-2" draggable={true} onDragStart={onDragStartCb} onDragEnd={onDragEndCb}>
+        <div
+            className="bg-zinc-900 mb-2 cursor-move"
+            draggable={true}
+            onDragStart={onDragStartCb}
+            onDragEnd={onDragEndCb}
+        >
             <div className="px-4 py-5">
                 <div className="flex space-x-3">
                     <div className="flex-shrink-0">
@@ -39,7 +44,7 @@ export function Citation({ citation, onDragged }: { citation: ICitation; onDragg
                         />
                     </div>
                     <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-sm font-semibold text-white">
                             <a href="#" className="hover:underline">
                                 <span>{citation.company}</span>
                                 <span>
@@ -48,7 +53,7 @@ export function Citation({ citation, onDragged }: { citation: ICitation; onDragg
                                 <span>{citation.filing}</span>
                             </a>
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-white/50">
                             <a href="#" className="hover:underline">
                                 {format(citation.updatedAt, "Pp")}
                             </a>
@@ -57,7 +62,7 @@ export function Citation({ citation, onDragged }: { citation: ICitation; onDragg
                     <div className="flex flex-shrink-0 self-center">
                         <Menu as="div" className="relative inline-block text-left">
                             <div>
-                                <MenuButton className="-m-2 flex items-center rounded-full p-2 text-gray-400 hover:text-gray-600">
+                                <MenuButton className="-m-2 flex items-center rounded-full p-2 text-white hover:text-gray-600">
                                     <span className="sr-only">Open options</span>
                                     <EllipsisVerticalIcon aria-hidden="true" className="h-5 w-5" />
                                 </MenuButton>
@@ -105,9 +110,36 @@ export function Citation({ citation, onDragged }: { citation: ICitation; onDragg
                 </div>
             </div>
             <div className="px-4 pb-5">
-                <p className="text-black">{citation.text}</p>
+                <p className="text-white/75">{citation.text}</p>
             </div>
         </div>
+    );
+}
+
+interface ITab {
+    id: string;
+    name: string;
+    filter: (citations: ICitation[]) => ICitation[];
+}
+
+const tabs: ITab[] = [
+    {
+        id: "new",
+        name: "New Citations",
+        filter: (citations: ICitation[]) => citations.filter((citation) => !citation.embeddedOnJournalEntry),
+    },
+    {
+        id: "all",
+        name: "All Citations",
+        filter: (citations: ICitation[]) => citations,
+    },
+];
+
+export function Tab({ tab, selectedTab, onClick }: { tab: ITab; selectedTab: string; onClick: (tab: ITab) => void }) {
+    return (
+        <li onClick={() => onClick(tab)} className="cursor-pointer">
+            <span className={tab.id === selectedTab ? "text-indigo-400" : ""}>{tab.name}</span>
+        </li>
     );
 }
 
@@ -118,14 +150,34 @@ export function Citations({
     citations: ICitation[];
     onDragged: (citation: ICitation) => void;
 }) {
+    // Default To New Citations Tab
+    const [selectedTab, setSelectedTab] = useState("new");
+    const displayedCitations = tabs.find((tab) => tab.id === selectedTab)?.filter(citations) || [];
+
+    // Set Tab Callback On Tab Click
+    const setTabCb = useCallback(
+        (tab: ITab) => {
+            setSelectedTab(tab.id);
+        },
+        [setSelectedTab]
+    );
+
     return (
         <>
-            <ul className="px-2 pt-2">
-                {citations
-                    .filter((citation) => !citation.embeddedOnJournalEntry)
-                    .map((citation) => (
-                        <Citation key={citation._id} citation={citation} onDragged={onDragged} />
+            <nav className="flex border-b border-white/10 py-4">
+                <ul
+                    role="list"
+                    className="flex min-w-full flex-none gap-x-6 px-2 text-sm font-semibold leading-6 text-gray-400"
+                >
+                    {tabs.map((tab) => (
+                        <Tab key={tab.name} tab={tab} selectedTab={selectedTab} onClick={setTabCb} />
                     ))}
+                </ul>
+            </nav>
+            <ul className="px-2 pt-2">
+                {displayedCitations.map((citation) => (
+                    <Citation key={citation._id} citation={citation} onDragged={onDragged} />
+                ))}
             </ul>
         </>
     );
