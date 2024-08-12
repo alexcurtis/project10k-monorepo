@@ -1,7 +1,7 @@
 'use client'
-
+import { DragEvent } from 'react'
 import { Editor as CoreEditor } from '@tiptap/core'
-import { memo, useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 // import { TableOfContentsStorage } from '@tiptap-pro/extension-table-of-contents'
 import { cn } from '@/lib/utils'
 
@@ -36,15 +36,20 @@ export const Citation = memo(({ content }: Citation) => {
   // }
   //   }, [editor])
 
-  return (
-    <div className="">
-      <div className="">
-        <Badge>{'Carvana > 10-Q > Ended 03/31/24'}</Badge>
-        <Button>Save changes</Button>
-      </div>
-      <Text>{demoText}</Text>
+  const onDragStartCb = useCallback((event: DragEvent<HTMLDivElement>) => {
+    event.dataTransfer.setData('application/json', JSON.stringify({ test: 'hello' }))
+  }, [])
 
-      {/* {data && data.content.length > 0 ? (
+  return (
+    <li>
+      <div draggable={true} onDragStart={onDragStartCb}>
+        <div className="">
+          <Badge>{'Carvana > 10-Q > Ended 03/31/24'}</Badge>
+          <Button>Save changes</Button>
+        </div>
+        <Text>{demoText}</Text>
+
+        {/* {data && data.content.length > 0 ? (
         <div className="flex flex-col gap-1">
           {data.content.map(item => (
             <a
@@ -64,7 +69,8 @@ export const Citation = memo(({ content }: Citation) => {
       ) : (
         <div className="text-sm text-neutral-500">kiss my ass</div>
       )} */}
-    </div>
+      </div>
+    </li>
   )
 })
 

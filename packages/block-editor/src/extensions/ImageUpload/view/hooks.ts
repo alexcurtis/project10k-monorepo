@@ -9,7 +9,6 @@ export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) =
       setLoading(true)
       try {
         // const url = await API.uploadImage()
-
         // onUpload(url)
       } catch (errPayload: any) {
         const error = errPayload?.response?.data?.error || 'Something went wrong'
@@ -17,7 +16,7 @@ export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) =
       }
       setLoading(false)
     },
-    [onUpload],
+    [onUpload]
   )
 
   return { loading, uploadFile }
@@ -57,6 +56,7 @@ export const useDropZone = ({ uploader }: { uploader: (file: File) => void }) =>
 
   const onDrop = useCallback(
     (e: DragEvent<HTMLDivElement>) => {
+      console.log('dropping here......')
       setDraggedInside(false)
       if (e.dataTransfer.files.length === 0) {
         return
@@ -87,7 +87,7 @@ export const useDropZone = ({ uploader }: { uploader: (file: File) => void }) =>
         uploader(file)
       }
     },
-    [uploader],
+    [uploader]
   )
 
   const onDragEnter = () => {

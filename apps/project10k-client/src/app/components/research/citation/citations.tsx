@@ -1,3 +1,4 @@
+import { DragEvent, useCallback } from "react";
 import { format } from "date-fns";
 import { ICitation } from "@/app/types/entities";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -5,8 +6,12 @@ import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { CodeBracketIcon, EllipsisVerticalIcon, FlagIcon, StarIcon } from "@heroicons/react/20/solid";
 
 export function Citation({ citation }: { citation: ICitation }) {
+    const onDragStartCb = useCallback((event: DragEvent<HTMLDivElement>) => {
+        event.dataTransfer.setData("citation", JSON.stringify(citation));
+    }, []);
+
     return (
-        <div className="bg-white mb-2">
+        <div className="bg-white mb-2" draggable={true} onDragStart={onDragStartCb}>
             <div className="px-4 py-5">
                 <div className="flex space-x-3">
                     <div className="flex-shrink-0">

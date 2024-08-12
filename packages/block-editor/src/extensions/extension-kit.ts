@@ -41,7 +41,8 @@ import {
 } from '.'
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight'
 import { TableOfContentsNode } from './TableOfContentsNode'
-import { DocReference } from './DocReference'
+// import { DocReference } from './DocReference'
+// import { Citation, CitationNode } from './Citation'
 import { lowlight } from 'lowlight'
 
 interface ExtensionKitProps {
@@ -89,7 +90,9 @@ export const ExtensionKit = ({}: ExtensionKitProps) => [
   CharacterCount.configure({ limit: 50000 }),
   TableOfContents,
   TableOfContentsNode,
-  DocReference,
+  //   CitationNode,
+  //   Citation,
+  //   DocReference,
   ImageBlock,
   Emoji.configure({
     enableEmoticons: true,
