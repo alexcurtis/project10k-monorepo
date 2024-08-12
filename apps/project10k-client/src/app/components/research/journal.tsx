@@ -59,20 +59,41 @@ const M_UPDATE_CITATION_ON_JOURNAL = gql`
     }
 `;
 
+// function Header({ name }: { name: string }) {
+//     return (
+//         <header className="border-b border-white/5 p-4">
+//             <h1 className="align-middle text-xl font-semibold leading-7 text-white">{name}</h1>
+//         </header>
+//     );
+// }
+
 function JournalHeader({
-    name,
-    onNameChange,
+    journalName,
+    workspaceName,
+    onJournalNameChange,
 }: {
-    name: string;
-    onNameChange: (name: EditableTextSubmitEvent) => void;
+    journalName: string;
+    workspaceName: string;
+    onJournalNameChange: (name: EditableTextSubmitEvent) => void;
 }) {
-    console.log("rendering header");
     return (
-        <div className="px-4 py-2 bg-zinc-900 dark:text-white">
-            <h2 className="text-lg">
-                <EditableText placeholder="Placeholder" value={name} onSubmit={onNameChange} neverEmpty={true} />
-            </h2>
+        <div className="px-2 pt-3 pb-2">
+            <h3 className="text-lg font-semibold leading-7 text-white">{workspaceName}</h3>
+            <p className="mt-1 max-w-2xl text-base leading-6 text-gray-400">
+                <EditableText
+                    placeholder="Placeholder"
+                    value={journalName}
+                    onSubmit={onJournalNameChange}
+                    neverEmpty={true}
+                />
+            </p>
         </div>
+
+        // <div className="px-4 py-2 bg-zinc-900 dark:text-white">
+        //     <h2 className="text-lg">
+        //         <EditableText placeholder="Placeholder" value={name} onSubmit={onNameChange} neverEmpty={true} />
+        //     </h2>
+        // </div>
     );
 }
 
@@ -91,10 +112,11 @@ export function Journal() {
     if (!workspaceContext) {
         return;
     }
+    const { workspace } = workspaceContext;
     const activeJournalId = workspaceContext.activeJournal;
 
     // TODO - MAYBE PART OF THE CONTEXT? OR A STORE? - ZUTSU THINGY?
-    const activeJournal = workspaceContext.workspace.journals.find((journal) => {
+    const activeJournal = workspace.journals.find((journal) => {
         return journal._id === activeJournalId;
     });
 
@@ -116,7 +138,7 @@ export function Journal() {
     const [updateJournalEntry, {}] = useMutation(M_UPDATE_JOURNAL_ENTRY);
     const [updateCitationOnJournal, {}] = useMutation(M_UPDATE_CITATION_ON_JOURNAL);
 
-    const onNameChangeCb = useCallback(
+    const onJournalNameChangeCb = useCallback(
         ({ value }: EditableTextSubmitEvent) => {
             updateJournal({
                 variables: {
@@ -168,7 +190,11 @@ export function Journal() {
     return (
         <>
             <div className="flex flex-col h-full max-h-full">
-                <JournalHeader name={activeJournal.name} onNameChange={onNameChangeCb} />
+                <JournalHeader
+                    workspaceName={workspace.name}
+                    journalName={activeJournal.name}
+                    onJournalNameChange={onJournalNameChangeCb}
+                />
                 <Citations citations={activeJournal.citations} onDragged={onCitationDraggedOntoJournalCb} />
                 <BlockEditor
                     content={data.journalEntry.content}

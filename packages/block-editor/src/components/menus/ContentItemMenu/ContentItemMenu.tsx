@@ -55,18 +55,18 @@ export const ContentItemMenu = ({ editor }: ContentItemMenuProps) => {
                   Clear formatting
                 </DropdownButton>
               </Popover.Close>
-              <Popover.Close>
+              {/* <Popover.Close>
                 <DropdownButton onClick={actions.copyNodeToClipboard}>
                   <Icon name="Clipboard" />
                   Copy to clipboard
                 </DropdownButton>
-              </Popover.Close>
-              <Popover.Close>
+              </Popover.Close> */}
+              {/* <Popover.Close>
                 <DropdownButton onClick={actions.duplicateNode}>
                   <Icon name="Copy" />
                   Duplicate
                 </DropdownButton>
-              </Popover.Close>
+              </Popover.Close> */}
               <Toolbar.Divider horizontal />
               <Popover.Close>
                 <DropdownButton

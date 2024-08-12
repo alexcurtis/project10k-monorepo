@@ -24,7 +24,7 @@ export function EmptyDocViewer() {
     // I Need to pass attributes like the selected company, etc.
 
     return (
-        <div className="mx-auto max-w-lg pt-10">
+        <div className="mx-auto max-w-lg pt-40">
             <div>
                 <div className="text-center">
                     <DocumentPlusIcon className="text-center h-20 w-20 text-zinc-400 inline-block" />
