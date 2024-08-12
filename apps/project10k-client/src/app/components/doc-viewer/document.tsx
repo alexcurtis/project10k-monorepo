@@ -4,24 +4,14 @@ import { DocViewerHeader } from "./header";
 import { Loader } from "@vspark/catalyst/loader";
 import { gql, useMutation } from "@apollo/client";
 import { WorkspaceContext } from "@/app/context";
+import { CITATIONS_QL_RESPONSE } from "@/app/graphql";
 
-// interface Highlight {
-//     text: string;
-//     range: string;
-// }
-
-// Journal Update Mutation
+// Citation Add Mutation
 const M_ADD_CITATION_TO_JOURNAL = gql`
     mutation AddCitationToJournal($id: ID!, $citation: InputCitation!) {
         addCitationToJournal(id: $id, citation: $citation) {
             _id
-            citations {
-                _id
-                text
-                range
-                company
-                filing
-            }
+            ${CITATIONS_QL_RESPONSE}
         }
     }
 `;
@@ -93,6 +83,7 @@ export function CompanyDocument() {
                                 range: serialisedRange,
                                 company: company._id,
                                 filing: filing._id,
+                                embeddedOnJournalEntry: false,
                             },
                         },
                     });

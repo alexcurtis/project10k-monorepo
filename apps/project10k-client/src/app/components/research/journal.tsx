@@ -13,6 +13,8 @@ import { Citations } from "./citation/citations";
 import { Citation, CitationNode } from "./citation/editor-extension";
 
 import "@vspark/block-editor/src/app/editor.css";
+import { CITATIONS_QL_RESPONSE } from "@/app/graphql";
+import { ICitation } from "@/app/types/entities";
 
 // How Often Editor Saves When Typing / Making Changes
 const EDITOR_SAVE_DEBOUNCE = 500;
@@ -43,6 +45,16 @@ const M_UPDATE_JOURNAL_ENTRY = gql`
         updateJournalEntry(id: $id, journalEntry: { content: $content }) {
             _id
             content
+        }
+    }
+`;
+
+// Citation Update Mutation
+const M_UPDATE_CITATION_ON_JOURNAL = gql`
+    mutation UpdateCitationOnJournal($id: ID!, $citation: InputCitation!) {
+        updateCitationOnJournal(id: $id, citation: $citation) {
+            _id
+            ${CITATIONS_QL_RESPONSE}
         }
     }
 `;
@@ -102,6 +114,7 @@ export function Journal() {
     // Mutators
     const [updateJournal, {}] = useMutation(M_UPDATE_JOURNAL);
     const [updateJournalEntry, {}] = useMutation(M_UPDATE_JOURNAL_ENTRY);
+    const [updateCitationOnJournal, {}] = useMutation(M_UPDATE_CITATION_ON_JOURNAL);
 
     const onNameChangeCb = useCallback(
         ({ value }: EditableTextSubmitEvent) => {
@@ -129,6 +142,23 @@ export function Journal() {
         [updateJournalEntry, journalEntry]
     );
 
+    const onCitationDraggedOntoJournalCb = useCallback(
+        (citation: ICitation) => {
+            // Citation Was Dragged Onto Journal. Update Journal Citation
+            console.log("CITATION DRAGGED ONTO JOURNAL", activeJournal, citation);
+            updateCitationOnJournal({
+                variables: {
+                    id: activeJournal._id,
+                    citation: {
+                        _id: citation._id,
+                        embeddedOnJournalEntry: true,
+                    },
+                },
+            });
+        },
+        [activeJournal]
+    );
+
     // Saftey Gate - If Loading or No Data
     if (loading || !data || !activeJournal) {
         return <JournalLoader />;
@@ -139,7 +169,7 @@ export function Journal() {
         <>
             <div className="flex flex-col h-full max-h-full">
                 <JournalHeader name={activeJournal.name} onNameChange={onNameChangeCb} />
-                <Citations citations={activeJournal.citations} />
+                <Citations citations={activeJournal.citations} onDragged={onCitationDraggedOntoJournalCb} />
                 <BlockEditor
                     content={data.journalEntry.content}
                     onUpdate={updateJournalEntryCb}

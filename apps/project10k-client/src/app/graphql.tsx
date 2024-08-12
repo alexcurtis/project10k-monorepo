@@ -33,6 +33,7 @@ export const CITATIONS_QL_RESPONSE = `
         company
         filing
         updatedAt
+        embeddedOnJournalEntry
     }
 `;
 

@@ -5,7 +5,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { CodeBracketIcon, EllipsisVerticalIcon, FlagIcon, StarIcon } from "@heroicons/react/20/solid";
 
-export function Citation({ citation }: { citation: ICitation }) {
+export function Citation({ citation, onDragged }: { citation: ICitation; onDragged: (citation: ICitation) => void }) {
     const onDragStartCb = useCallback(
         (event: DragEvent<HTMLDivElement>) => {
             event.dataTransfer.setData("citation", JSON.stringify(citation));
@@ -20,11 +20,11 @@ export function Citation({ citation }: { citation: ICitation }) {
             if (dropEffect === "none") {
                 return;
             }
-            // Looks Like Citation Was Imported Correctly
-            console.log("CITATION IMPORTED!", citation);
-            // TODO - GRAPHQL TO SAY CITATION IMPORTED.
+            if (onDragged) {
+                onDragged(citation);
+            }
         },
-        [citation]
+        [citation, onDragged]
     );
 
     return (
@@ -111,13 +111,21 @@ export function Citation({ citation }: { citation: ICitation }) {
     );
 }
 
-export function Citations({ citations }: { citations: ICitation[] }) {
+export function Citations({
+    citations,
+    onDragged,
+}: {
+    citations: ICitation[];
+    onDragged: (citation: ICitation) => void;
+}) {
     return (
         <>
             <ul className="px-2 pt-2">
-                {citations.map((citation) => (
-                    <Citation key={citation._id} citation={citation} />
-                ))}
+                {citations
+                    .filter((citation) => !citation.embeddedOnJournalEntry)
+                    .map((citation) => (
+                        <Citation key={citation._id} citation={citation} onDragged={onDragged} />
+                    ))}
             </ul>
         </>
     );

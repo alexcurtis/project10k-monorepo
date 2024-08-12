@@ -28,6 +28,7 @@ export type ICitation = {
     company: string;
     filing: string;
     updatedAt: Date;
+    embeddedOnJournalEntry: boolean;
 };
 
 export type IJournal = {
