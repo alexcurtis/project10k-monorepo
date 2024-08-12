@@ -1,78 +1,81 @@
-import { mergeAttributes, Node } from '@tiptap/core'
-import { ReactNodeViewRenderer, NodeViewWrapper } from '@tiptap/react'
+import { mergeAttributes, Node } from "@tiptap/core";
+import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
 
 interface ICitationProps {
-  node: Node & {
-    attrs: {}
-    content: {
-      content: [
-        {
-          type: string
-          content: {
+    node: Node & {
+        attrs: {};
+        content: {
             content: [
-              {
-                type: string
-                text: string
-              }
-            ]
-          }
-        }
-      ]
-    }
-  }
+                {
+                    type: string;
+                    content: {
+                        content: [
+                            {
+                                type: string;
+                                text: string;
+                            }
+                        ];
+                    };
+                }
+            ];
+        };
+    };
 }
 
 function Citation(props: ICitationProps) {
-  console.log('NODE VIEW CITIATION props', props)
-  return (
-    <NodeViewWrapper className="citation">
-      <p>{props.node.content.content[0].content.content[0].text}</p>
-    </NodeViewWrapper>
-  )
+    console.log("NODE VIEW CITIATION props", props);
+    return (
+        // <NodeViewWrapper className="citation outline outline-yellow-500 outline-2 p-2 rounded">
+        //     <p>{props.node.content.content[0].content.content[0].text}</p>
+        // </NodeViewWrapper>
+        <NodeViewWrapper className="citation bg-indigo-400/25 p-2 rounded-sm text-white outline outline-2 outline-indigo-300/25">
+            <p>{props.node.content.content[0].content.content[0].text}</p>
+        </NodeViewWrapper>
+    );
 }
 
 export const CitationNode = Node.create({
-  name: 'citation-node',
-  group: 'block',
-  defining: true,
-  isolating: true,
-  atom: true,
-  draggable: true,
-  addAttributes() {
-    return {
-      _id: {
-        default: null,
-      },
-      company: {
-        default: null,
-      },
-      filing: {
-        default: null,
-      },
-      updatedAt: {
-        default: null,
-      },
-    }
-  },
+    name: "citation-node",
+    group: "block",
+    defining: true,
+    isolating: true,
+    atom: true,
+    draggable: true,
+    addAttributes() {
+        return {
+            _id: {
+                default: null,
+            },
+            company: {
+                default: null,
+            },
+            filing: {
+                default: null,
+            },
+            updatedAt: {
+                default: null,
+            },
+        };
+    },
 
-  parseHTML() {
-    return [
-      {
-        tag: 'div',
-      },
-    ]
-  },
+    parseHTML() {
+        return [
+            {
+                tag: "div",
+            },
+        ];
+    },
 
-  renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes)]
-  },
+    renderHTML({ HTMLAttributes }) {
+        return ["div", mergeAttributes(HTMLAttributes)];
+    },
 
-  addNodeView() {
-    return ReactNodeViewRenderer(Citation)
-  },
-})
+    addNodeView() {
+        return ReactNodeViewRenderer(Citation);
+    },
+});
 
-export default CitationNode
+export default CitationNode;
 
 // import { Node } from '@tiptap/core'
 

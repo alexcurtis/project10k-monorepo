@@ -29,7 +29,7 @@ export function Citation({ citation, onDragged }: { citation: ICitation; onDragg
 
     return (
         <div
-            className="bg-zinc-900 mb-2 cursor-move"
+            className="bg-zinc-900 mb-2 cursor-move rounded-sm"
             draggable={true}
             onDragStart={onDragStartCb}
             onDragEnd={onDragEndCb}
@@ -167,7 +167,7 @@ export function Citations({
             <nav className="flex border-b border-white/10 py-4">
                 <ul
                     role="list"
-                    className="flex min-w-full flex-none gap-x-6 px-2 text-sm font-semibold leading-6 text-gray-400"
+                    className="flex min-w-full flex-none gap-x-6 px-4 text-sm font-semibold leading-6 text-gray-400"
                 >
                     {tabs.map((tab) => (
                         <Tab key={tab.name} tab={tab} selectedTab={selectedTab} onClick={setTabCb} />

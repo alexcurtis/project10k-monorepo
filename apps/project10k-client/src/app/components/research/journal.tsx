@@ -77,7 +77,7 @@ function JournalHeader({
     onJournalNameChange: (name: EditableTextSubmitEvent) => void;
 }) {
     return (
-        <div className="px-2 pt-3 pb-2">
+        <div className="px-4 pt-3 pb-2">
             <h3 className="text-lg font-semibold leading-7 text-white">{workspaceName}</h3>
             <p className="mt-1 max-w-2xl text-base leading-6 text-gray-400">
                 <EditableText
