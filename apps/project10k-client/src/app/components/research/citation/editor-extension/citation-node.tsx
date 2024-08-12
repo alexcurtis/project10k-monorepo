@@ -25,9 +25,6 @@ interface ICitationProps {
 function Citation(props: ICitationProps) {
     console.log("NODE VIEW CITIATION props", props);
     return (
-        // <NodeViewWrapper className="citation outline outline-yellow-500 outline-2 p-2 rounded">
-        //     <p>{props.node.content.content[0].content.content[0].text}</p>
-        // </NodeViewWrapper>
         <NodeViewWrapper className="citation bg-indigo-400/25 p-2 rounded-sm text-white outline outline-2 outline-indigo-300/25">
             <p>{props.node.content.content[0].content.content[0].text}</p>
         </NodeViewWrapper>

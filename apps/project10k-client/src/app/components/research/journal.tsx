@@ -59,15 +59,7 @@ const M_UPDATE_CITATION_ON_JOURNAL = gql`
     }
 `;
 
-// function Header({ name }: { name: string }) {
-//     return (
-//         <header className="border-b border-white/5 p-4">
-//             <h1 className="align-middle text-xl font-semibold leading-7 text-white">{name}</h1>
-//         </header>
-//     );
-// }
-
-function JournalHeader({
+function WorkspaceHeader({
     journalName,
     workspaceName,
     onJournalNameChange,
@@ -79,7 +71,20 @@ function JournalHeader({
     return (
         <div className="px-4 pt-3 pb-2">
             <h3 className="text-lg font-semibold leading-7 text-white">{workspaceName}</h3>
-            <p className="mt-1 max-w-2xl text-base leading-6 text-gray-400">
+        </div>
+    );
+}
+
+function JournalHeader({
+    journalName,
+    onJournalNameChange,
+}: {
+    journalName: string;
+    onJournalNameChange: (name: EditableTextSubmitEvent) => void;
+}) {
+    return (
+        <div className="mx-24 pt-12">
+            <p className="text-4xl font-semibold text-white">
                 <EditableText
                     placeholder="Placeholder"
                     value={journalName}
@@ -88,12 +93,6 @@ function JournalHeader({
                 />
             </p>
         </div>
-
-        // <div className="px-4 py-2 bg-zinc-900 dark:text-white">
-        //     <h2 className="text-lg">
-        //         <EditableText placeholder="Placeholder" value={name} onSubmit={onNameChange} neverEmpty={true} />
-        //     </h2>
-        // </div>
     );
 }
 
@@ -190,12 +189,13 @@ export function Journal() {
     return (
         <>
             <div className="flex flex-col h-full max-h-full">
-                <JournalHeader
+                <WorkspaceHeader
                     workspaceName={workspace.name}
                     journalName={activeJournal.name}
                     onJournalNameChange={onJournalNameChangeCb}
                 />
                 <Citations citations={activeJournal.citations} onDragged={onCitationDraggedOntoJournalCb} />
+                <JournalHeader journalName={activeJournal.name} onJournalNameChange={onJournalNameChangeCb} />
                 <BlockEditor
                     content={data.journalEntry.content}
                     onUpdate={updateJournalEntryCb}
