@@ -45,7 +45,6 @@ export const Citation = Extension.create({
                             dropTransaction.setMeta("isCitationDropTransaction", true);
                             view.dispatch(dropTransaction);
                         }
-
                         return false;
                     },
                 },

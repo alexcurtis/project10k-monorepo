@@ -6,12 +6,29 @@ import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { CodeBracketIcon, EllipsisVerticalIcon, FlagIcon, StarIcon } from "@heroicons/react/20/solid";
 
 export function Citation({ citation }: { citation: ICitation }) {
-    const onDragStartCb = useCallback((event: DragEvent<HTMLDivElement>) => {
-        event.dataTransfer.setData("citation", JSON.stringify(citation));
-    }, []);
+    const onDragStartCb = useCallback(
+        (event: DragEvent<HTMLDivElement>) => {
+            event.dataTransfer.setData("citation", JSON.stringify(citation));
+        },
+        [citation]
+    );
+
+    const onDragEndCb = useCallback(
+        (event: DragEvent<HTMLDivElement>) => {
+            const dropEffect = event.dataTransfer.dropEffect;
+            // Check If Drop Was Successful. If Not. Abort
+            if (dropEffect === "none") {
+                return;
+            }
+            // Looks Like Citation Was Imported Correctly
+            console.log("CITATION IMPORTED!", citation);
+            // TODO - GRAPHQL TO SAY CITATION IMPORTED.
+        },
+        [citation]
+    );
 
     return (
-        <div className="bg-white mb-2" draggable={true} onDragStart={onDragStartCb}>
+        <div className="bg-white mb-2" draggable={true} onDragStart={onDragStartCb} onDragEnd={onDragEndCb}>
             <div className="px-4 py-5">
                 <div className="flex space-x-3">
                     <div className="flex-shrink-0">
