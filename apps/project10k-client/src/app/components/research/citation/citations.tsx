@@ -4,6 +4,10 @@ import { ICitation } from "@/app/types/entities";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { CodeBracketIcon, EllipsisVerticalIcon, FlagIcon, StarIcon } from "@heroicons/react/20/solid";
+import { Badge } from "@vspark/catalyst/badge";
+
+const dateTimeFormat = (date: Date) => format(date, "Pp");
+const dateFormat = (date: Date) => format(date, "P");
 
 export function Citation({ citation, onDragged }: { citation: ICitation; onDragged: (citation: ICitation) => void }) {
     const onDragStartCb = useCallback(
@@ -45,19 +49,23 @@ export function Citation({ citation, onDragged }: { citation: ICitation; onDragg
                     </div>
                     <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-white">
-                            <a href="#" className="hover:underline">
-                                <span>{citation.company}</span>
-                                <span>
-                                    <ChevronRightIcon className="h-6 w-6 inline-block" />
-                                </span>
-                                <span>{citation.filing}</span>
-                            </a>
+                            <span>
+                                {citation.company.title} {`(${citation.company.ticker})`}
+                            </span>
+                            <span>
+                                <ChevronRightIcon className="h-6 w-6 inline-block" />
+                            </span>
+                            <span>
+                                {citation.filing.name}
+                                <Badge className="ml-2" color="indigo">
+                                    {"Period: " + dateFormat(citation.filing.period)}
+                                </Badge>
+                                <Badge className="ml-1" color="indigo">
+                                    {"Filed: " + dateFormat(citation.filing.filedOn)}
+                                </Badge>
+                            </span>
                         </p>
-                        <p className="text-sm text-white/50">
-                            <a href="#" className="hover:underline">
-                                {format(citation.updatedAt, "Pp")}
-                            </a>
-                        </p>
+                        <p className="text-sm text-white/50">{dateTimeFormat(citation.updatedAt)}</p>
                     </div>
                     <div className="flex flex-shrink-0 self-center">
                         <Menu as="div" className="relative inline-block text-left">

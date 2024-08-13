@@ -11,7 +11,7 @@ const M_ADD_CITATION_TO_JOURNAL = gql`
     mutation AddCitationToJournal($id: ID!, $citation: InputCitation!) {
         addCitationToJournal(id: $id, citation: $citation) {
             _id
-            ${CITATIONS_QL_RESPONSE}
+            citations ${CITATIONS_QL_RESPONSE}
         }
     }
 `;

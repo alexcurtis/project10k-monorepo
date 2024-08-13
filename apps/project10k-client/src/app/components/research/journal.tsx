@@ -8,12 +8,12 @@ import { BlockEditor } from "@vspark/block-editor/src/components/BlockEditor";
 import { EditableText, EditableTextSubmitEvent } from "@vspark/catalyst/editable-text";
 
 import { WorkspaceContext } from "@/app/context";
-import { IJournalEntryQL } from "@/app/types/ql";
+import { IJournalQL } from "@/app/types/ql";
 import { Citations } from "./citation/citations";
 import { Citation, CitationNode } from "./citation/editor-extension";
 
 import "@vspark/block-editor/src/app/editor.css";
-import { CITATIONS_QL_RESPONSE } from "@/app/graphql";
+import { CITATIONS_QL_RESPONSE, JOURNAL_ENTRY_QL_RESPONSE, JOURNAL_FULLFAT_QL_RESPONSE } from "@/app/graphql";
 import { ICitation } from "@/app/types/entities";
 
 // How Often Editor Saves When Typing / Making Changes
@@ -30,22 +30,18 @@ const M_UPDATE_JOURNAL = gql`
 `;
 
 // Journal Entry Query - Entry Stored Seperatly from Journal (As can be big)
-const Q_JOURNAL_ENTRY = gql`
-    query GetJournalEntry($id: ID!) {
-        journalEntry(id: $id) {
-            _id
-            content
-        }
+const Q_JOURNAL_FULLFAT = gql`
+    query GetJournalFullFat($id: ID!) {
+        journal(id: $id)
+            ${JOURNAL_FULLFAT_QL_RESPONSE}
     }
 `;
 
 // Journal Entry Update Mutation
 const M_UPDATE_JOURNAL_ENTRY = gql`
     mutation UpdateJournalEntry($id: ID!, $content: JSON!) {
-        updateJournalEntry(id: $id, journalEntry: { content: $content }) {
-            _id
-            content
-        }
+        updateJournalEntry(id: $id, journalEntry: { content: $content })
+            ${JOURNAL_ENTRY_QL_RESPONSE}
     }
 `;
 
@@ -54,7 +50,7 @@ const M_UPDATE_CITATION_ON_JOURNAL = gql`
     mutation UpdateCitationOnJournal($id: ID!, $citation: InputCitation!) {
         updateCitationOnJournal(id: $id, citation: $citation) {
             _id
-            ${CITATIONS_QL_RESPONSE}
+            citations ${CITATIONS_QL_RESPONSE}
         }
     }
 `;
@@ -125,12 +121,13 @@ export function Journal() {
     if (!activeJournal) {
         return;
     }
-    const journalEntry = activeJournal.journalEntry;
 
-    // Query
-    const { loading, error, data } = useQuery<IJournalEntryQL>(Q_JOURNAL_ENTRY, {
-        variables: { id: journalEntry },
+    // Full Fat Journal Query
+    const { loading, error, data } = useQuery<IJournalQL>(Q_JOURNAL_FULLFAT, {
+        variables: { id: activeJournal._id },
     });
+
+    const journal = data?.journal;
 
     // Mutators
     const [updateJournal, {}] = useMutation(M_UPDATE_JOURNAL);
@@ -141,12 +138,12 @@ export function Journal() {
         ({ value }: EditableTextSubmitEvent) => {
             updateJournal({
                 variables: {
-                    id: activeJournal._id,
+                    id: journal._id,
                     name: value,
                 },
             });
         },
-        [updateJournal, activeJournal]
+        [updateJournal, journal]
     );
 
     // When Journal Entry Changes - Update
@@ -154,22 +151,22 @@ export function Journal() {
         debounce((evnt) => {
             updateJournalEntry({
                 variables: {
-                    id: journalEntry,
+                    id: journal.journalEntry._id,
                     content: evnt.editor.getJSON(),
                 },
                 ignoreResults: true,
             });
         }, EDITOR_SAVE_DEBOUNCE),
-        [updateJournalEntry, journalEntry]
+        [updateJournalEntry, journal]
     );
 
     const onCitationDraggedOntoJournalCb = useCallback(
         (citation: ICitation) => {
             // Citation Was Dragged Onto Journal. Update Journal Citation
-            console.log("CITATION DRAGGED ONTO JOURNAL", activeJournal, citation);
+            console.log("CITATION DRAGGED ONTO JOURNAL", journal, citation);
             updateCitationOnJournal({
                 variables: {
-                    id: activeJournal._id,
+                    id: journal._id,
                     citation: {
                         _id: citation._id,
                         embeddedOnJournalEntry: true,
@@ -177,7 +174,7 @@ export function Journal() {
                 },
             });
         },
-        [activeJournal]
+        [journal]
     );
 
     // Saftey Gate - If Loading or No Data
@@ -185,19 +182,19 @@ export function Journal() {
         return <JournalLoader />;
     }
 
-    console.log("RENDERING JOURNAL", activeJournalId, data, "active journal name", activeJournal.name);
+    console.log("RENDERING JOURNAL", activeJournalId, data, "active journal name", journal.name);
     return (
         <>
             <div className="flex flex-col h-full max-h-full">
                 <WorkspaceHeader
                     workspaceName={workspace.name}
-                    journalName={activeJournal.name}
+                    journalName={journal.name}
                     onJournalNameChange={onJournalNameChangeCb}
                 />
-                <Citations citations={activeJournal.citations} onDragged={onCitationDraggedOntoJournalCb} />
-                <JournalHeader journalName={activeJournal.name} onJournalNameChange={onJournalNameChangeCb} />
+                <Citations citations={journal.citations} onDragged={onCitationDraggedOntoJournalCb} />
+                <JournalHeader journalName={journal.name} onJournalNameChange={onJournalNameChangeCb} />
                 <BlockEditor
-                    content={data.journalEntry.content}
+                    content={journal.journalEntry.content}
                     onUpdate={updateJournalEntryCb}
                     extensions={[Citation, CitationNode]}
                 />

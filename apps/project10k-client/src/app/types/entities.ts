@@ -1,5 +1,28 @@
 import { Dispatch, SetStateAction } from "react";
 
+export type ICompany = {
+    _id: string;
+    externalId: string;
+    ticker: string;
+    title: string;
+};
+
+export type ICompanyFiling = {
+    _id: string;
+    form: string;
+    name: string;
+    period: Date;
+    filedOn: Date;
+    format: string;
+    path: string;
+    filename: string;
+};
+
+export type IJournalEntry = {
+    _id: string;
+    content: object;
+};
+
 export type IMindMapNodePosition = {
     x: number;
     y: number;
@@ -16,17 +39,12 @@ export type IMindMapNode = {
     edges: IMindMapEdge[];
 };
 
-export type IJournalEntry = {
-    _id: string;
-    content: object;
-};
-
 export type ICitation = {
     _id: string;
     text: string;
     range: object;
-    company: string;
-    filing: string;
+    company: ICompany;
+    filing: ICompanyFiling;
     updatedAt: Date;
     embeddedOnJournalEntry: boolean;
 };
@@ -35,7 +53,7 @@ export type IJournal = {
     _id: string;
     name: string;
     mindMapNode: IMindMapNode;
-    journalEntry: string;
+    journalEntry: IJournalEntry;
     citations: ICitation[];
 };
 
@@ -52,24 +70,6 @@ export type IAccount = {
     lastName: string;
     email: string;
     workspaces: IWorkspace[];
-};
-
-export type ICompany = {
-    _id: string;
-    externalId: string;
-    ticker: string;
-    title: string;
-};
-
-export type ICompanyFiling = {
-    _id: string;
-    form: string;
-    name: string;
-    period: string;
-    filedOn: string;
-    format: string;
-    path: string;
-    filename: string;
 };
 
 // Context For Workspaces

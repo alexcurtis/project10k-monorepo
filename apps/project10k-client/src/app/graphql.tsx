@@ -13,7 +13,7 @@ export const ApolloAppProvider = ({ children }: { children: any }) => {
 };
 
 export const MINDMAP_NODE_QL_RESPONSE = `
-    mindMapNode {
+    {
         _id
         position {
             x, y
@@ -26,24 +26,51 @@ export const MINDMAP_NODE_QL_RESPONSE = `
 `;
 
 export const CITATIONS_QL_RESPONSE = `
-    citations {
+    {
         _id
         text
         range
-        company
-        filing
+        company {
+            _id
+            title
+            ticker
+        }
+        filing {
+            _id
+            name
+            period
+            filedOn
+        }
         updatedAt
         embeddedOnJournalEntry
     }
 `;
 
 export const WORKSPACE_JOURNALS_QL_RESPONSE = `
-    journals {
+    {
         _id
         name
-        ${MINDMAP_NODE_QL_RESPONSE}
-        journalEntry
-        ${CITATIONS_QL_RESPONSE}
+        mindMapNode ${MINDMAP_NODE_QL_RESPONSE}
+        citations {
+            _id
+        }
+    }
+`;
+
+export const JOURNAL_ENTRY_QL_RESPONSE = `
+    {
+        _id
+        content
+    }
+`;
+
+export const JOURNAL_FULLFAT_QL_RESPONSE = `
+    {
+        _id
+        name
+        mindMapNode ${MINDMAP_NODE_QL_RESPONSE}
+        journalEntry ${JOURNAL_ENTRY_QL_RESPONSE}
+        citations ${CITATIONS_QL_RESPONSE}
     }
 `;
 
@@ -51,6 +78,6 @@ export const WORKSPACE_QL_RESPONSE = `
     {
         _id,
         name
-        ${WORKSPACE_JOURNALS_QL_RESPONSE}
+        journals ${WORKSPACE_JOURNALS_QL_RESPONSE}
     }
 `;

@@ -75,7 +75,7 @@ const M_UPDATE_MINDMAPNODE = gql`mutation UpdateJournalMindMapNode($journalId: I
         }
     ){
         _id,
-        ${MINDMAP_NODE_QL_RESPONSE}
+        mindMapNode ${MINDMAP_NODE_QL_RESPONSE}
     }
 }
 `;
