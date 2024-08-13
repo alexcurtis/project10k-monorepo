@@ -5,6 +5,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { CodeBracketIcon, EllipsisVerticalIcon, FlagIcon, StarIcon } from "@heroicons/react/20/solid";
 import { Badge } from "@vspark/catalyst/badge";
+import { ITab, Tabs } from "@vspark/catalyst/tabs";
 
 const dateTimeFormat = (date: Date) => format(date, "Pp");
 const dateFormat = (date: Date) => format(date, "P");
@@ -57,10 +58,10 @@ export function Citation({ citation, onDragged }: { citation: ICitation; onDragg
                             </span>
                             <span>
                                 {citation.filing.name}
-                                <Badge className="ml-2" color="indigo">
+                                <Badge className="ml-2" color="zinc">
                                     {"Period: " + dateFormat(citation.filing.period)}
                                 </Badge>
-                                <Badge className="ml-1" color="indigo">
+                                <Badge className="ml-1" color="zinc">
                                     {"Filed: " + dateFormat(citation.filing.filedOn)}
                                 </Badge>
                             </span>
@@ -124,13 +125,11 @@ export function Citation({ citation, onDragged }: { citation: ICitation; onDragg
     );
 }
 
-interface ITab {
-    id: string;
-    name: string;
+interface ITabCitations extends ITab {
     filter: (citations: ICitation[]) => ICitation[];
 }
 
-const tabs: ITab[] = [
+const tabs: ITabCitations[] = [
     {
         id: "new",
         name: "New Citations",
@@ -142,14 +141,6 @@ const tabs: ITab[] = [
         filter: (citations: ICitation[]) => citations,
     },
 ];
-
-export function Tab({ tab, selectedTab, onClick }: { tab: ITab; selectedTab: string; onClick: (tab: ITab) => void }) {
-    return (
-        <li onClick={() => onClick(tab)} className="cursor-pointer">
-            <span className={tab.id === selectedTab ? "text-indigo-400" : ""}>{tab.name}</span>
-        </li>
-    );
-}
 
 export function Citations({
     citations,
@@ -172,16 +163,7 @@ export function Citations({
 
     return (
         <>
-            <nav className="flex border-b border-white/10 py-4">
-                <ul
-                    role="list"
-                    className="flex min-w-full flex-none gap-x-6 px-4 text-sm font-semibold leading-6 text-gray-400"
-                >
-                    {tabs.map((tab) => (
-                        <Tab key={tab.name} tab={tab} selectedTab={selectedTab} onClick={setTabCb} />
-                    ))}
-                </ul>
-            </nav>
+            <Tabs tabs={tabs} selectedTab={selectedTab} onClick={setTabCb} />
             <ul className="px-2 pt-2">
                 {displayedCitations.map((citation) => (
                     <Citation key={citation._id} citation={citation} onDragged={onDragged} />

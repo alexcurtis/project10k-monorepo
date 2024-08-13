@@ -81,3 +81,20 @@ export const WORKSPACE_QL_RESPONSE = `
         journals ${WORKSPACE_JOURNALS_QL_RESPONSE}
     }
 `;
+
+export const ACCOUNT_QL_RESPONSE = `
+    {
+        _id
+        firstName
+        lastName
+        email
+        workspaces {
+            _id
+            name
+            updatedAt
+            journals {
+                _id
+            }
+        }
+    }
+`;

@@ -1,29 +1,16 @@
-'use client';
+"use client";
 import dynamic from "next/dynamic";
-import React from 'react';
+import React from "react";
 import { useQuery, gql } from "@apollo/client";
-import { Loader } from '@vspark/catalyst/loader';
+import { Loader } from "@vspark/catalyst/loader";
 
-import { ApolloAppProvider } from '@/app/graphql';
-import { Workspaces } from '@/app/workspaces';
+import { ACCOUNT_QL_RESPONSE, ApolloAppProvider } from "@/app/graphql";
+import { Workspaces } from "@/app/workspaces";
 
-import { IAccountQL } from './types/ql';
+import { IAccountQL } from "./types/ql";
 
 const Q_MY_ACCOUNT = gql`query getAccount {
-    account(id: "66a6502936a423235f97625f") {
-      _id
-      firstName
-      lastName
-      email
-      workspaces {
-        _id
-        name
-        updatedAt
-        journals {
-            _id
-        }
-      }
-    }
+    account(id: "66a6502936a423235f97625f") ${ACCOUNT_QL_RESPONSE}
 }`;
 
 // TODO - Move This T
@@ -32,12 +19,14 @@ function PageLoader() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
             <Loader />
         </div>
-    )
+    );
 }
 
 function WorkspacesPage() {
     const { loading, error, data } = useQuery<IAccountQL>(Q_MY_ACCOUNT);
-    if (loading || !data) { return (<PageLoader />); }
+    if (loading || !data) {
+        return <PageLoader />;
+    }
     const workspaces = data.account.workspaces;
     return (
         <div className="dark min-h-screen w-full bg-zinc-950">
@@ -56,7 +45,7 @@ function WorkspacesPage() {
                 </main>
             </div>
         </div>
-    )
+    );
 }
 
 function Page() {
@@ -75,4 +64,3 @@ function Page() {
 
 // Turn Off SSR for Main App
 export default dynamic(async () => Page, { ssr: false });
-
