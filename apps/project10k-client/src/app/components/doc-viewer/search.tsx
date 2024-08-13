@@ -101,7 +101,7 @@ export function CompanySearch({ onCompanyClicked }: { onCompanyClicked: (company
                 <Input
                     name="compsearch"
                     type="text"
-                    placeholder="Enter a company name or ticker"
+                    placeholder="Search for a company name or ticker"
                     value={search}
                     onChange={onSearchChangeCb}
                 />

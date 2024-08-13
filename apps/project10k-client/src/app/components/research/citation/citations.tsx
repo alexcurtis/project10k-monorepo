@@ -1,11 +1,11 @@
-import { DragEvent, useCallback, useState } from "react";
+import { DragEvent, SyntheticEvent, useCallback, useState } from "react";
 import { format } from "date-fns";
 import { ICitation } from "@/app/types/entities";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { CodeBracketIcon, EllipsisVerticalIcon, FlagIcon, StarIcon } from "@heroicons/react/20/solid";
 import { Badge } from "@vspark/catalyst/badge";
-import { ITab, Tabs } from "@vspark/catalyst/tabs";
+import { ITab, Tabs, TabsUnderline } from "@vspark/catalyst/tabs";
+import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 
 const dateTimeFormat = (date: Date) => format(date, "Pp");
 const dateFormat = (date: Date) => format(date, "P");
@@ -142,6 +142,15 @@ const tabs: ITabCitations[] = [
     },
 ];
 
+function ExpandCollapse({ collapsed, onClick }: { collapsed: boolean; onClick: (c: boolean) => void }) {
+    const chevron = "h-9 w-9 text-gray-400 cursor-pointer ml-1";
+    return (
+        <div className={chevron} onClick={() => onClick(!collapsed)}>
+            {collapsed ? <ChevronRightIcon className={chevron} /> : <ChevronDownIcon className={chevron} />}
+        </div>
+    );
+}
+
 export function Citations({
     citations,
     onDragged,
@@ -151,6 +160,9 @@ export function Citations({
 }) {
     // Default To New Citations Tab
     const [selectedTab, setSelectedTab] = useState("new");
+    // Default to Expanded
+    const [collapsed, setCollapsed] = useState(false);
+
     const displayedCitations = tabs.find((tab) => tab.id === selectedTab)?.filter(citations) || [];
 
     // Set Tab Callback On Tab Click
@@ -161,14 +173,27 @@ export function Citations({
         [setSelectedTab]
     );
 
+    // Set Collapse/Collapse On Click
+    const setCollapseCb = useCallback(
+        (collapsed: boolean) => {
+            setCollapsed(collapsed);
+        },
+        [setCollapsed]
+    );
+
     return (
         <>
-            <Tabs tabs={tabs} selectedTab={selectedTab} onClick={setTabCb} />
-            <ul className="px-2 pt-2">
-                {displayedCitations.map((citation) => (
-                    <Citation key={citation._id} citation={citation} onDragged={onDragged} />
-                ))}
-            </ul>
+            <TabsUnderline>
+                <ExpandCollapse collapsed={collapsed} onClick={setCollapseCb} />
+                <Tabs tabs={tabs} selectedTab={selectedTab} onClick={setTabCb} />
+            </TabsUnderline>
+            {!collapsed ? (
+                <ul className="px-2 pt-2">
+                    {displayedCitations.map((citation) => (
+                        <Citation key={citation._id} citation={citation} onDragged={onDragged} />
+                    ))}
+                </ul>
+            ) : null}
         </>
     );
 }
