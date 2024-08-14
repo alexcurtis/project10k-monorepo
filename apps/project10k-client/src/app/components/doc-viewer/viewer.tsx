@@ -1,6 +1,6 @@
-import { useContext, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 
-import { DocViewerPage, ICompany, IDocViewerQuery } from "@/app/types/entities";
+import { DocViewerPage, ICompany, ICompanyFiling, IDocViewerQuery } from "@/app/types/entities";
 import { DocViewerContext } from "./context";
 
 import { EmptyDocViewer } from "./empty";
@@ -8,6 +8,8 @@ import { CompanyFilings } from "./filings";
 import { CompanyDocument } from "./document";
 import { ITab, Tabs, TabsUnderline } from "@vspark/catalyst/tabs";
 import { CompanySearch } from "./search";
+
+import { useSub } from "@/app/hooks";
 
 function DocViewerLayout() {
     // Load The Doc Viewer Page Based On Context
@@ -44,16 +46,38 @@ export function DocViewer() {
         company: null,
         filing: null,
     });
+
+    // Subscribe To External Events
+    useSub("filing:navigate", ({ company, filing }: { company: ICompany; filing: ICompanyFiling }) => {
+        console.log("Navigate To Filing!!!!!!!!", company, filing);
+        setDocViewerQuery({
+            page: DocViewerPage.Document,
+            company,
+            filing,
+        });
+    });
+
+    // Update The Context And Move To The Filings Page
+    const onCompanyClicked = useCallback(
+        (company: ICompany) => {
+            setDocViewerQuery({
+                page: DocViewerPage.Filings,
+                company,
+                filing: null,
+            });
+        },
+        [setDocViewerQuery]
+    );
+
+    // Do Not Show Company Search On Empty View (As already has it)
+    const showCompanySearch = docViewerQuery.page !== DocViewerPage.Empty;
+
     return (
         <>
             <TabsUnderline>
                 <Tabs tabs={tabs} selectedTab={selectedTab} onClick={() => {}} />
                 <div className="pl-2 w-96">
-                    <CompanySearch
-                        onCompanyClicked={function (company: ICompany): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                    />
+                    {showCompanySearch ? <CompanySearch onCompanyClicked={onCompanyClicked} /> : null}
                 </div>
             </TabsUnderline>
             <DocViewerContext.Provider value={{ docViewerQuery, setDocViewerQuery }}>

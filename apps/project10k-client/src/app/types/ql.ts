@@ -23,6 +23,10 @@ export interface ICompaniesSearchQL extends IQueryLanguage {
     companySearch: ICompany[];
 }
 
+export interface ICompanyFilingQL extends IQueryLanguage {
+    companyFiling: ICompanyFiling;
+}
+
 export interface ICompanyFilingsQL extends IQueryLanguage {
     companyFilings: ICompanyFiling[];
 }

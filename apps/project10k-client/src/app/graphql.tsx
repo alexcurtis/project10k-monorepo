@@ -3,7 +3,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: "http://localhost:3000/graphql",
+    uri: "http://localhost:3010/graphql",
     name: "Project10k",
     version: "1.0",
 });
@@ -11,6 +11,19 @@ const client = new ApolloClient({
 export const ApolloAppProvider = ({ children }: { children: any }) => {
     return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
+
+export const COMPANY_FILING_QL_RESPONSE = `
+    {
+        _id
+        form
+        name
+        period
+        filedOn
+        format
+        path
+        filename
+    }
+`;
 
 export const MINDMAP_NODE_QL_RESPONSE = `
     {
@@ -53,6 +66,14 @@ export const WORKSPACE_JOURNALS_QL_RESPONSE = `
         mindMapNode ${MINDMAP_NODE_QL_RESPONSE}
         citations {
             _id
+            text
+            range
+            filing {
+                _id
+            }
+            company {
+                _id
+            }
         }
     }
 `;

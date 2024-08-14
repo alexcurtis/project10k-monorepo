@@ -11,7 +11,6 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ICompanyFilingsQL } from "@/app/types/ql";
 import { DocViewerPage, ICompany, ICompanyFiling } from "@/app/types/entities";
 import { DocViewerContext } from "./context";
-import { DocViewerHeader } from "./header";
 
 const FINANCIAL_FORMS = ["10-K", "10-Q", "10-K/A", "10-Q/A", "NT 10-K", "NT 10-Q", "10-K405"];
 const NEWS_FORMS = ["8-K", "8-K/A"];
@@ -120,7 +119,7 @@ function CompanyFilingsGroup({
 function Header({ title, ticker }: { title: string; ticker: string }) {
     return (
         <>
-            <h1 className="text-2xl mb-5">
+            <h1 className="text-2xl mb-5 mt-4">
                 {title} <span className="text-zinc-400">({ticker})</span>
             </h1>
         </>
@@ -148,7 +147,6 @@ export function CompanyFilings() {
 
     return (
         <div className="pl-4 pb-4 flex flex-col h-full max-h-full">
-            <DocViewerHeader />
             <Header title={company.title} ticker={company.ticker} />
             <div className="overflow-y-scroll flex-grow pr-4">
                 <div className="relative">
