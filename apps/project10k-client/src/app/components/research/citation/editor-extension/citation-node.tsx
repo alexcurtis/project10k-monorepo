@@ -4,6 +4,7 @@ import { usePub } from "@/app/hooks";
 import { Button } from "@vspark/catalyst/button";
 import { useCallback } from "react";
 import { ICompany, ICompanyFiling } from "@/app/types/entities";
+import { ArrowRightIcon } from "@heroicons/react/24/solid";
 
 interface ICitationProps {
     node: Node & {
@@ -39,20 +40,17 @@ function Citation(props: ICitationProps) {
         publish("filing:navigate:scroll", { company: attrs.company, filing: attrs.filing, scrollTo: attrs._id });
     }, [node]);
     return (
-        <NodeViewWrapper className="citation  text-white flex flex-row relative">
+        <NodeViewWrapper className="citation text-white flex flex-row relative min-h-9">
             <div className="flex-none w-2 bg-yellow-400 rounded-sm" />
             <div className="flex-grow ml-4">
                 <p>{node.content.content[0].content.content[0].text}</p>
             </div>
-            <div className="absolute right-0 top-0">
-                <Button onClick={onNavigateToFilingCb}>GO GO GO!</Button>
+            <div className="absolute -right-10 top-0 h-full w-10">
+                <Button outline onClick={onNavigateToFilingCb}>
+                    <ArrowRightIcon className="stroke-white" />
+                </Button>
             </div>
         </NodeViewWrapper>
-
-        // <NodeViewWrapper className="citation bg-indigo-400/25 p-2 rounded-sm text-white outline outline-2 outline-indigo-300/25">
-        //     <p>{node.content.content[0].content.content[0].text}</p>
-        //     <Button onClick={onNavigateToFilingCb}>GO GO GO!</Button>
-        // </NodeViewWrapper>
     );
 }
 
