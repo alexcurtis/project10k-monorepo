@@ -188,7 +188,7 @@ export function Citations({
                 <Tabs tabs={tabs} selectedTab={selectedTab} onClick={setTabCb} />
             </TabsUnderline>
             {!collapsed ? (
-                <ul className="px-2 pt-2 max-h-96, overflow-auto">
+                <ul className="px-2 pt-2 max-h-96 overflow-auto">
                     {displayedCitations.map((citation) => (
                         <Citation key={citation._id} citation={citation} onDragged={onDragged} />
                     ))}

@@ -27,20 +27,14 @@ function DocViewerLayout() {
     }
 }
 
-const tabs: ITab[] = [
+const fixedTabs: ITab[] = [
     {
-        id: "all-references",
+        id: DocViewerPage.Empty.toString(),
         name: "All References",
-    },
-    {
-        id: "most-recent",
-        name: "Most Recent",
     },
 ];
 
 export function DocViewer() {
-    // Default To New Citations Tab
-    const [selectedTab, setSelectedTab] = useState("all-references");
     const [docViewerQuery, setDocViewerQuery] = useState<IDocViewerQuery>({
         page: DocViewerPage.Empty,
         company: undefined,
@@ -76,17 +70,36 @@ export function DocViewer() {
     // Do Not Show Company Search On Empty View (As already has it)
     const showCompanySearch = docViewerQuery.page !== DocViewerPage.Empty;
 
+    // Tab Building
+    const { filing, company } = docViewerQuery;
+    const selectedTab = filing && company ? DocViewerPage.Document : DocViewerPage.Empty;
+    const tabs =
+        !filing || !company
+            ? fixedTabs
+            : fixedTabs.concat([
+                  {
+                      id: DocViewerPage.Document.toString(),
+                      name: `${company.title} (${company.ticker}) > ${filing.name}`,
+                  },
+              ]);
+
     return (
         <>
-            <TabsUnderline>
-                <Tabs tabs={tabs} selectedTab={selectedTab} onClick={() => {}} />
-                <div className="pl-2 w-96">
-                    {showCompanySearch ? <CompanySearch onCompanyClicked={onCompanyClicked} /> : null}
+            <div className="flex flex-col h-full">
+                <div className="flex-none">
+                    <TabsUnderline>
+                        <Tabs tabs={tabs} selectedTab={selectedTab.toString()} onClick={() => {}} />
+                        <div className="pl-2 w-96">
+                            {showCompanySearch ? <CompanySearch onCompanyClicked={onCompanyClicked} /> : null}
+                        </div>
+                    </TabsUnderline>
                 </div>
-            </TabsUnderline>
-            <DocViewerContext.Provider value={{ docViewerQuery, setDocViewerQuery }}>
-                <DocViewerLayout />
-            </DocViewerContext.Provider>
+                <div className="flex-grow">
+                    <DocViewerContext.Provider value={{ docViewerQuery, setDocViewerQuery }}>
+                        <DocViewerLayout />
+                    </DocViewerContext.Provider>
+                </div>
+            </div>
         </>
     );
 }
