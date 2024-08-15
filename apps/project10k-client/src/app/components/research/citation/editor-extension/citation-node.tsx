@@ -8,6 +8,7 @@ import { ICompany, ICompanyFiling } from "@/app/types/entities";
 interface ICitationProps {
     node: Node & {
         attrs: {
+            _id: string;
             company: ICompany;
             filing: ICompanyFiling;
         };
@@ -35,7 +36,7 @@ function Citation(props: ICitationProps) {
     const { attrs } = node;
     const publish = usePub();
     const onNavigateToFilingCb = useCallback(() => {
-        publish("filing:navigate", { company: attrs.company, filing: attrs.filing });
+        publish("filing:navigate:scroll", { company: attrs.company, filing: attrs.filing, scrollTo: attrs._id });
     }, [node]);
     return (
         <NodeViewWrapper className="citation  text-white flex flex-row relative">

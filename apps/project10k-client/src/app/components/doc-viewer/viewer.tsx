@@ -43,19 +43,23 @@ export function DocViewer() {
     const [selectedTab, setSelectedTab] = useState("all-references");
     const [docViewerQuery, setDocViewerQuery] = useState<IDocViewerQuery>({
         page: DocViewerPage.Empty,
-        company: null,
-        filing: null,
+        company: undefined,
+        filing: undefined,
     });
 
     // Subscribe To External Events
-    useSub("filing:navigate", ({ company, filing }: { company: ICompany; filing: ICompanyFiling }) => {
-        console.log("Navigate To Filing!!!!!!!!", company, filing);
-        setDocViewerQuery({
-            page: DocViewerPage.Document,
-            company,
-            filing,
-        });
-    });
+    useSub(
+        "filing:navigate:scroll",
+        ({ company, filing, scrollTo }: { company: ICompany; filing: ICompanyFiling; scrollTo: string }) => {
+            console.log("Navigate To Filing!!!!!!!!", company, filing);
+            setDocViewerQuery({
+                page: DocViewerPage.Document,
+                company,
+                filing,
+                scrollTo,
+            });
+        }
+    );
 
     // Update The Context And Move To The Filings Page
     const onCompanyClicked = useCallback(
@@ -63,7 +67,7 @@ export function DocViewer() {
             setDocViewerQuery({
                 page: DocViewerPage.Filings,
                 company,
-                filing: null,
+                filing: undefined,
             });
         },
         [setDocViewerQuery]

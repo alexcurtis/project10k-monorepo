@@ -88,8 +88,9 @@ export enum DocViewerPage {
 
 export type IDocViewerQuery = {
     page: DocViewerPage;
-    company: ICompany;
-    filing: ICompanyFiling;
+    company?: ICompany;
+    filing?: ICompanyFiling;
+    scrollTo?: string;
 };
 
 export type IDocViewerContext = {
