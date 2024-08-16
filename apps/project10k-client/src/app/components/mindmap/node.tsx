@@ -28,7 +28,6 @@ export const DefaultNode = memo(({ id, data, isConnectable, selected }: NodeProp
             ) : null}
             <div>
                 <div>{data.label}</div>
-                <div>Citations: {data.citations}</div>
             </div>
             <div className="absolute -bottom-3 right-1/2">
                 <Handle type="source" position={Position.Bottom} isConnectable={isConnectable} />

@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 
 export interface ITab {
-    id: string;
+    id: any;
     name: string;
 }
 
-export function Tab({ tab, selectedTab, onClick }: { tab: ITab; selectedTab: string; onClick: (tab: ITab) => void }) {
+export function Tab({ tab, selectedTab, onClick }: { tab: ITab; selectedTab: any; onClick: (tab: ITab) => void }) {
     return (
         <li onClick={() => onClick(tab)} className="cursor-pointer leading-9">
             <span className={tab.id === selectedTab ? "text-indigo-400" : ""}>{tab.name}</span>
@@ -13,15 +13,7 @@ export function Tab({ tab, selectedTab, onClick }: { tab: ITab; selectedTab: str
     );
 }
 
-export function Tabs({
-    tabs,
-    selectedTab,
-    onClick,
-}: {
-    tabs: ITab[];
-    selectedTab: string;
-    onClick: (tab: ITab) => void;
-}) {
+export function Tabs({ tabs, selectedTab, onClick }: { tabs: ITab[]; selectedTab: any; onClick: (tab: ITab) => void }) {
     return (
         <ul role="list" className="flex gap-x-6 px-4 text-sm font-semibold leading-6 text-gray-400">
             {tabs.map((tab) => (

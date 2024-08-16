@@ -108,7 +108,6 @@ function buildNodesFromJournals(journals: IJournal[], onNodeDeleteCb: (id: strin
             data: {
                 label: journal.name,
                 journalId: journal._id,
-                citations: journal.citations.length,
                 onNodeDeleteCb,
             },
         };

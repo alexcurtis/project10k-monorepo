@@ -46,7 +46,7 @@ export type ICitation = {
     company: ICompany;
     filing: ICompanyFiling;
     updatedAt: Date;
-    embeddedOnJournalEntry: boolean;
+    createdAt: Date;
 };
 
 export type IJournal = {
@@ -54,7 +54,6 @@ export type IJournal = {
     name: string;
     mindMapNode: IMindMapNode;
     journalEntry: IJournalEntry;
-    citations: ICitation[];
 };
 
 export type IWorkspace = {
@@ -82,6 +81,7 @@ export type IWorkspaceContext = {
 // Context For Doc Viewer
 export enum DocViewerPage {
     Empty,
+    Citations,
     Filings,
     Document,
 }

@@ -55,7 +55,7 @@ export const CITATIONS_QL_RESPONSE = `
             filedOn
         }
         updatedAt
-        embeddedOnJournalEntry
+        createdAt
     }
 `;
 
@@ -64,17 +64,6 @@ export const WORKSPACE_JOURNALS_QL_RESPONSE = `
         _id
         name
         mindMapNode ${MINDMAP_NODE_QL_RESPONSE}
-        citations {
-            _id
-            text
-            range
-            filing {
-                _id
-            }
-            company {
-                _id
-            }
-        }
     }
 `;
 
@@ -91,13 +80,12 @@ export const JOURNAL_FULLFAT_QL_RESPONSE = `
         name
         mindMapNode ${MINDMAP_NODE_QL_RESPONSE}
         journalEntry ${JOURNAL_ENTRY_QL_RESPONSE}
-        citations ${CITATIONS_QL_RESPONSE}
     }
 `;
 
 export const WORKSPACE_QL_RESPONSE = `
     {
-        _id,
+        _id
         name
         journals ${WORKSPACE_JOURNALS_QL_RESPONSE}
     }

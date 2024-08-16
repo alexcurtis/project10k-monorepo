@@ -8,6 +8,7 @@ import { CompanyFilings } from "./filings";
 import { CompanyDocument } from "./document";
 import { ITab, Tabs, TabsUnderline } from "@vspark/catalyst/tabs";
 import { CompanySearch } from "./search";
+import { Citations } from "./citations";
 
 import { useSub } from "@/app/hooks";
 
@@ -17,6 +18,9 @@ function DocViewerLayout() {
     switch (docViewerQuery.page) {
         case DocViewerPage.Empty: {
             return <EmptyDocViewer />;
+        }
+        case DocViewerPage.Citations: {
+            return <Citations />;
         }
         case DocViewerPage.Filings: {
             return <CompanyFilings />;
@@ -29,23 +33,20 @@ function DocViewerLayout() {
 
 const fixedTabs: ITab[] = [
     {
-        id: DocViewerPage.Empty.toString(),
-        name: "All References",
+        id: DocViewerPage.Citations,
+        name: "All Citations",
     },
 ];
 
 export function DocViewer() {
     const [docViewerQuery, setDocViewerQuery] = useState<IDocViewerQuery>({
         page: DocViewerPage.Empty,
-        company: undefined,
-        filing: undefined,
     });
 
     // Subscribe To External Events
     useSub(
         "filing:navigate:scroll",
         ({ company, filing, scrollTo }: { company: ICompany; filing: ICompanyFiling; scrollTo: string }) => {
-            console.log("Navigate To Filing!!!!!!!!", company, filing);
             setDocViewerQuery({
                 page: DocViewerPage.Document,
                 company,
@@ -59,12 +60,12 @@ export function DocViewer() {
     const onCompanyClicked = useCallback(
         (company: ICompany) => {
             setDocViewerQuery({
+                ...docViewerQuery,
                 page: DocViewerPage.Filings,
                 company,
-                filing: undefined,
             });
         },
-        [setDocViewerQuery]
+        [docViewerQuery, setDocViewerQuery]
     );
 
     // Do Not Show Company Search On Empty View (As already has it)
@@ -72,29 +73,41 @@ export function DocViewer() {
 
     // Tab Building
     const { filing, company } = docViewerQuery;
-    const selectedTab = filing && company ? DocViewerPage.Document : DocViewerPage.Empty;
+
     const tabs =
         !filing || !company
             ? fixedTabs
             : fixedTabs.concat([
                   {
-                      id: DocViewerPage.Document.toString(),
+                      id: DocViewerPage.Document,
                       name: `${company.title} (${company.ticker}) > ${filing.name}`,
                   },
               ]);
+
+    // Update The Context And Move To The Filings Page
+    const onTabClicked = useCallback(
+        (tab: ITab) => {
+            setDocViewerQuery({
+                ...docViewerQuery,
+                scrollTo: undefined,
+                page: tab.id,
+            });
+        },
+        [docViewerQuery, setDocViewerQuery]
+    );
 
     return (
         <>
             <div className="flex flex-col h-full">
                 <div className="flex-none">
                     <TabsUnderline>
-                        <Tabs tabs={tabs} selectedTab={selectedTab.toString()} onClick={() => {}} />
+                        <Tabs tabs={tabs} selectedTab={docViewerQuery.page} onClick={onTabClicked} />
                         <div className="pl-2 w-96">
                             {showCompanySearch ? <CompanySearch onCompanyClicked={onCompanyClicked} /> : null}
                         </div>
                     </TabsUnderline>
                 </div>
-                <div className="flex-grow">
+                <div className="flex-grow overflow-y-auto">
                     <DocViewerContext.Provider value={{ docViewerQuery, setDocViewerQuery }}>
                         <DocViewerLayout />
                     </DocViewerContext.Provider>

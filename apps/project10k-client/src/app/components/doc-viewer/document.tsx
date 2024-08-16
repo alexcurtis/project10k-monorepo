@@ -4,24 +4,23 @@ import { Loader } from "@vspark/catalyst/loader";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { WorkspaceContext } from "@/app/context";
 import { CITATIONS_QL_RESPONSE, COMPANY_FILING_QL_RESPONSE } from "@/app/graphql";
-import { ICompanyFilingQL } from "@/app/types/ql";
+import { ICompanyFilingDatasetQL, ICompanyFilingQL } from "@/app/types/ql";
 import { ICitation } from "@/app/types/entities";
 import { v4 as uuidv4 } from "uuid";
+import { Q_CITATIONS_ON_WORKSPACE } from "./citations";
 
 // Filing Query
-const Q_COMPANY_FILING = gql`
-    query GetCompanyFiling($id: ID!) {
+const Q_COMPANY_FILING_DATASET = gql`
+    query GetCompanyFilingDataset($id: ID!) {
         companyFiling(id: $id) ${COMPANY_FILING_QL_RESPONSE}
+        citationsOnFiling(filingId: $id) ${CITATIONS_QL_RESPONSE}
     }
 `;
 
-// Citation Add Mutation
-const M_ADD_CITATION_TO_JOURNAL = gql`
-    mutation AddCitationToJournal($id: ID!, $citation: InputCitation!) {
-        addCitationToJournal(id: $id, citation: $citation) {
-            _id
-            citations ${CITATIONS_QL_RESPONSE}
-        }
+// Citation Create Mutation
+const M_CREATE_CITATION = gql`
+    mutation CreateCitation($citation: InputCitationDto!) {
+        createCitation(citation: $citation) ${CITATIONS_QL_RESPONSE}
     }
 `;
 
@@ -73,7 +72,7 @@ const getNodePath = (node: Node) => {
     return path;
 };
 
-const loadCitations = async (iframeRef, citations) => {
+const loadCitations = async (iframeRef, citations: ICitation[]) => {
     const iframeDocument = iframeRef.current?.contentDocument;
     if (!iframeDocument) return;
 
@@ -179,10 +178,16 @@ export function CompanyDocument() {
     const { company } = docViewerQuery;
 
     // Mutators
-    const [addCitationToJournal, {}] = useMutation(M_ADD_CITATION_TO_JOURNAL);
+    const [createCitation, {}] = useMutation(M_CREATE_CITATION, {
+        update(cache, { data: { createCitation } }) {
+            // After Citation Added. Update Cache So It Will Refetch Citations
+            cache.evict({ fieldName: "citationsOnWorkspace" });
+            cache.evict({ fieldName: "citationsOnFiling" });
+        },
+    });
 
     // Query
-    const { loading, error, data } = useQuery<ICompanyFilingQL>(Q_COMPANY_FILING, {
+    const { loading, error, data } = useQuery<ICompanyFilingDatasetQL>(Q_COMPANY_FILING_DATASET, {
         variables: { id: docViewerQuery.filing._id },
     });
 
@@ -194,7 +199,7 @@ export function CompanyDocument() {
         scrollToHightlight(iframeRef, scrollToHighlightId);
     }, [iframeRef, scrollToHighlightId]);
 
-    console.log("RENDERING COMPANY DOCUMENT");
+    console.log("RENDERING COMPANY DOCUMENT", data);
 
     useEffect(() => {
         if (!data) {
@@ -212,7 +217,7 @@ export function CompanyDocument() {
     }, [data, setHtml]);
 
     useEffect(() => {
-        if (!data) {
+        if (!data || !company) {
             return;
         }
         const { companyFiling } = data;
@@ -227,11 +232,11 @@ export function CompanyDocument() {
                     const range = selection.getRangeAt(0);
                     const serialisedRange = serialiseRange(range);
                     const id = uuidv4();
-                    addCitationToJournal({
+                    createCitation({
                         variables: {
-                            id: activeJournal,
                             citation: {
                                 _id: id,
+                                workspace: workspace._id,
                                 text: selectedString,
                                 range: serialisedRange,
                                 company: company._id,
@@ -259,22 +264,15 @@ export function CompanyDocument() {
         return () => {
             iframe?.removeEventListener("load", handleIframeLoad);
         };
-    }, [iframeRef, addCitationToJournal, activeJournal, data, company]);
+    }, [iframeRef, createCitation, activeJournal, data, company]);
 
     useEffect(() => {
         if (!data || !html) {
             return;
         }
 
-        // Get All Citations From Workspace That Relate To This Filing
-        const citations = workspace.journals.flatMap((journal) => {
-            return journal.citations.flatMap((citation) => {
-                return citation.filing._id === companyFiling._id ? citation : [];
-            });
-        });
-
         const onIframeLoad = () => {
-            loadCitations(iframeRef, citations);
+            loadCitations(iframeRef, data.citationsOnFiling);
             scrollToHightlight(iframeRef, scrollToHighlightId);
         };
 
