@@ -27,7 +27,7 @@ import { IJournal } from "@/app/types/entities";
 
 import { MindMapInteractivityStore, useMindMapInteractivityStore } from "./store";
 import { DefaultNode } from "./node";
-import { MINDMAP_NODE_QL_RESPONSE, WORKSPACE_QL_RESPONSE } from "@/app/graphql";
+import { MINDMAP_NODE_QL_RESPONSE, M_CREATE_NEW_JOURNAL_ON_WORKSPACE } from "@/app/graphql";
 
 import "@xyflow/react/dist/style.css";
 import "./mindmap.css";
@@ -72,11 +72,6 @@ const M_DELETE_JOURNAL_FROM_WORKSPACE = gql`
             }
         }
     }
-`;
-
-const M_CREATE_NEW_JOURNAL_ON_WORKSPACE = gql`mutation CreateNewJournalOnWorkspace($id: ID!) {
-	createNewJournalOnWorkspace(id: $id)${WORKSPACE_QL_RESPONSE}
-}
 `;
 
 function buildNodesFromJournals(journals: IJournal[], onNodeDeleteCb: (id: string) => void): Node[] {

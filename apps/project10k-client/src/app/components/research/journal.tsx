@@ -13,6 +13,8 @@ import { Citation, CitationNode } from "./citation/editor-extension";
 import { JOURNAL_ENTRY_QL_RESPONSE, JOURNAL_FULLFAT_QL_RESPONSE } from "@/app/graphql";
 
 import "@vspark/block-editor/src/app/editor.css";
+import { EmptyJournal } from "./empty";
+import { IJournal, IWorkspace } from "@/app/types/entities";
 
 // How Often Editor Saves When Typing / Making Changes
 const EDITOR_SAVE_DEBOUNCE = 500;
@@ -88,35 +90,7 @@ function JournalLoader() {
     );
 }
 
-// Block Editor Does Not Re-Render When Data Updated - Editor Is An Expensive Function
-export function Journal() {
-    console.log("Top Of Journal");
-    const workspaceContext = useContext(WorkspaceContext);
-    if (!workspaceContext) {
-        return;
-    }
-    const { workspace } = workspaceContext;
-    const activeJournalId = workspaceContext.activeJournal;
-
-    // TODO - MAYBE PART OF THE CONTEXT? OR A STORE? - ZUTSU THINGY?
-    const activeJournal = workspace.journals.find((journal) => {
-        return journal._id === activeJournalId;
-    });
-
-    console.log("active journal (in journal render)", activeJournal);
-
-    // If For Some (Strange) Reason No Active Journal. TODO - Make This An Error Gate
-    if (!activeJournal) {
-        return;
-    }
-
-    // Full Fat Journal Query
-    const { loading, error, data } = useQuery<IJournalQL>(Q_JOURNAL_FULLFAT, {
-        variables: { id: activeJournal._id },
-    });
-
-    const journal = data?.journal;
-
+function JournalEditor({ journal, workspace }: { journal: IJournal; workspace: IWorkspace }) {
     // Mutators
     const [updateJournal, {}] = useMutation(M_UPDATE_JOURNAL);
     const [updateJournalEntry, {}] = useMutation(M_UPDATE_JOURNAL_ENTRY);
@@ -146,13 +120,6 @@ export function Journal() {
         }, EDITOR_SAVE_DEBOUNCE),
         [updateJournalEntry, journal]
     );
-
-    // Saftey Gate - If Loading or No Data
-    if (loading || !data || !journal) {
-        return <JournalLoader />;
-    }
-
-    console.log("RENDERING JOURNAL", activeJournalId, data, "active journal name", journal.name);
     return (
         <>
             <div className="flex flex-col h-full max-h-full">
@@ -170,4 +137,44 @@ export function Journal() {
             </div>
         </>
     );
+}
+
+function JournalContainer({ activeJournal, workspace }: { activeJournal: IJournal; workspace: IWorkspace }) {
+    // Full Fat Journal Query
+    const { loading, error, data } = useQuery<IJournalQL>(Q_JOURNAL_FULLFAT, {
+        variables: { id: activeJournal._id },
+    });
+
+    // Saftey Gate - If Loading or No Data
+    if (loading || !data) {
+        return <JournalLoader />;
+    }
+
+    const journal = data.journal;
+    return <JournalEditor journal={journal} workspace={workspace} />;
+}
+
+// Block Editor Does Not Re-Render When Data Updated - Editor Is An Expensive Function
+export function Journal() {
+    console.log("Top Of Journal");
+    const workspaceContext = useContext(WorkspaceContext);
+    if (!workspaceContext) {
+        return;
+    }
+    const { workspace } = workspaceContext;
+    const activeJournalId = workspaceContext.activeJournal;
+
+    // TODO - MAYBE PART OF THE CONTEXT? OR A STORE? - ZUTSU THINGY?
+    const activeJournal = workspace.journals.find((journal) => {
+        return journal._id === activeJournalId;
+    });
+
+    console.log("active journal (in journal render)", activeJournal);
+
+    // If No Active Journal. Set Empty View
+    if (!activeJournal) {
+        return <EmptyJournal />;
+    }
+
+    return <JournalContainer activeJournal={activeJournal} workspace={workspace} />;
 }

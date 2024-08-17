@@ -15,7 +15,7 @@ export function EmptyDocViewer() {
             setDocViewerQuery({
                 page: DocViewerPage.Filings,
                 company,
-                filing: null,
+                filing: undefined,
             });
         },
         [setDocViewerQuery]
@@ -24,7 +24,7 @@ export function EmptyDocViewer() {
     // I Need to pass attributes like the selected company, etc.
 
     return (
-        <div className="mx-auto max-w-lg pt-40">
+        <div className="mx-auto max-w-lg pt-24 mt-3">
             <div>
                 <div className="text-center">
                     <DocumentPlusIcon className="text-center h-20 w-20 text-zinc-400 inline-block" />

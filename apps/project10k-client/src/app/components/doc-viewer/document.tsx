@@ -175,7 +175,7 @@ export function CompanyDocument() {
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
     const workspaceContext = useContext(WorkspaceContext);
-    const { activeJournal, workspace } = workspaceContext;
+    const { workspace } = workspaceContext;
     const { company } = docViewerQuery;
 
     // Mutators
@@ -265,7 +265,7 @@ export function CompanyDocument() {
         return () => {
             iframe?.removeEventListener("load", handleIframeLoad);
         };
-    }, [iframeRef, createCitation, activeJournal, data, company]);
+    }, [iframeRef, createCitation, data, company]);
 
     useEffect(() => {
         if (!data || !html) {

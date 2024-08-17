@@ -114,3 +114,7 @@ export const Q_MY_ACCOUNT = gql`query getAccount {
 }`;
 
 // Mutators ---------------------------
+export const M_CREATE_NEW_JOURNAL_ON_WORKSPACE = gql`mutation CreateNewJournalOnWorkspace($id: ID!) {
+	createNewJournalOnWorkspace(id: $id)${WORKSPACE_QL_RESPONSE}
+}
+`;

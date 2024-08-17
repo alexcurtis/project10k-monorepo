@@ -2,7 +2,13 @@ import { Dispatch, DragEvent, memo, SetStateAction, useCallback, useContext, use
 import { format } from "date-fns";
 import { ICitation } from "@/app/types/entities";
 import { Badge } from "@vspark/catalyst/badge";
-import { ChevronRightIcon, TrashIcon, ArrowRightIcon, EllipsisVerticalIcon } from "@heroicons/react/24/solid";
+import {
+    ChevronRightIcon,
+    TrashIcon,
+    ArrowRightIcon,
+    EllipsisVerticalIcon,
+    PencilIcon,
+} from "@heroicons/react/24/solid";
 import { CITATIONS_QL_RESPONSE } from "@/app/graphql";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { ICitationsOnWorkspaceQL } from "@/app/types/ql";
@@ -23,7 +29,7 @@ const Q_CITATIONS_ON_WORKSPACE = gql`
     }
 `;
 
-// Journal Entry Query - Entry Stored Seperatly from Journal (As can be big)
+// Delete Citation Mutation
 const M_DELETE_CITATION = gql`
     mutation DeleteCitation($id: ID!) {
         deleteCitation(id: $id) {
@@ -38,6 +44,22 @@ export function OptionsButton() {
             <span className="sr-only">Open options</span>
             <EllipsisVerticalIcon aria-hidden="true" className="stroke-white" />
         </>
+    );
+}
+
+export function NoCitations() {
+    return (
+        <div className="mx-auto max-w-lg pt-24 mt-3">
+            <div>
+                <div className="text-center">
+                    <PencilIcon className="text-center h-20 w-20 text-zinc-400 inline-block" />
+                    <h2 className="mt-2 text-lg font-semibold leading-6 text-white">No Citations</h2>
+                    <p className="mt-1 text-base text-zinc-400">
+                        It looks like you haven’t created any citations on your workspace.
+                    </p>
+                </div>
+            </div>
+        </div>
     );
 }
 
@@ -180,6 +202,11 @@ export function Citations() {
     // Saftey Gate - If Loading or No Data
     if (loading || !data) {
         return <CitationsLoader />;
+    }
+
+    // If No Citations. Show Empty View
+    if (data.citationsOnWorkspace.length === 0) {
+        return <NoCitations />;
     }
 
     return (

@@ -68,7 +68,7 @@ function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
         },
     });
     // Ensure Data and ActiveJournal Are Synced Before Rendering Workspace
-    if (loading || !data || !activeJournal) {
+    if (loading || !data) {
         return <WorspacePageLoader />;
     }
     const workspace = data.workspace;
