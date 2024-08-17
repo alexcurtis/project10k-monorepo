@@ -7,15 +7,16 @@ import { CITATIONS_QL_RESPONSE, COMPANY_FILING_QL_RESPONSE } from "@/app/graphql
 import { ICompanyFilingDatasetQL, ICompanyFilingQL } from "@/app/types/ql";
 import { ICitation } from "@/app/types/entities";
 import { v4 as uuidv4 } from "uuid";
-import { Q_CITATIONS_ON_WORKSPACE } from "./citations";
 
 // Filing Query
 const Q_COMPANY_FILING_DATASET = gql`
-    query GetCompanyFilingDataset($id: ID!) {
-        companyFiling(id: $id) ${COMPANY_FILING_QL_RESPONSE}
-        citationsOnFiling(filingId: $id) ${CITATIONS_QL_RESPONSE}
+    query GetCompanyFilingDataset($workspaceId: ID!, $filingId: ID!) {
+        companyFiling(id: $filingId) ${COMPANY_FILING_QL_RESPONSE}
+        citationsOnFiling(workspaceId: $workspaceId filingId: $filingId) ${CITATIONS_QL_RESPONSE}
     }
 `;
+
+// TODO ^^ NEEDS TO BE THE CITATIONS ON THE FILING ON THE WORKSPACE
 
 // Citation Create Mutation
 const M_CREATE_CITATION = gql`
@@ -188,7 +189,7 @@ export function CompanyDocument() {
 
     // Query
     const { loading, error, data } = useQuery<ICompanyFilingDatasetQL>(Q_COMPANY_FILING_DATASET, {
-        variables: { id: docViewerQuery.filing._id },
+        variables: { workspaceId: workspace._id, filingId: docViewerQuery.filing._id },
     });
 
     const { scrollTo } = docViewerQuery;
