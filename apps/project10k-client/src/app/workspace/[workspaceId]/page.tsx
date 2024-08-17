@@ -59,6 +59,9 @@ function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
     const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE, {
         variables: { id: workspaceId },
         onCompleted: () => {
+            if (!data || !data.workspace.journals || data.workspace.journals.length === 0) {
+                return;
+            }
             // Default To First Journal As Active On A New Opened Workspace
             const firstJournal = data?.workspace.journals[0]._id;
             setActiveJournal(firstJournal);

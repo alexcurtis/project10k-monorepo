@@ -9,8 +9,7 @@ import { ICitationsOnWorkspaceQL } from "@/app/types/ql";
 import { WorkspaceContext } from "@/app/context";
 import { Loader } from "@vspark/catalyst/loader";
 import { Dropdown, DropdownButton, DropdownMenu, DropdownItem, DropdownLabel } from "@vspark/catalyst/dropdown";
-import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from "@vspark/catalyst/dialog";
-import { Button } from "@vspark/catalyst/button";
+import { DeleteGateway, IDeleteGateway } from "@vspark/catalyst/common-dialogs";
 
 import { usePub } from "@/app/hooks";
 
@@ -122,44 +121,6 @@ function CitationsLoader() {
     );
 }
 
-interface IDeleteGateway {
-    isOpen: boolean;
-    deleteAction: () => void | null;
-    name: string;
-}
-
-interface IDeleteJournalGatewayProps {
-    gateway: IDeleteGateway;
-    setDeleteGateway: Dispatch<SetStateAction<IDeleteGateway>>;
-    entity: string;
-}
-
-const DeleteGateway = memo(function ({ gateway, setDeleteGateway, entity }: IDeleteJournalGatewayProps) {
-    const closeDeleteJournalGatewayCb = () => setDeleteGateway({ ...gateway, isOpen: false });
-    const triggerDeleteAction = () => {
-        gateway.deleteAction();
-        closeDeleteJournalGatewayCb();
-    };
-    return (
-        <>
-            <Dialog open={gateway.isOpen} onClose={closeDeleteJournalGatewayCb}>
-                <DialogTitle>Delete Citation</DialogTitle>
-                <DialogDescription>
-                    {`Are you sure you want to delete the ${entity} ${gateway.name}?`}
-                </DialogDescription>
-                <DialogActions>
-                    <Button plain onClick={closeDeleteJournalGatewayCb}>
-                        Cancel
-                    </Button>
-                    <Button color="red" onClick={triggerDeleteAction}>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
-});
-
 export function Citations() {
     const [deleteCitationGateway, setDeleteCitationGateway] = useState<IDeleteGateway>({
         name: "",
@@ -224,6 +185,7 @@ export function Citations() {
     return (
         <>
             <DeleteGateway
+                title="Delete Citation"
                 entity="Citation"
                 gateway={deleteCitationGateway}
                 setDeleteGateway={setDeleteCitationGateway}

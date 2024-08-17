@@ -1,17 +1,15 @@
 "use client";
 import dynamic from "next/dynamic";
-import React from "react";
-import { useQuery, gql } from "@apollo/client";
+import React, { useCallback, useState } from "react";
+import { useQuery, gql, useMutation } from "@apollo/client";
 import { Loader } from "@vspark/catalyst/loader";
+import { Button } from "@vspark/catalyst/button";
 
-import { ACCOUNT_QL_RESPONSE, ApolloAppProvider } from "@/app/graphql";
+import { Q_MY_ACCOUNT, ApolloAppProvider } from "@/app/graphql";
 import { Workspaces } from "@/app/workspaces";
 
 import { IAccountQL } from "./types/ql";
-
-const Q_MY_ACCOUNT = gql`query getAccount {
-    account(id: "66a6502936a423235f97625f") ${ACCOUNT_QL_RESPONSE}
-}`;
+import { PlusIcon } from "@heroicons/react/24/solid";
 
 // TODO - Move This T
 function PageLoader() {
@@ -23,7 +21,15 @@ function PageLoader() {
 }
 
 function WorkspacesPage() {
+    const [newWorkspace, setNewWorkspace] = useState(false);
+
+    // Account Query + Workspaces
     const { loading, error, data } = useQuery<IAccountQL>(Q_MY_ACCOUNT);
+
+    const onNewWorkspaceCancelCb = useCallback(() => {
+        setNewWorkspace(false);
+    }, [setNewWorkspace]);
+
     if (loading || !data) {
         return <PageLoader />;
     }
@@ -32,15 +38,31 @@ function WorkspacesPage() {
         <div className="dark min-h-screen w-full bg-zinc-950">
             <div className="py-11">
                 <header>
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold leading-tight tracking-tight text-white">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex">
+                        <h1 className="text-3xl font-bold leading-tight tracking-tight text-white flex-grow">
                             {`${data.account.firstName}'s Workspaces`}
                         </h1>
+                        <Button
+                            className="flex-node"
+                            color="indigo"
+                            disabled={newWorkspace}
+                            onClick={() => {
+                                setNewWorkspace(true);
+                            }}
+                        >
+                            <PlusIcon />
+                            Add New Workspace
+                        </Button>
                     </div>
                 </header>
                 <main>
                     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                        <Workspaces workspaces={workspaces} />
+                        <Workspaces
+                            accountId={data.account._id}
+                            workspaces={workspaces}
+                            newWorkspace={newWorkspace}
+                            onNewWorkspaceCancel={onNewWorkspaceCancelCb}
+                        />
                     </div>
                 </main>
             </div>

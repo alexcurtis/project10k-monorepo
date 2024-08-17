@@ -1,5 +1,5 @@
 import React from "react";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from "@apollo/client";
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
@@ -107,3 +107,10 @@ export const ACCOUNT_QL_RESPONSE = `
         }
     }
 `;
+
+// Queries ----------------------------
+export const Q_MY_ACCOUNT = gql`query getAccount {
+    account(id: "66a6502936a423235f97625f") ${ACCOUNT_QL_RESPONSE}
+}`;
+
+// Mutators ---------------------------

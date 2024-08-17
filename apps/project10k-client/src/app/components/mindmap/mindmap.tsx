@@ -8,20 +8,13 @@ import {
     Background,
     BackgroundVariant,
     NodeMouseHandler,
-    NodeChange,
-    applyNodeChanges,
-    useOnSelectionChange,
-    NodeToolbar,
-    OnNodesChange,
-    OnEdgesChange,
-    OnConnect,
     Node,
     Edge,
     Connection,
     EdgeChange,
 } from "@xyflow/react";
 
-import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from "@vspark/catalyst/dialog";
+import { DeleteGateway, IDeleteGateway } from "@vspark/catalyst/common-dialogs";
 
 import { Button } from "@vspark/catalyst/button";
 import { PlusIcon } from "@heroicons/react/16/solid";
@@ -46,17 +39,6 @@ const BACKGROUND_COLOUR = "#09090b";
 const nodeTypes = {
     default: DefaultNode,
 };
-
-interface IDeleteJournalGateway {
-    isOpen: boolean;
-    deleteAction: () => void | null;
-    name: string;
-}
-
-interface IDeleteJournalGatewayProps {
-    gateway: IDeleteJournalGateway;
-    setDeleteJournalGateway: Dispatch<SetStateAction<IDeleteJournalGateway>>;
-}
 
 // Local Interactivity Store Selector
 const selector = (state: MindMapInteractivityStore) => ({
@@ -172,30 +154,6 @@ function findSourceNodeFromEdgeId(id: string, edges: Edge[], nodes: Node[]) {
     // Find The Node From The Source ID
     return nodes.find((node) => node.id === source);
 }
-
-const DeleteJournalGateway = memo(function ({ gateway, setDeleteJournalGateway }: IDeleteJournalGatewayProps) {
-    const closeDeleteJournalGatewayCb = () => setDeleteJournalGateway({ ...gateway, isOpen: false });
-    const triggerDeleteAction = () => {
-        gateway.deleteAction();
-        closeDeleteJournalGatewayCb();
-    };
-    return (
-        <>
-            <Dialog open={gateway.isOpen} onClose={closeDeleteJournalGatewayCb}>
-                <DialogTitle>Delete Journal</DialogTitle>
-                <DialogDescription>Are you sure you want to delete the journal {gateway.name}?</DialogDescription>
-                <DialogActions>
-                    <Button plain onClick={closeDeleteJournalGatewayCb}>
-                        Cancel
-                    </Button>
-                    <Button color="red" onClick={triggerDeleteAction}>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
-});
 
 export function FlowGraph({
     onNodeDeleteAction,
@@ -368,7 +326,7 @@ function ToolBar() {
 
 export function MindMap() {
     console.log("rendering Mind Map");
-    const [deleteJournalGateway, setDeleteJournalGateway] = useState<IDeleteJournalGateway>({
+    const [deleteJournalGateway, setDeleteJournalGateway] = useState<IDeleteGateway>({
         name: "",
         isOpen: false,
         deleteAction: () => {},
@@ -384,7 +342,12 @@ export function MindMap() {
     return (
         <div className="relative w-full h-full">
             <ToolBar />
-            <DeleteJournalGateway gateway={deleteJournalGateway} setDeleteJournalGateway={setDeleteJournalGateway} />
+            <DeleteGateway
+                title="Delete Journal"
+                entity="Journal"
+                gateway={deleteJournalGateway}
+                setDeleteGateway={setDeleteJournalGateway}
+            />
             <ReactFlowProvider>
                 <FlowGraph onNodeDeleteAction={openDeleteJournalGatewayCb} />
             </ReactFlowProvider>
