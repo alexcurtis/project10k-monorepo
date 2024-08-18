@@ -7,14 +7,13 @@ import { Fieldset, FieldGroup, Field, Label } from "@vspark/catalyst/fieldset";
 import { Input } from "@vspark/catalyst/input";
 
 import { IWorkspace } from "./types/entities";
-import { CubeIcon, EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import { useCallback, useState } from "react";
 import { Dropdown, DropdownButton, DropdownMenu, DropdownItem, DropdownLabel } from "@vspark/catalyst/dropdown";
 import { DeleteGateway, IDeleteGateway } from "@vspark/catalyst/common-dialogs";
 
 import { gql, useMutation } from "@apollo/client";
 import { Q_MY_ACCOUNT, ACCOUNT_QL_RESPONSE } from "./graphql";
-import { TrashIcon } from "@heroicons/react/24/solid";
+import { CubeIcon, EllipsisVerticalIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 // Workspace Create Mutation
 const M_CREATE_WORKSPACE_ON_ACCOUNT = gql`
@@ -32,21 +31,26 @@ const M_DELETE_WORKSPACE = gql`
     }
 `;
 
-export function OptionsButton() {
-    return (
-        <>
-            <EllipsisVerticalIcon className="stroke-white h-20 w-20" />
-        </>
-    );
-}
-
 function Workspace({ workspace, onDelete }: { workspace: IWorkspace; onDelete: (w: IWorkspace) => void }) {
     return (
-        <li className="flex items-center justify-between gap-x-6 p-4">
-            <div className="min-w-0">
+        <li className="flex items-center justify-between gap-x-6 px-4 py-6">
+            <div className="flex-none">
+                <Dropdown>
+                    <DropdownButton plain aria-label="More options">
+                        <EllipsisVerticalIcon className="stroke-white h-20 w-20" />
+                    </DropdownButton>
+                    <DropdownMenu>
+                        <DropdownItem onClick={() => onDelete(workspace)}>
+                            <TrashIcon />
+                            <DropdownLabel>Delete</DropdownLabel>
+                        </DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
+            <div className="flex-grow">
                 <div className="flex items-start gap-x-3">
                     <p className="text-lg font-semibold leading-6 text-white">{workspace.name}</p>
-                    <Badge>{"Complete"}</Badge>
+                    {/* <Badge>{"Complete"}</Badge> */}
                 </div>
                 <div className="mt-1 flex items-center gap-x-2 text-base leading-5 text-zinc-400">
                     <p className="whitespace-nowrap">
@@ -64,17 +68,6 @@ function Workspace({ workspace, onDelete }: { workspace: IWorkspace; onDelete: (
                     <Button>View Workspace</Button>
                 </Link>
             </div>
-            <Dropdown>
-                <DropdownButton plain aria-label="More options" className="h-24 w-24 p-0">
-                    <EllipsisVerticalIcon className="stroke-white h-20 w-20" />
-                </DropdownButton>
-                <DropdownMenu>
-                    <DropdownItem onClick={() => onDelete(workspace)}>
-                        <TrashIcon />
-                        <DropdownLabel>Delete</DropdownLabel>
-                    </DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
         </li>
     );
 }

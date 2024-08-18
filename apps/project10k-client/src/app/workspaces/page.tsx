@@ -38,7 +38,7 @@ function WorkspacesPage() {
         <div className="dark min-h-screen w-full bg-zinc-950">
             <div className="py-11">
                 <header>
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4 flex">
                         <h1 className="text-3xl font-bold leading-tight tracking-tight text-white flex-grow">
                             {`${data.account.firstName}'s Workspaces`}
                         </h1>
