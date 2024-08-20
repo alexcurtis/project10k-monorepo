@@ -36,7 +36,7 @@ function WorkspacesPage() {
     const workspaces = data.account.workspaces;
     return (
         <div className="dark min-h-screen w-full bg-zinc-950">
-            <div className="py-11">
+            <div className="pt-20 pb-4">
                 <header>
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4 flex">
                         <h1 className="text-3xl font-bold leading-tight tracking-tight text-white flex-grow">
@@ -74,11 +74,9 @@ function Page() {
     return (
         <>
             <div className="dark min-h-screen w-full bg-zinc-950">
-                <div className="py-10">
-                    <ApolloAppProvider>
-                        <WorkspacesPage />
-                    </ApolloAppProvider>
-                </div>
+                <ApolloAppProvider>
+                    <WorkspacesPage />
+                </ApolloAppProvider>
             </div>
         </>
     );

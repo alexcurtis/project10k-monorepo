@@ -14,10 +14,6 @@ interface SidebarItem {
 const navigation: SidebarItem[] = [
     { name: "Workspaces", href: "/workspaces", icon: FolderIcon },
     { name: "Log Out", href: "/logout", icon: ArrowRightStartOnRectangleIcon },
-    // { name: 'Activity', href: '#', icon: SignalIcon },
-    // { name: 'Domains', href: '#', icon: GlobeAltIcon },
-    // { name: 'Usage', href: '#', icon: ChartBarSquareIcon },
-    // { name: 'Settings', href: '#', icon: Cog6ToothIcon }
 ];
 
 function Logo() {
@@ -66,13 +62,11 @@ export function ApplicationLinks({ pathname }: { pathname: string }) {
 
 export function Sidebar() {
     const pathname = usePathname();
-    // If Login/Logout Do Not Show SideBar
-    const isApplication = pathname !== "/login" && pathname !== "/logout";
     return (
-        <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-48 xl:flex-col">
+        <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-48 xl:flex-col h-screen">
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 ring-1 ring-white/5">
                 <Logo />
-                {isApplication ? <ApplicationLinks pathname={pathname} /> : null}
+                <ApplicationLinks pathname={pathname} />
             </div>
         </div>
     );
