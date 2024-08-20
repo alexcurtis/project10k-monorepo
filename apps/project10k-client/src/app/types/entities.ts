@@ -2,8 +2,8 @@ import { Dispatch, SetStateAction } from "react";
 
 export type ICompany = {
     _id: string;
-    externalId: string;
-    ticker: string;
+    apidbId: string;
+    ticker: string[];
     title: string;
 };
 

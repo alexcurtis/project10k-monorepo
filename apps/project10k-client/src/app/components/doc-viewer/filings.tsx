@@ -120,7 +120,7 @@ function Header({ title, ticker }: { title: string; ticker: string }) {
     return (
         <>
             <h1 className="text-2xl mb-5 mt-4">
-                {title} <span className="text-zinc-400">({ticker})</span>
+                {title} <span className="text-zinc-400">{`(${ticker})`}</span>
             </h1>
         </>
     );

@@ -6,6 +6,7 @@ import { debounce } from "lodash";
 import { Loader } from "@vspark/catalyst/loader";
 import { BlockEditor } from "@vspark/block-editor/src/components/BlockEditor";
 import { EditableText, EditableTextSubmitEvent } from "@vspark/catalyst/editable-text";
+import { InlineError } from "@vspark/catalyst/inline-alerts";
 
 import { WorkspaceContext } from "@/app/context";
 import { IJournalQL } from "@/app/types/ql";
@@ -92,8 +93,8 @@ function JournalLoader() {
 
 function JournalEditor({ journal, workspace }: { journal: IJournal; workspace: IWorkspace }) {
     // Mutators
-    const [updateJournal, {}] = useMutation(M_UPDATE_JOURNAL);
-    const [updateJournalEntry, {}] = useMutation(M_UPDATE_JOURNAL_ENTRY);
+    const [updateJournal, { error: journalError }] = useMutation(M_UPDATE_JOURNAL);
+    const [updateJournalEntry, { error: journalEntryError }] = useMutation(M_UPDATE_JOURNAL_ENTRY);
 
     const onJournalNameChangeCb = useCallback(
         ({ value }: EditableTextSubmitEvent) => {
@@ -120,6 +121,15 @@ function JournalEditor({ journal, workspace }: { journal: IJournal; workspace: I
         }, EDITOR_SAVE_DEBOUNCE),
         [updateJournalEntry, journal]
     );
+
+    const errors = [];
+    if (journalError) {
+        errors.push({ message: "The property change failed to save" });
+    }
+    if (journalEntryError) {
+        errors.push({ message: "The document change failed to save" });
+    }
+
     return (
         <>
             <div className="flex flex-col h-full max-h-full">
@@ -129,6 +139,13 @@ function JournalEditor({ journal, workspace }: { journal: IJournal; workspace: I
                     onJournalNameChange={onJournalNameChangeCb}
                 />
                 <JournalHeader journalName={journal.name} onJournalNameChange={onJournalNameChangeCb} />
+                {errors.length > 0 ? (
+                    <InlineError
+                        className="mx-24 mt-4"
+                        headline={`There was a problem saving the Journal: ${journal.name}`}
+                        errors={errors}
+                    />
+                ) : null}
                 <BlockEditor
                     content={journal.journalEntry.content}
                     onUpdate={updateJournalEntryCb}
