@@ -27,7 +27,7 @@ export function Account({ accountId, children }: { accountId: string; children: 
 
     return (
         <div className="h-screen">
-            <Sidebar user={data.me} />
+            <Sidebar user={data.me} account={data.account} />
             <div className="min-h-full h-full max-h-full xl:pl-48">
                 <main className="flex flex-col min-h-full h-full max-h-full">{children}</main>
             </div>

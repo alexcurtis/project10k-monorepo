@@ -24,7 +24,7 @@ import {
 import { Avatar } from "@vspark/catalyst/avatar";
 
 import { FolderIcon, AcademicCapIcon } from "@heroicons/react/24/solid";
-import { IUser } from "./types/entities";
+import { IAccount, IAccount, IUser } from "./types/entities";
 
 import {
     ArrowRightStartOnRectangleIcon,
@@ -54,11 +54,6 @@ interface SidebarLink {
     icon: ElementType;
 }
 
-const navigation: SidebarLink[] = [
-    { name: "Workspaces", href: "/workspaces", icon: FolderIcon },
-    { name: "Log Out", href: "/logout", icon: ArrowRightStartOnRectangleIcon },
-];
-
 function Logo() {
     return (
         <>
@@ -87,12 +82,12 @@ function SidebarLink({ item, pathname }: { item: SidebarLink; pathname: string }
     );
 }
 
-export function ApplicationLinks({ pathname }: { pathname: string }) {
+export function ApplicationLinks({ navigation, pathname }: { navigation: SidebarLink[]; pathname: string }) {
     return (
         <nav className="flex flex-1 flex-col">
             <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
-                    <ul role="list" className="-mx-2 space-y-1">
+                    <ul role="list" className="space-y-1">
                         {navigation.map((item) => (
                             <SidebarLink key={item.name} pathname={pathname} item={item} />
                         ))}
@@ -109,7 +104,6 @@ export function User({ user }: { user: IUser }) {
             <Dropdown>
                 <DropdownButton as={SidebarItem}>
                     <span className="flex min-w-0 items-center gap-3">
-                        <Avatar src="/profile-photo.jpg" className="size-10" square alt="" />
                         <span className="min-w-0">
                             <span className="block truncate text-sm/5 font-medium text-zinc-950 dark:text-white">
                                 {user.firstName}
@@ -121,25 +115,7 @@ export function User({ user }: { user: IUser }) {
                     </span>
                     <ChevronUpIcon />
                 </DropdownButton>
-                <DropdownMenu className="min-w-64" anchor="top start">
-                    <DropdownItem href="/my-profile">
-                        <UserIcon />
-                        <DropdownLabel>My profile</DropdownLabel>
-                    </DropdownItem>
-                    <DropdownItem href="/settings">
-                        <Cog8ToothIcon />
-                        <DropdownLabel>Settings</DropdownLabel>
-                    </DropdownItem>
-                    <DropdownDivider />
-                    <DropdownItem href="/privacy-policy">
-                        <ShieldCheckIcon />
-                        <DropdownLabel>Privacy policy</DropdownLabel>
-                    </DropdownItem>
-                    <DropdownItem href="/share-feedback">
-                        <LightBulbIcon />
-                        <DropdownLabel>Share feedback</DropdownLabel>
-                    </DropdownItem>
-                    <DropdownDivider />
+                <DropdownMenu className="z-50" anchor="top start">
                     <DropdownItem href="/logout">
                         <ArrowRightStartOnRectangleIcon />
                         <DropdownLabel>Sign out</DropdownLabel>
@@ -150,13 +126,16 @@ export function User({ user }: { user: IUser }) {
     );
 }
 
-export function Sidebar({ user }: { user: IUser }) {
+export function Sidebar({ user, account }: { user: IUser; account: IAccount }) {
     const pathname = usePathname();
+    const navigation: SidebarLink[] = [
+        { name: "Workspaces", href: `/platform/${account._id}/workspaces`, icon: FolderIcon },
+    ];
     return (
-        <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-48 xl:flex-col h-screen">
-            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 ring-1 ring-white/5">
+        <div className="hidden xl:fixed xl:inset-y-0 xl:z-40 xl:flex xl:w-48 xl:flex-col h-screen">
+            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 p-2 ring-1 ring-white/5">
                 <Logo />
-                <ApplicationLinks pathname={pathname} />
+                <ApplicationLinks navigation={navigation} pathname={pathname} />
                 <User user={user} />
             </div>
         </div>
