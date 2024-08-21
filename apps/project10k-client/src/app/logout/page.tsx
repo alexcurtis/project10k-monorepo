@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { clearJwtToken } from "@/app/graphql";
+import { clearJwtToken } from "@/app/platform/[accountId]/graphql";
 import { useEffect } from "react";
 
 export default function LogoutPage() {

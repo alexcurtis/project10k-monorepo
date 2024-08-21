@@ -1,18 +1,19 @@
 "use client";
 
 import { FormEvent, useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ApolloAppProvider, setJwtToken } from "@/app/graphql";
 import { gql, useMutation } from "@apollo/client";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@vspark/catalyst/button";
 import { Input } from "@vspark/catalyst/input";
+
+import { ApolloAppProvider, LOGIN_QL_RESPONSE, setJwtToken } from "@platform/graphql";
+import { IUser } from "@platform//types/entities";
 
 // Login Mutation
 const M_LOGIN = gql`
     mutation Login($login: InputLoginDto!) {
-        login(login: $login) {
-            token
-        }
+        login(login: $login) ${LOGIN_QL_RESPONSE}
     }
 `;
 
@@ -28,11 +29,11 @@ export function LoginForm() {
         (event: FormEvent<HTMLFormElement>) => {
             login({
                 variables: { login: { email, password } },
-                onCompleted: ({ login }: { login: { token: string } }) => {
+                onCompleted: ({ login }: { login: { user: IUser; token: string } }) => {
                     // Store The Token
                     setJwtToken(login.token);
                     // Redirect User To Workspaces Page
-                    router.push("/workspaces");
+                    router.push(`/platform/${login.user.account._id}/workspaces`);
                 },
             });
             event.preventDefault();
