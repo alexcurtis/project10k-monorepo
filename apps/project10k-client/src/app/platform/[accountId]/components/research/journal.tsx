@@ -48,14 +48,6 @@ const M_UPDATE_JOURNAL_ENTRY = gql`
     }
 `;
 
-function WorkspaceHeader({ workspaceName }: { workspaceName: string }) {
-    return (
-        <div className="px-4 pt-3 pb-2">
-            <h3 className="text-lg font-semibold leading-7 text-white">{workspaceName}</h3>
-        </div>
-    );
-}
-
 function JournalHeader({
     journalName,
     onJournalNameChange,
@@ -172,8 +164,7 @@ export function Journal() {
     });
 
     return (
-        <div className="flex flex-col h-full max-h-full">
-            <WorkspaceHeader workspaceName={workspace.name} />
+        <div className="h-full max-h-full">
             {activeJournal ? <JournalContainer activeJournal={activeJournal} /> : <EmptyJournal />}
         </div>
     );
