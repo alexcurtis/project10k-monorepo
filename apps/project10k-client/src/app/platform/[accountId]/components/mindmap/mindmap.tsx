@@ -252,38 +252,43 @@ export function FlowGraph({
         [updateMindMapNode, nodes, edges]
     );
 
+    console.log("nodes", nodes);
+
     return (
         <>
             <div style={{ height: "100%", width: "100%" }}>
-                <ReactFlow
-                    className="mindmap-flow"
-                    style={{ backgroundColor: BACKGROUND_COLOUR }}
-                    colorMode="dark"
-                    // Fit View To Initial Nodes
-                    fitView={true}
-                    nodes={nodes}
-                    edges={edges}
-                    // Allows Node Click To Trigger More Successfully
-                    // https://github.com/xyflow/xyflow/issues/3833
-                    nodeDragThreshold={5}
-                    deleteKeyCode={["Delete", "Backspace"]}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChangeCb}
-                    // onEdgesChange={onEdgesChange}
-                    onConnect={onConnection}
-                    onNodeClick={setActiveJournalCb}
-                    onNodeDragStop={onNodeDragStopCb}
-                    nodeTypes={nodeTypes}
-                >
-                    <Controls />
-                    <MiniMap />
-                    <Background
+                {/* Render React Flow When Nodes Are Available - Fixes The FitView */}
+                {nodes.length > 0 && (
+                    <ReactFlow
+                        className="mindmap-flow"
                         style={{ backgroundColor: BACKGROUND_COLOUR }}
-                        variant={BackgroundVariant.Dots}
-                        gap={12}
-                        size={1}
-                    />
-                </ReactFlow>
+                        colorMode="dark"
+                        // Fit View To Initial Nodes
+                        fitView={true}
+                        nodes={nodes}
+                        edges={edges}
+                        // Allows Node Click To Trigger More Successfully
+                        // https://github.com/xyflow/xyflow/issues/3833
+                        nodeDragThreshold={5}
+                        deleteKeyCode={["Delete", "Backspace"]}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChangeCb}
+                        // onEdgesChange={onEdgesChange}
+                        onConnect={onConnection}
+                        onNodeClick={setActiveJournalCb}
+                        onNodeDragStop={onNodeDragStopCb}
+                        nodeTypes={nodeTypes}
+                    >
+                        <Controls />
+                        <MiniMap />
+                        <Background
+                            style={{ backgroundColor: BACKGROUND_COLOUR }}
+                            variant={BackgroundVariant.Dots}
+                            gap={12}
+                            size={1}
+                        />
+                    </ReactFlow>
+                )}
             </div>
         </>
     );

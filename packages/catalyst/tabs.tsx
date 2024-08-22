@@ -24,5 +24,5 @@ export function Tabs({ tabs, selectedTab, onClick }: { tabs: ITab[]; selectedTab
 }
 
 export function TabsUnderline({ children }: { children: ReactNode }) {
-    return <nav className="flex border-b border-white/10 py-2">{children}</nav>;
+    return <nav className="flex border-b border-white/30 py-2">{children}</nav>;
 }

@@ -7,7 +7,7 @@ import { Dropdown, DropdownButton, DropdownItem, DropdownLabel, DropdownMenu } f
 
 import { SidebarItem } from "@vspark/catalyst/sidebar";
 
-import { FolderIcon, AcademicCapIcon } from "@heroicons/react/24/solid";
+import { FolderIcon, CubeIcon } from "@heroicons/react/24/solid";
 import { IAccount, IUser } from "./types/entities";
 
 import { ArrowRightStartOnRectangleIcon, ChevronUpIcon } from "@heroicons/react/16/solid";
@@ -21,8 +21,8 @@ interface SidebarLink {
 function Logo() {
     return (
         <>
-            <div className="flex h-16 shrink-0 items-center">
-                <AcademicCapIcon className="size-11 text-zinc-200" />
+            <div className="flex h-16 shrink-0 items-center justify-center">
+                <CubeIcon className="size-11 text-zinc-200" />
             </div>
         </>
     );
@@ -97,7 +97,7 @@ export function Sidebar({ user, account }: { user: IUser; account: IAccount }) {
     ];
     return (
         <div className="hidden xl:fixed xl:inset-y-0 xl:z-40 xl:flex xl:w-48 xl:flex-col h-screen">
-            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 p-2 ring-1 ring-white/5">
+            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 p-2 ring-1 ring-white/30">
                 <Logo />
                 <ApplicationLinks navigation={navigation} pathname={pathname} />
                 <User user={user} />

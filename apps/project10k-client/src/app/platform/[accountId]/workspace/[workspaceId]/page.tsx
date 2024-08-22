@@ -48,7 +48,7 @@ function WorkspaceHeader({
     onLayoutOrientation: (o: Orientation) => void;
 }) {
     return (
-        <div className="px-4 flex border-b border-white/10 py-2">
+        <div className="px-4 flex border-b border-white/30 py-2">
             <h3 className="text-lg font-semibold leading-9 align-middle text-white flex-grow">{name}</h3>
             <div className="flex-none">
                 <div className="flex">
@@ -86,13 +86,13 @@ function QuadrantContentPanels({ children }: { children: React.ReactNode }) {
                 <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>
                     <PanelGroup autoSaveId="layout-quadrant-v-persistence" direction="vertical">
                         <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>{children}</Panel>
-                        <PanelResizeHandle className="h-1 bg-white/5" />
+                        <PanelResizeHandle className="h-px bg-white/30" />
                         <Panel minSize={DEFAULT_MIN_PANEL_SIZE} defaultSize={40}>
                             <MindMap />
                         </Panel>
                     </PanelGroup>
                 </Panel>
-                <PanelResizeHandle className="w-1 bg-white/5" />
+                <PanelResizeHandle className="w-px bg-white/30" />
                 <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>
                     <DocViewer />
                 </Panel>
@@ -106,11 +106,11 @@ function ColumnContentPanels({ children }: { children: React.ReactNode }) {
         <>
             <PanelGroup autoSaveId="layout-column-persistence" direction="horizontal">
                 <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>{children}</Panel>
-                <PanelResizeHandle className="w-1 bg-white/5" />
+                <PanelResizeHandle className="w-px bg-white/30" />
                 <Panel minSize={DEFAULT_MIN_PANEL_SIZE}>
                     <DocViewer />
                 </Panel>
-                <PanelResizeHandle className="w-1 bg-white/5" />
+                <PanelResizeHandle className="w-px bg-white/30" />
                 <Panel minSize={DEFAULT_MIN_PANEL_SIZE} defaultSize={40}>
                     <MindMap />
                 </Panel>
