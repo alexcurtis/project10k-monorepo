@@ -10,7 +10,7 @@ import { ICompany } from "@platform/types/entities";
 import { ICompaniesSearchQL } from "@platform/types/ql";
 
 // How Often BE Search Is Triggered
-const SEARCH_DEBOUNCE = 1000;
+const SEARCH_DEBOUNCE = 500;
 
 // Company Search Query
 const Q_COMPANIES = gql`
@@ -107,8 +107,12 @@ export function CompanySearch({ onCompanyClicked }: { onCompanyClicked: (company
                     onChange={onSearchChangeCb}
                 />
             </form>
-            {data && data.companySearch ? (
-                <SearchResults loading={loading} results={data.companySearch} onResultClicked={onCompanyClickedCb} />
+            {loading || (data && data.companySearch) ? (
+                <SearchResults
+                    loading={loading}
+                    results={data?.companySearch || []}
+                    onResultClicked={onCompanyClickedCb}
+                />
             ) : null}
         </div>
     );

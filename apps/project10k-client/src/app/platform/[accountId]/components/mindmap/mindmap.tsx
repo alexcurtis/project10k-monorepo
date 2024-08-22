@@ -252,8 +252,6 @@ export function FlowGraph({
         [updateMindMapNode, nodes, edges]
     );
 
-    console.log("nodes", nodes);
-
     return (
         <>
             <div style={{ height: "100%", width: "100%" }}>
