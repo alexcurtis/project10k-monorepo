@@ -51,7 +51,6 @@ function WorspacePageLoader() {
 }
 
 function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
-    console.log("rendering workspace layout - workspaceId", workspaceId);
     const [activeJournal, setActiveJournal] = useState<string>();
 
     const { loading, error, data } = useQuery<IWorkspaceQL>(Q_MY_WORKSPACE, {
@@ -69,8 +68,7 @@ function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
     if (loading || !data) {
         return <WorspacePageLoader />;
     }
-    const workspace = data.workspace;
-    console.log("---------rendering real workspace-----------", activeJournal, workspace);
+    const { workspace } = data;
     return (
         <>
             <WorkspaceContext.Provider
@@ -87,7 +85,6 @@ function WorkspaceLayout({ workspaceId }: { workspaceId: string }) {
 }
 
 function WorkspacePage({ params }: { params: { workspaceId: string } }) {
-    console.log("rendering workspace page");
     return (
         <>
             <WorkspaceLayout workspaceId={params.workspaceId} />

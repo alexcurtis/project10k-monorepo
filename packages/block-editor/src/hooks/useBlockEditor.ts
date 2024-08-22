@@ -19,7 +19,6 @@ export const useBlockEditor = ({
   onUpdate: DebouncedFunc<(evnt: any) => void>
   extensions: []
 }) => {
-  console.log('end hook for use editor', content)
   const editor = useEditor(
     {
       // Performance Options
@@ -53,7 +52,6 @@ export const useBlockEditor = ({
     editor.commands.setTextSelection({ from, to })
   }, [content])
 
-  console.log('Use Block Editor')
   window.editor = editor
   return { editor }
 }

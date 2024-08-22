@@ -34,7 +34,6 @@ interface ICitationProps {
 }
 
 function Citation(props: ICitationProps) {
-    console.log("NODE VIEW CITIATION props", props);
     const { node } = props;
     const { attrs } = node;
     const publish = usePub();

@@ -56,7 +56,6 @@ export const useDropZone = ({ uploader }: { uploader: (file: File) => void }) =>
 
   const onDrop = useCallback(
     (e: DragEvent<HTMLDivElement>) => {
-      console.log('dropping here......')
       setDraggedInside(false)
       if (e.dataTransfer.files.length === 0) {
         return

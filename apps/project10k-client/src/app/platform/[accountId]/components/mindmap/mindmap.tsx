@@ -152,7 +152,6 @@ export function FlowGraph({
 }: {
     onNodeDeleteAction: (name: string, deleteAction: () => void) => void;
 }) {
-    console.log("rendering flow graph");
     const workspaceContext = useContext(WorkspaceContext);
     if (!workspaceContext) {
         return;
@@ -163,7 +162,6 @@ export function FlowGraph({
 
     // Mutators
     const [updateMindMapNode, {}] = useMutation(M_UPDATE_MINDMAPNODE);
-    // TODO - Move These Up The Hierachy If Need A Delete Else Where
     const [deleteJournalFromWorkspace, {}] = useMutation(M_DELETE_JOURNAL_FROM_WORKSPACE);
 
     // MindMap Interactivity Store
@@ -199,7 +197,6 @@ export function FlowGraph({
         const nodes = buildNodesFromJournals(journals, onNodeDeleteCb);
         const edges = buildEdgesFromJournals(journals);
         setNodesAndEdges(nodes, edges);
-        // Todo Also Push Edges
     }, [journals, onNodeDeleteCb, setNodesAndEdges]);
 
     // Set The Active Journal When A Node Is Clicked
@@ -317,7 +314,6 @@ function ToolBar() {
 }
 
 export function MindMap() {
-    console.log("rendering Mind Map");
     const [deleteJournalGateway, setDeleteJournalGateway] = useState<IDeleteGateway>({
         name: "",
         isOpen: false,

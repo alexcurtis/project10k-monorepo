@@ -5,7 +5,6 @@ import { gql, useMutation } from "@apollo/client";
 import { CubeIcon, EllipsisVerticalIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 import { Button } from "@vspark/catalyst/button";
-import { Loader } from "@vspark/catalyst/loader";
 import { Fieldset, FieldGroup, Field, Label } from "@vspark/catalyst/fieldset";
 import { Input } from "@vspark/catalyst/input";
 import { Dropdown, DropdownButton, DropdownMenu, DropdownItem, DropdownLabel } from "@vspark/catalyst/dropdown";
@@ -13,6 +12,7 @@ import { DeleteGateway, IDeleteGateway } from "@vspark/catalyst/common-dialogs";
 
 import { IWorkspace } from "@platform/types/entities";
 import { Q_MY_ACCOUNT, ACCOUNT_QL_RESPONSE } from "@platform/graphql";
+import { IAccountQL } from "../types/ql";
 
 // Workspace Create Mutation
 const M_CREATE_WORKSPACE_ON_ACCOUNT = gql`
@@ -49,7 +49,6 @@ function Workspace({ workspace, onDelete }: { workspace: IWorkspace; onDelete: (
             <div className="flex-grow">
                 <div className="flex items-start gap-x-3">
                     <p className="text-lg font-semibold leading-6 text-white">{workspace.name}</p>
-                    {/* <Badge>{"Complete"}</Badge> */}
                 </div>
                 <div className="mt-1 flex items-center gap-x-2 text-base leading-5 text-zinc-400">
                     <p className="whitespace-nowrap">
@@ -75,14 +74,6 @@ function Workspace({ workspace, onDelete }: { workspace: IWorkspace; onDelete: (
     );
 }
 
-function WorkspacesLoader() {
-    return (
-        <div className="py-5">
-            <Loader />
-        </div>
-    );
-}
-
 function NewWorkspace({
     accountId,
     onCancel,
@@ -93,7 +84,7 @@ function NewWorkspace({
     onWorkspaceCreated: () => void;
 }) {
     // Create Workspace Mutator
-    const [createWorkspaceOnAccount, { data, loading, error }] = useMutation(M_CREATE_WORKSPACE_ON_ACCOUNT);
+    const [createWorkspaceOnAccount, { loading, error }] = useMutation(M_CREATE_WORKSPACE_ON_ACCOUNT);
     const [name, setName] = useState("");
 
     return (
@@ -160,8 +151,12 @@ export function Workspaces({
     const [deleteWorkspaceOnAccount, {}] = useMutation(M_DELETE_WORKSPACE, {
         update(cache, { data: { deleteWorkspaceOnAccount } }) {
             // After Workspace Removed Update The Cache Account Query
-            const { account } = cache.readQuery({ query: Q_MY_ACCOUNT });
-            const workspaces = account.workspaces.filter((workspace) => workspace._id !== deleteWorkspaceOnAccount._id);
+            const myAccountQuery = cache.readQuery<IAccountQL>({ query: Q_MY_ACCOUNT, variables: { id: accountId } });
+            if (!myAccountQuery) {
+                return;
+            }
+            const { account } = myAccountQuery;
+            const workspaces = account.workspaces.filter((w) => w._id !== deleteWorkspaceOnAccount._id);
             const accountWithUpdatedWorkspaces = { ...account, workspaces };
             cache.writeQuery({
                 query: Q_MY_ACCOUNT,

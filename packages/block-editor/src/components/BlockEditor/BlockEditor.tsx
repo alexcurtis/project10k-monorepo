@@ -35,8 +35,6 @@ export const BlockEditor = ({
     return null
   }
 
-  console.log('Rendering Block Editor', content)
-
   return (
     <div className="overflow-auto" ref={menuContainerRef}>
       <div className="relative flex flex-col flex-1 h-full overflow-hidden">

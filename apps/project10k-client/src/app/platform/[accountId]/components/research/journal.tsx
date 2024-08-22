@@ -48,15 +48,7 @@ const M_UPDATE_JOURNAL_ENTRY = gql`
     }
 `;
 
-function WorkspaceHeader({
-    journalName,
-    workspaceName,
-    onJournalNameChange,
-}: {
-    journalName: string;
-    workspaceName: string;
-    onJournalNameChange: (name: EditableTextSubmitEvent) => void;
-}) {
+function WorkspaceHeader({ workspaceName }: { workspaceName: string }) {
     return (
         <div className="px-4 pt-3 pb-2">
             <h3 className="text-lg font-semibold leading-7 text-white">{workspaceName}</h3>
@@ -93,7 +85,7 @@ function JournalLoader() {
     );
 }
 
-function JournalEditor({ journal, workspace }: { journal: IJournal; workspace: IWorkspace }) {
+function JournalEditor({ journal }: { journal: IJournal }) {
     // Mutators
     const [updateJournal, { error: journalError }] = useMutation(M_UPDATE_JOURNAL);
     const [updateJournalEntry, { error: journalEntryError }] = useMutation(M_UPDATE_JOURNAL_ENTRY);
@@ -134,31 +126,24 @@ function JournalEditor({ journal, workspace }: { journal: IJournal; workspace: I
 
     return (
         <>
-            <div className="flex flex-col h-full max-h-full">
-                <WorkspaceHeader
-                    workspaceName={workspace.name}
-                    journalName={journal.name}
-                    onJournalNameChange={onJournalNameChangeCb}
+            <JournalHeader journalName={journal.name} onJournalNameChange={onJournalNameChangeCb} />
+            {errors.length > 0 ? (
+                <InlineError
+                    className="mx-24 mt-4"
+                    headline={`There was a problem saving the Journal: ${journal.name}`}
+                    errors={errors}
                 />
-                <JournalHeader journalName={journal.name} onJournalNameChange={onJournalNameChangeCb} />
-                {errors.length > 0 ? (
-                    <InlineError
-                        className="mx-24 mt-4"
-                        headline={`There was a problem saving the Journal: ${journal.name}`}
-                        errors={errors}
-                    />
-                ) : null}
-                <BlockEditor
-                    content={journal.journalEntry.content}
-                    onUpdate={updateJournalEntryCb}
-                    extensions={[Citation, CitationNode]}
-                />
-            </div>
+            ) : null}
+            <BlockEditor
+                content={journal.journalEntry.content}
+                onUpdate={updateJournalEntryCb}
+                extensions={[Citation, CitationNode]}
+            />
         </>
     );
 }
 
-function JournalContainer({ activeJournal, workspace }: { activeJournal: IJournal; workspace: IWorkspace }) {
+function JournalContainer({ activeJournal }: { activeJournal: IJournal }) {
     // Full Fat Journal Query
     const { loading, error, data } = useQuery<IJournalQL>(Q_JOURNAL_FULLFAT, {
         variables: { id: activeJournal._id },
@@ -170,12 +155,11 @@ function JournalContainer({ activeJournal, workspace }: { activeJournal: IJourna
     }
 
     const journal = data.journal;
-    return <JournalEditor journal={journal} workspace={workspace} />;
+    return <JournalEditor journal={journal} />;
 }
 
 // Block Editor Does Not Re-Render When Data Updated - Editor Is An Expensive Function
 export function Journal() {
-    console.log("Top Of Journal");
     const workspaceContext = useContext(WorkspaceContext);
     if (!workspaceContext) {
         return;
@@ -183,17 +167,14 @@ export function Journal() {
     const { workspace } = workspaceContext;
     const activeJournalId = workspaceContext.activeJournal;
 
-    // TODO - MAYBE PART OF THE CONTEXT? OR A STORE? - ZUTSU THINGY?
     const activeJournal = workspace.journals.find((journal) => {
         return journal._id === activeJournalId;
     });
 
-    console.log("active journal (in journal render)", activeJournal);
-
-    // If No Active Journal. Set Empty View
-    if (!activeJournal) {
-        return <EmptyJournal />;
-    }
-
-    return <JournalContainer activeJournal={activeJournal} workspace={workspace} />;
+    return (
+        <div className="flex flex-col h-full max-h-full">
+            <WorkspaceHeader workspaceName={workspace.name} />
+            {activeJournal ? <JournalContainer activeJournal={activeJournal} /> : <EmptyJournal />}
+        </div>
+    );
 }

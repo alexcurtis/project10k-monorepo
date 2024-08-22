@@ -3,50 +3,14 @@ import { ElementType } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-import {
-    Dropdown,
-    DropdownButton,
-    DropdownDivider,
-    DropdownItem,
-    DropdownLabel,
-    DropdownMenu,
-} from "@vspark/catalyst/dropdown";
+import { Dropdown, DropdownButton, DropdownItem, DropdownLabel, DropdownMenu } from "@vspark/catalyst/dropdown";
 
-import {
-    SidebarBody,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarItem,
-    SidebarLabel,
-    SidebarSection,
-    SidebarSpacer,
-} from "@vspark/catalyst/sidebar";
-import { Avatar } from "@vspark/catalyst/avatar";
+import { SidebarItem } from "@vspark/catalyst/sidebar";
 
 import { FolderIcon, AcademicCapIcon } from "@heroicons/react/24/solid";
-import { IAccount, IAccount, IUser } from "./types/entities";
+import { IAccount, IUser } from "./types/entities";
 
-import {
-    ArrowRightStartOnRectangleIcon,
-    ChevronDownIcon,
-    ChevronUpIcon,
-    Cog8ToothIcon,
-    LightBulbIcon,
-    PlusIcon,
-    ShieldCheckIcon,
-    UserIcon,
-} from "@heroicons/react/16/solid";
-import {
-    Cog6ToothIcon,
-    HomeIcon,
-    InboxIcon,
-    MagnifyingGlassIcon,
-    MegaphoneIcon,
-    QuestionMarkCircleIcon,
-    SparklesIcon,
-    Square2StackIcon,
-    TicketIcon,
-} from "@heroicons/react/20/solid";
+import { ArrowRightStartOnRectangleIcon, ChevronUpIcon } from "@heroicons/react/16/solid";
 
 interface SidebarLink {
     name: string;

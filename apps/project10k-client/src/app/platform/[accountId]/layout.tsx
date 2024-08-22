@@ -40,7 +40,7 @@ export function Platform({ params, children }: { params: { accountId: string }; 
         <div className="h-screen">
             <ApolloAppProvider>
                 <Account accountId={params.accountId}>
-                    <div className="min-h-full h-full max-h-full xl:pl-48">
+                    <div className="min-h-full h-full max-h-full">
                         <main className="flex flex-col min-h-full h-full max-h-full">{children}</main>
                     </div>
                 </Account>

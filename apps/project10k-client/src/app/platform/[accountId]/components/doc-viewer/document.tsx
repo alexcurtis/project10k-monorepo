@@ -18,8 +18,6 @@ const Q_COMPANY_FILING_DATASET = gql`
     }
 `;
 
-// TODO ^^ NEEDS TO BE THE CITATIONS ON THE FILING ON THE WORKSPACE
-
 // Citation Create Mutation
 const M_CREATE_CITATION = gql`
     mutation CreateCitation($citation: InputCitationDto!) {
@@ -201,8 +199,6 @@ export function CompanyDocument() {
         // If IFrame Is Already Rendered. Scroll To The Correct Place (If Required)
         scrollToHightlight(iframeRef, scrollToHighlightId);
     }, [iframeRef, scrollToHighlightId]);
-
-    console.log("RENDERING COMPANY DOCUMENT", data);
 
     useEffect(() => {
         if (!data) {
