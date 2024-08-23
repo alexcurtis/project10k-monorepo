@@ -41,7 +41,7 @@ export const Menu = ({
             className={triggerClassName}
             tooltip={!isOpen ? tooltip : ""}
           >
-            {trigger}
+            <>{trigger}</>
           </Toolbar.Button>
         </Trigger>
       )}
@@ -50,14 +50,14 @@ export const Menu = ({
         <Popover.Portal>
           <Popover.Content asChild sideOffset={8}>
             <Surface className="min-w-[15rem] p-2 flex flex-col gap-0.5 max-h-80 overflow-auto z-[9999]">
-              {children}
+              <>{children}</>
             </Surface>
           </Popover.Content>
         </Popover.Portal>
       ) : (
         <Popover.Content asChild sideOffset={8}>
           <Surface className="min-w-[15rem] p-2 flex flex-col gap-0.5 max-h-80 overflow-auto z-[9999]">
-            {children}
+            <>{children}</>
           </Surface>
         </Popover.Content>
       )}
@@ -115,7 +115,7 @@ export type CategoryTitle = {
 export const CategoryTitle = ({ children }: CategoryTitle) => {
   return (
     <div className="mt-4 first:mt-1.5 mb-1.5 text-[0.625rem] font-medium text-neutral-400 dark:text-neutral-600 uppercase select-none px-1">
-      {children}
+      <>{children}</>
     </div>
   );
 };

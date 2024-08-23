@@ -13,22 +13,4 @@ export default {
         // your project has ESLint errors.
         ignoreDuringBuilds: true,
     },
-    // // Custom Webpack Resolution for The Block Editor. So It Can Use The @/ tsconfig paths together
-    // webpack: (config, options) => {
-    //     config.resolve.plugins = [
-    //         ...config.resolve.plugins,
-    //         new TsconfigPathsPlugin({ configFile: "../../packages/block-editor/tsconfig.json" }),
-    //     ];
-    //     //Referenced In Fix For TS Paths - But seems to work fine without it
-    //     // config.module.rules = [
-    //     //     ...config.module.rules,
-    //     //     {
-    //     //         test: /\.(js|jsx|ts|tsx)$/,
-    //     //         include: [workspace],
-    //     //         exclude: /node_modules/,
-    //     //         use: options.defaultLoaders.babel,
-    //     //     },
-    //     // ];
-    //     return config;
-    // },
 };

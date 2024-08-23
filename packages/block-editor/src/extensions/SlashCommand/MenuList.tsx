@@ -136,12 +136,12 @@ export const MenuList = React.forwardRef((props: MenuListProps, ref) => {
             {group.commands.map((command: Command, commandIndex: number) => (
               <div
                 key={command.name}
-                ref={
-                  selectedGroupIndex === groupIndex &&
-                  selectedCommandIndex === commandIndex
-                    ? activeItem
-                    : null
-                }
+                // ref={
+                //   selectedGroupIndex === groupIndex &&
+                //   selectedCommandIndex === commandIndex
+                //     ? activeItem
+                //     : null
+                // }
               >
                 <DropdownButton
                   key={`${command.label}`}

@@ -23,7 +23,7 @@ export const Panel = forwardRef<HTMLDivElement, PanelProps>(
     return (
       <Comp ref={ref} {...rest}>
         <Surface className={panelClass} withShadow={!noShadow}>
-          {children}
+          <>{children}</>
         </Surface>
       </Comp>
     );
@@ -42,7 +42,7 @@ export const PanelDivider = forwardRef<
 
   return (
     <Comp className={dividerClass} {...rest} ref={ref}>
-      {children}
+      <>{children}</>
     </Comp>
   );
 });
@@ -62,7 +62,7 @@ export const PanelHeader = forwardRef<
 
   return (
     <Comp className={headerClass} {...rest} ref={ref}>
-      {children}
+      <>{children}</>
     </Comp>
   );
 });
@@ -79,7 +79,7 @@ export const PanelSection = forwardRef<
 
   return (
     <Comp className={sectionClass} {...rest} ref={ref}>
-      {children}
+      <>{children}</>
     </Comp>
   );
 });
@@ -99,7 +99,7 @@ export const PanelHeadline = forwardRef<
 
   return (
     <Comp className={headlineClass} {...rest} ref={ref}>
-      {children}
+      <>{children}</>
     </Comp>
   );
 });
@@ -119,7 +119,7 @@ export const PanelFooter = forwardRef<
 
   return (
     <Comp className={footerClass} {...rest} ref={ref}>
-      {children}
+      <>{children}</>
     </Comp>
   );
 });
