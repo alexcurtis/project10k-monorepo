@@ -5,7 +5,7 @@ import { ITab, Tabs, TabsUnderline } from "@vspark/catalyst/tabs";
 import { DocViewerPage, ICompany, ICompanyFiling, IDocViewerQuery } from "@platform/types/entities";
 import { useSub } from "@platform/hooks";
 
-import { DocViewerContext } from "./context";
+import { DocViewerContext, emptyCompany, emptyFiling } from "./context";
 import { EmptyDocViewer } from "./empty";
 import { CompanyFilings } from "./filings";
 import { CompanyDocument } from "./document";
@@ -41,6 +41,8 @@ const fixedTabs: ITab[] = [
 export function DocViewer() {
     const [docViewerQuery, setDocViewerQuery] = useState<IDocViewerQuery>({
         page: DocViewerPage.Empty,
+        company: emptyCompany,
+        filing: emptyFiling,
     });
 
     // Subscribe To External Events
@@ -75,7 +77,7 @@ export function DocViewer() {
     const { filing, company } = docViewerQuery;
 
     const tabs =
-        !filing || !company
+        filing._id === "" || company._id === ""
             ? fixedTabs
             : fixedTabs.concat([
                   {

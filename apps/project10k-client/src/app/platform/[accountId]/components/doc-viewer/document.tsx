@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+import React, { useRef, useEffect, useState, useContext, RefObject } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { v4 as uuidv4 } from "uuid";
 
@@ -45,7 +45,10 @@ function iterateWalker(walker: TreeWalker) {
 }
 
 // Test If Node Is Text Or Not
-function hasText(node: { textContent: string }) {
+function hasText(node: Node | null) {
+    if (!node || !node.textContent) {
+        return false;
+    }
     return /\S/.test(node.textContent);
 }
 
@@ -73,7 +76,7 @@ const getNodePath = (node: Node) => {
     return path;
 };
 
-const loadCitations = async (iframeRef, citations: ICitation[]) => {
+const loadCitations = async (iframeRef: RefObject<HTMLIFrameElement>, citations: ICitation[]) => {
     const iframeDocument = iframeRef.current?.contentDocument;
     if (!iframeDocument) return;
 
@@ -161,7 +164,7 @@ const highlightSelection = (citationId: string, range: Range) => {
     }
 };
 
-const scrollToHightlight = (iFrameRef, highlightId) => {
+const scrollToHightlight = (iFrameRef: RefObject<HTMLIFrameElement>, highlightId: string | null) => {
     const iframeDocument = iFrameRef.current?.contentDocument;
     if (!iframeDocument || !highlightId) return;
     iframeDocument.getElementById(highlightId)?.scrollIntoView({
@@ -263,7 +266,7 @@ export function CompanyDocument() {
         return () => {
             iframe?.removeEventListener("load", handleIframeLoad);
         };
-    }, [iframeRef, createCitation, data, company]);
+    }, [iframeRef, createCitation, workspace, data, company]);
 
     useEffect(() => {
         if (!data || !html) {

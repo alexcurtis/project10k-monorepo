@@ -4,8 +4,9 @@ import { XCircleIcon } from "@heroicons/react/16/solid";
 
 import { Button } from "@vspark/catalyst/button";
 
-export const DefaultNode = memo(({ id, data, isConnectable, selected }: NodeProps) => {
-    const { onNodeDeleteCb } = data;
+const DefaultNode = memo(({ id, data, isConnectable, selected }: NodeProps) => {
+    const onNodeDeleteCb = data.onNodeDeleteCb as Function;
+    const label = data.label as string;
     return (
         <div className="relative">
             <div className="absolute -top-3 right-1/2">
@@ -28,7 +29,7 @@ export const DefaultNode = memo(({ id, data, isConnectable, selected }: NodeProp
                 </div>
             ) : null}
             <div>
-                <div>{data.label}</div>
+                <div>{label}</div>
             </div>
             <div className="absolute -bottom-3 right-1/2">
                 <Handle type="source" position={Position.Bottom} isConnectable={isConnectable} />
@@ -36,3 +37,5 @@ export const DefaultNode = memo(({ id, data, isConnectable, selected }: NodeProp
         </div>
     );
 });
+DefaultNode.displayName = "DefaultNode";
+export default DefaultNode;

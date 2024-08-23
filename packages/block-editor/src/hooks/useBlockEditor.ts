@@ -17,7 +17,7 @@ export const useBlockEditor = ({
 }: {
   content: object
   onUpdate: DebouncedFunc<(evnt: any) => void>
-  extensions: []
+  extensions: any[]
 }) => {
   const editor = useEditor(
     {

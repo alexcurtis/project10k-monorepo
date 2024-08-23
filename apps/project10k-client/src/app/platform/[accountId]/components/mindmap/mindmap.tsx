@@ -24,7 +24,7 @@ import { WorkspaceContext } from "@platform/context";
 import { IJournal } from "@platform/types/entities";
 
 import { MindMapInteractivityStore, useMindMapInteractivityStore } from "./store";
-import { DefaultNode } from "./node";
+import DefaultNode from "./node";
 
 import "@xyflow/react/dist/style.css";
 import "./mindmap.css";
@@ -153,9 +153,6 @@ export function FlowGraph({
     onNodeDeleteAction: (name: string, deleteAction: () => void) => void;
 }) {
     const workspaceContext = useContext(WorkspaceContext);
-    if (!workspaceContext) {
-        return;
-    }
     const { setActiveJournal } = workspaceContext;
     const workspace = workspaceContext.workspace;
     const { journals } = workspace;
@@ -188,7 +185,7 @@ export function FlowGraph({
                 });
             });
         },
-        [workspace, journals, onNodeDeleteAction]
+        [workspace, journals, onNodeDeleteAction, deleteJournalFromWorkspace]
     );
 
     // MindMap Builder
@@ -202,7 +199,7 @@ export function FlowGraph({
     // Set The Active Journal When A Node Is Clicked
     const setActiveJournalCb = useCallback<NodeMouseHandler>(
         (_, node) => {
-            const selectedJournalId = node.data.journalId;
+            const selectedJournalId = node.data.journalId as string;
             setActiveJournal(selectedJournalId);
         },
         [setActiveJournal]
@@ -230,7 +227,7 @@ export function FlowGraph({
             }
             updateMindMapNode(createMindMapNodeUpdateFromFlowNode(node, updatedEdges));
         },
-        [updateMindMapNode, nodes, edges]
+        [updateMindMapNode, onConnect, nodes, edges]
     );
 
     // When An Edge Is Removed
@@ -249,7 +246,7 @@ export function FlowGraph({
             // Pass Everything To Interactivity Store
             onEdgesChange(changes);
         },
-        [updateMindMapNode, nodes, edges]
+        [updateMindMapNode, nodes, edges, onEdgesChange]
     );
 
     return (

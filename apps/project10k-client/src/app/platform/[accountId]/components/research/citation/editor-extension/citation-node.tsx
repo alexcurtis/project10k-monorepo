@@ -39,7 +39,7 @@ function Citation(props: ICitationProps) {
     const publish = usePub();
     const onNavigateToFilingCb = useCallback(() => {
         publish("filing:navigate:scroll", { company: attrs.company, filing: attrs.filing, scrollTo: attrs._id });
-    }, [node]);
+    }, [publish, attrs]);
     return (
         <NodeViewWrapper className="citation text-white flex flex-row relative min-h-9">
             <div className="flex-none w-2 bg-yellow-400 rounded-sm" />

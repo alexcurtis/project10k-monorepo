@@ -21,7 +21,7 @@ export const BlockEditor = ({
 }: {
   content: object
   onUpdate: DebouncedFunc<(evnt: any) => void>
-  extensions: []
+  extensions: any[]
 }) => {
   const menuContainerRef = useRef(null)
 

@@ -1,7 +1,7 @@
 import { useCallback, useState, ChangeEvent, useContext } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { AgGridReact } from "ag-grid-react";
-import { RowClickedEvent } from "ag-grid-community";
+import { RowClickedEvent, ColDef } from "ag-grid-community";
 
 import { Loader } from "@vspark/catalyst/loader";
 
@@ -43,14 +43,16 @@ function DocumentsLoader() {
     );
 }
 
+const defaultColDefs: ColDef[] = [
+    { field: "form" },
+    { field: "name", flex: 1 },
+    { field: "period" },
+    { field: "filedOn" },
+];
+
 function FilingTable({ filings, onClick }: { filings: ICompanyFiling[]; onClick: (filing: ICompanyFiling) => void }) {
     // Column Definitions: Defines the columns to be displayed.
-    const [colDefs, setColDefs] = useState([
-        { field: "form" },
-        { field: "name", flex: 1 },
-        { field: "period" },
-        { field: "filedOn" },
-    ]);
+    const [colDefs] = useState(defaultColDefs);
 
     const pagination = true;
     const paginationPageSize = 10;
@@ -116,7 +118,7 @@ function CompanyFilingsGroup({
     );
 }
 
-function Header({ title, ticker }: { title: string; ticker: string }) {
+function Header({ title, ticker }: { title: string; ticker: string[] }) {
     return (
         <>
             <h1 className="text-2xl mb-5 mt-4">
@@ -129,9 +131,6 @@ function Header({ title, ticker }: { title: string; ticker: string }) {
 export function CompanyFilings() {
     const { docViewerQuery, setDocViewerQuery } = useContext(DocViewerContext);
     const { company } = docViewerQuery;
-    if (!company) {
-        return;
-    }
 
     // Update The Context And Move To The Document Page
     const onFilingClicked = useCallback(

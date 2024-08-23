@@ -3,7 +3,7 @@ import { DocumentPlusIcon } from "@heroicons/react/20/solid";
 
 import { DocViewerPage, ICompany } from "@platform/types/entities";
 import { CompanySearch } from "./search";
-import { DocViewerContext } from "./context";
+import { DocViewerContext, emptyFiling } from "./context";
 
 export function EmptyDocViewer() {
     const { setDocViewerQuery } = useContext(DocViewerContext);
@@ -14,7 +14,7 @@ export function EmptyDocViewer() {
             setDocViewerQuery({
                 page: DocViewerPage.Filings,
                 company,
-                filing: undefined,
+                filing: emptyFiling,
             });
         },
         [setDocViewerQuery]

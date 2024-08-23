@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { EventEmitter } from 'eventemitter3';
+import { useEffect } from "react";
+import { EventEmitter } from "eventemitter3";
 
 const emitter = new EventEmitter();
 
@@ -17,7 +17,7 @@ export const useSub = (event: string, callback: (...args: any[]) => void) => {
 };
 
 export const usePub = () => {
-    return (event: string, data : any) => {
+    return (event: string, data: any) => {
         emitter.emit(event, data);
     };
 };
