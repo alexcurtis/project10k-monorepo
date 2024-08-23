@@ -1,38 +1,38 @@
-'use client'
+"use client";
 
-import { EditorContent } from '@tiptap/react'
-import React, { useRef } from 'react'
-import { DebouncedFunc } from 'lodash'
+import { EditorContent } from "@tiptap/react";
+import React, { useRef } from "react";
+import { DebouncedFunc } from "lodash";
 
-import { LinkMenu } from '@/components/menus'
-import { useBlockEditor } from '@/hooks/useBlockEditor'
-import ImageBlockMenu from '@/extensions/ImageBlock/components/ImageBlockMenu'
-import { ColumnsMenu } from '@/extensions/MultiColumn/menus'
-import { TableColumnMenu, TableRowMenu } from '@/extensions/Table/menus'
-import { TextMenu } from '../menus/TextMenu'
-import { ContentItemMenu } from '../menus/ContentItemMenu'
+import { LinkMenu } from "../menus";
+import { useBlockEditor } from "../../hooks/useBlockEditor";
+import ImageBlockMenu from "../../extensions/ImageBlock/components/ImageBlockMenu";
+import { ColumnsMenu } from "../../extensions/MultiColumn/menus";
+import { TableColumnMenu, TableRowMenu } from "../../extensions/Table/menus";
+import { TextMenu } from "../menus/TextMenu";
+import { ContentItemMenu } from "../menus/ContentItemMenu";
 
-import '@/styles/index.css'
+import "../../styles/index.css";
 
 export const BlockEditor = ({
   content,
   onUpdate,
   extensions,
 }: {
-  content: object
-  onUpdate: DebouncedFunc<(evnt: any) => void>
-  extensions: any[]
+  content: object;
+  onUpdate: DebouncedFunc<(evnt: any) => void>;
+  extensions: any[];
 }) => {
-  const menuContainerRef = useRef(null)
+  const menuContainerRef = useRef(null);
 
   const { editor } = useBlockEditor({
     content,
     onUpdate,
     extensions,
-  })
+  });
 
   if (!editor) {
-    return null
+    return null;
   }
 
   return (
@@ -48,7 +48,7 @@ export const BlockEditor = ({
         <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BlockEditor
+export default BlockEditor;

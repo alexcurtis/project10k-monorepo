@@ -1,2 +1,1 @@
-export interface TiptapProps {
-}
+export interface TiptapProps {}

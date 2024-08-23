@@ -1,7 +1,5 @@
-import { createContext } from 'react'
+import { createContext } from "react";
 
-interface IEditorContext {
-}
+interface IEditorContext {}
 
-export const EditorContext = createContext<IEditorContext>({
-})
+export const EditorContext = createContext<IEditorContext>({});

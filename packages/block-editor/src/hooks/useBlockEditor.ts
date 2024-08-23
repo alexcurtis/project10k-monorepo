@@ -1,12 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
+import { Editor, useEditor } from "@tiptap/react";
+import { DebouncedFunc } from "lodash";
 
-import { Editor, useEditor } from '@tiptap/react'
-import { ExtensionKit } from '@/extensions/extension-kit'
-import { DebouncedFunc } from 'lodash'
+import { ExtensionKit } from "../extensions/extension-kit";
 
 declare global {
   interface Window {
-    editor: Editor | null
+    editor: Editor | null;
   }
 }
 
@@ -15,9 +15,9 @@ export const useBlockEditor = ({
   onUpdate,
   extensions,
 }: {
-  content: object
-  onUpdate: DebouncedFunc<(evnt: any) => void>
-  extensions: any[]
+  content: object;
+  onUpdate: DebouncedFunc<(evnt: any) => void>;
+  extensions: any[];
 }) => {
   const editor = useEditor(
     {
@@ -33,25 +33,25 @@ export const useBlockEditor = ({
       extensions: [...ExtensionKit({}), ...extensions],
       editorProps: {
         attributes: {
-          autocomplete: 'off',
-          autocorrect: 'off',
-          autocapitalize: 'off',
-          class: 'min-h-full',
+          autocomplete: "off",
+          autocorrect: "off",
+          autocapitalize: "off",
+          class: "min-h-full",
         },
       },
     },
     []
-  )
+  );
 
   useEffect(() => {
     if (!editor || editor === null) {
-      return
+      return;
     }
-    const { from, to } = editor.state.selection
-    editor.commands.setContent(content)
-    editor.commands.setTextSelection({ from, to })
-  }, [content])
+    const { from, to } = editor.state.selection;
+    editor.commands.setContent(content);
+    editor.commands.setTextSelection({ from, to });
+  }, [content]);
 
-  window.editor = editor
-  return { editor }
-}
+  window.editor = editor;
+  return { editor };
+};

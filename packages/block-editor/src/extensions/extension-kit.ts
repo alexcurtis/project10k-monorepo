@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   BlockquoteFigure,
@@ -38,15 +38,15 @@ import {
   Column,
   TaskItem,
   TaskList,
-} from '.'
-import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight'
-import { TableOfContentsNode } from './TableOfContentsNode'
-import { lowlight } from 'lowlight'
+} from ".";
+import { CodeBlockLowlight } from "@tiptap/extension-code-block-lowlight";
+import { TableOfContentsNode } from "./TableOfContentsNode";
+import { lowlight } from "lowlight";
 
 interface ExtensionKitProps {
-  userId?: string
-  userName?: string
-  userColor?: string
+  userId?: string;
+  userName?: string;
+  userColor?: string;
 }
 
 export const ExtensionKit = ({}: ExtensionKitProps) => [
@@ -95,10 +95,10 @@ export const ExtensionKit = ({}: ExtensionKitProps) => [
   }),
   TextAlign.extend({
     addKeyboardShortcuts() {
-      return {}
+      return {};
     },
   }).configure({
-    types: ['heading', 'paragraph'],
+    types: ["heading", "paragraph"],
   }),
   Subscript,
   Superscript,
@@ -110,7 +110,7 @@ export const ExtensionKit = ({}: ExtensionKitProps) => [
   Placeholder.configure({
     includeChildren: true,
     showOnlyCurrent: false,
-    placeholder: () => '',
+    placeholder: () => "",
   }),
   SlashCommand,
   Focus,
@@ -118,8 +118,8 @@ export const ExtensionKit = ({}: ExtensionKitProps) => [
   BlockquoteFigure,
   Dropcursor.configure({
     width: 2,
-    class: 'ProseMirror-dropcursor border-black',
+    class: "ProseMirror-dropcursor border-black",
   }),
-]
+];
 
-export default ExtensionKit
+export default ExtensionKit;
