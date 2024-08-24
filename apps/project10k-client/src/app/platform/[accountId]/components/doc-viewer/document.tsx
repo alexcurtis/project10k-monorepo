@@ -209,7 +209,7 @@ export function CompanyDocument() {
         }
         const { companyFiling } = data;
         const { path, filename } = companyFiling;
-        const url = `http://localhost:3005/apidbdocproxy/document?path=${path}&filename=${filename}`;
+        const url = `/apidbdocproxy/document?path=${path}&filename=${filename}`;
         const fetchData = async () => {
             const response = await fetch(url);
             const htmly = await response.text();
