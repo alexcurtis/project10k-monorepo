@@ -11,7 +11,7 @@ services:
         ports:
             - 3000:3000
         networks:
-            - project10k_network
+            - backend_network
     nginx:
         container_name: nginx
         build:
@@ -21,10 +21,11 @@ services:
         ports:
             - 80:80
         networks:
-            - project10k_network
+            - backend_network
 
 # Define a network, which allows containers to communicate
 # with each other, by using their container name as a hostname
 networks:
-    project10k_network:
+    backend_network:
+        name: project10k-server_backend
         external: true
