@@ -12,8 +12,16 @@ services:
             - 3000:3000
         networks:
             - project10k_network
-
-    # Add more containers below (nginx, postgres, etc.)
+    nginx:
+        container_name: nginx
+        build:
+            context: ./nginx
+            dockerfile: Dockerfile
+        restart: always
+        ports:
+            - 80:80
+        networks:
+            - project10k_network
 
 # Define a network, which allows containers to communicate
 # with each other, by using their container name as a hostname

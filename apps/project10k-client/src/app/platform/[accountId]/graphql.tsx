@@ -4,7 +4,7 @@ import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 
 const httpLink = createHttpLink({
-    uri: "http://localhost:3010/graphql",
+    uri: "/graphql",
 });
 
 export function setJwtToken(token: string) {
