@@ -2,10 +2,11 @@ import { useCallback, useState } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { gql, useMutation } from "@apollo/client";
-import { CubeIcon, EllipsisVerticalIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { EllipsisVerticalIcon, TrashIcon } from "@heroicons/react/24/solid";
 
+import { PrimaryActionButton } from "@vspark/catalyst/buttons";
 import { Button } from "@vspark/catalyst/button";
-import { Fieldset, FieldGroup, Field, Label } from "@vspark/catalyst/fieldset";
+import { Fieldset, FieldGroup, Field } from "@vspark/catalyst/fieldset";
 import { Input } from "@vspark/catalyst/input";
 import { Dropdown, DropdownButton, DropdownMenu, DropdownItem, DropdownLabel } from "@vspark/catalyst/dropdown";
 import { DeleteGateway, IDeleteGateway } from "@vspark/catalyst/common-dialogs";
@@ -120,10 +121,12 @@ function NewWorkspace({
                     <Button type="button" className="ml-4 align-top" onClick={onCancel}>
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={loading || name === ""} className="ml-2 align-top" color="indigo">
-                        <CubeIcon className={`${loading ? "animate-spin" : ""}`} />
-                        Create
-                    </Button>
+                    <PrimaryActionButton
+                        label="Create"
+                        disabled={name === ""}
+                        loading={loading}
+                        className="ml-2 align-top"
+                    />
                 </Fieldset>
             </form>
         </div>

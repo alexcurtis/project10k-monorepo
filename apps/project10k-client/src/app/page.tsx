@@ -28,8 +28,12 @@ export default function LandingPage() {
                             <p className="mt-6 text-lg leading-8 text-gray-300">Built using:</p>
                             <ul className="list-disc pl-6">
                                 <li>React</li>
-                                <li>GraphQL</li>
+                                <li>Apollo GraphQL</li>
+                                <li>Tailwind</li>
                                 <li>MongoDB</li>
+                                <li>Next.js</li>
+                                <li>NestJS</li>
+                                <li>Docker + AWS</li>
                             </ul>
                             <div className="mt-10 flex items-center gap-x-6">
                                 <Link legacyBehavior={true} passHref href="/login">

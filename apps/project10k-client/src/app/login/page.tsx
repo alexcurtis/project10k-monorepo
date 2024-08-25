@@ -1,15 +1,15 @@
 "use client";
 
 import { FormEvent, useCallback, useState } from "react";
-import Image from "next/image";
 import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@vspark/catalyst/button";
+import { InlineError } from "@vspark/catalyst/inline-alerts";
 import { Input } from "@vspark/catalyst/input";
 
 import { ApolloAppProvider, LOGIN_QL_RESPONSE, setJwtToken } from "@platform/graphql";
 import { IUser } from "@platform//types/entities";
+import { PrimaryActionButton } from "@vspark/catalyst/buttons";
 
 // Login Mutation
 const M_LOGIN = gql`
@@ -23,7 +23,7 @@ function LoginForm() {
     const [password, setPassword] = useState("");
 
     // Login Mutator
-    const [login, {}] = useMutation(M_LOGIN);
+    const [login, { loading, error }] = useMutation(M_LOGIN);
 
     const router = useRouter();
     const onSubmitCb = useCallback(
@@ -44,20 +44,18 @@ function LoginForm() {
 
     return (
         <>
-            <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+            <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 -mt-32">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                    {/* <Image
-                        width={100}
-                        height={100}
-                        alt="Your Company"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        className="mx-auto"
-                    /> */}
                     <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
                         Sign in to your Project10k account
                     </h2>
+                    {error ? (
+                        <InlineError
+                            className="mt-4"
+                            headline="Email or password does not match. Please check and try again."
+                        />
+                    ) : null}
                 </div>
-
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                     <form onSubmit={onSubmitCb} className="space-y-6">
                         <div>
@@ -98,9 +96,12 @@ function LoginForm() {
                         </div>
 
                         <div>
-                            <Button color="indigo" type="submit" className="w-full">
-                                Sign in
-                            </Button>
+                            <PrimaryActionButton
+                                label="Sign in"
+                                disabled={email === "" || password === ""}
+                                loading={loading}
+                                className="w-full"
+                            />
                         </div>
                     </form>
                 </div>

@@ -4,7 +4,7 @@ import { XCircleIcon } from "@heroicons/react/20/solid";
 interface IInlineError {
     headline: string;
     className?: string;
-    errors: { message: string }[];
+    errors?: { message: string }[];
 }
 
 export function InlineError({ headline, errors, className }: IInlineError) {
@@ -19,9 +19,7 @@ export function InlineError({ headline, errors, className }: IInlineError) {
                     <h3 className="text-base font-medium text-white">{headline}</h3>
                     <div className="mt-2 text-sm text-white">
                         <ul role="list" className="list-disc space-y-1 pl-5">
-                            {errors.map((error) => (
-                                <li>{error.message}</li>
-                            ))}
+                            {errors ? errors.map((error) => <li>{error.message}</li>) : null}
                         </ul>
                     </div>
                 </div>
