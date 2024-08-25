@@ -3,6 +3,8 @@ import { ApolloClient, InMemoryCache, ApolloProvider, gql, createHttpLink, from 
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 
+const OPERATION_ERRORS_TO_IGNORE = ["Login"];
+
 const httpLink = createHttpLink({
     uri: "/graphql",
 });
@@ -33,10 +35,16 @@ const authLink = setContext((_, { headers }) => {
 });
 
 // JWT Authentication Error Link
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+const errorLink = onError(({ graphQLErrors, networkError, operation, response }) => {
     if (!graphQLErrors) {
         return;
     }
+    // Ignore Certain Errors (These Will Be Handled Else Where - Like Login Page)
+    const { operationName } = operation;
+    if (OPERATION_ERRORS_TO_IGNORE.includes(operationName)) {
+        return;
+    }
+
     // Find Any UnAuthorised Errors
     const unauthorised = graphQLErrors.find((qlError) => qlError.message === "Unauthorized");
     if (unauthorised) {
@@ -59,6 +67,8 @@ export function resetApolloClientStore() {
 export const ApolloAppProvider = ({ children }: { children: any }) => {
     return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
+
+// GraphQL Reponses------------------------------------
 
 export const COMPANY_FILING_QL_RESPONSE = `
     {
@@ -176,13 +186,13 @@ export const LOGIN_QL_RESPONSE = `
     }
 `;
 
-// Queries ----------------------------
+// Queries -----------------------------------------
 export const Q_MY_ACCOUNT = gql`query getAccount($id: ID!) {
     account(id: $id) ${ACCOUNT_QL_RESPONSE}
     me ${USER_QL_RESPONSE}
 }`;
 
-// Mutators ---------------------------
+// Mutators -----------------------------------------
 export const M_CREATE_NEW_JOURNAL_ON_WORKSPACE = gql`mutation CreateNewJournalOnWorkspace($id: ID!) {
 	createNewJournalOnWorkspace(id: $id)${WORKSPACE_QL_RESPONSE}
 }
