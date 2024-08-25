@@ -3522,6 +3522,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/add@npm:^2":
+  version: 2.0.3
+  resolution: "@types/add@npm:2.0.3"
+  checksum: 10c0/d18841b43d3799f69db0bdae380d19d05f43b716315c5bfd4d6c1b3467bada2644eab8c04bb5afdb94bba87604da06d466f22fe30df6bcf0518c373593bb474a
+  languageName: node
+  linkType: hard
+
 "@types/d3-color@npm:*":
   version: 3.1.3
   resolution: "@types/d3-color@npm:3.1.3"
@@ -3896,6 +3903,7 @@ __metadata:
     "@tiptap/pm": "npm:^2.5.7"
     "@tiptap/react": "npm:^2.5.7"
     "@tiptap/starter-kit": "npm:^2.5.7"
+    "@types/add": "npm:^2"
     "@types/lodash": "npm:^4"
     "@types/node": "npm:^20"
     "@types/react": "npm:^18"
@@ -3904,6 +3912,7 @@ __metadata:
     "@vspark/block-editor": "workspace:^"
     "@vspark/catalyst": "workspace:^"
     "@xyflow/react": "npm:^12.0.2"
+    add: "npm:^2.0.6"
     ag-grid-react: "npm:^32.1.0"
     date-fns: "npm:^3.6.0"
     eslint: "npm:^8"
@@ -3917,6 +3926,7 @@ __metadata:
     postcss: "npm:^8"
     react: "npm:^18"
     react-dom: "npm:^18"
+    react-hot-toast: "npm:^2.4.1"
     react-resizable-panels: "npm:^2.0.22"
     tailwindcss: "npm:^3.4.1"
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
@@ -3924,6 +3934,7 @@ __metadata:
     use-debounce: "npm:^10.0.3"
     uuid: "npm:^10.0.0"
     xpath-range: "npm:^1.1.1"
+    yarn: "npm:^1.22.22"
     zustand: "npm:^4.5.4"
   languageName: unknown
   linkType: soft
@@ -4031,6 +4042,13 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10c0/51fb26cd678f914e13287e886da2d7021f8c2bc0ccc95e03d3e0447ee278dd3b40b9c57dc222acd5881adcf26f3edc40901a4953403232129e3876793cd17386
+  languageName: node
+  linkType: hard
+
+"add@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "add@npm:2.0.6"
+  checksum: 10c0/6b21d5f2e58cf5e15d56cc6f9ebce04f04f4c33ae25f09d600ddacf8df00036ba521f17feb1b3f81307b7c6d2ef0bed8b511a0f86f062eb90c2f909b48b588ae
   languageName: node
   linkType: hard
 
@@ -8366,7 +8384,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hot-toast@npm:^2.1.1":
+"react-hot-toast@npm:^2.1.1, react-hot-toast@npm:^2.4.1":
   version: 2.4.1
   resolution: "react-hot-toast@npm:2.4.1"
   dependencies:
@@ -9938,6 +9956,16 @@ __metadata:
   bin:
     yaml: bin.mjs
   checksum: 10c0/e1ee78b381e5c710f715cc4082fd10fc82f7f5c92bd6f075771d20559e175616f56abf1c411f545ea0e9e16e4f84a83a50b42764af5f16ec006328ba9476bb31
+  languageName: node
+  linkType: hard
+
+"yarn@npm:^1.22.22":
+  version: 1.22.22
+  resolution: "yarn@npm:1.22.22"
+  bin:
+    yarn: bin/yarn.js
+    yarnpkg: bin/yarn.js
+  checksum: 10c0/8c77198c93d7542e7f4e131c63b66de357b7076ecfbcfe709ec0d674115c2dd9edaa45196e5510e6e9366d368707a802579e3402071002e1c9d9a99d491478de
   languageName: node
   linkType: hard
 

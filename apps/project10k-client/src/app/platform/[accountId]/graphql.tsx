@@ -2,6 +2,9 @@ import React from "react";
 import { ApolloClient, InMemoryCache, ApolloProvider, gql, createHttpLink, from } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
+import toast from "react-hot-toast";
+
+import { ErrorToast } from "@vspark/catalyst/toast";
 
 const OPERATION_ERRORS_TO_IGNORE = ["Login"];
 
@@ -36,21 +39,34 @@ const authLink = setContext((_, { headers }) => {
 
 // JWT Authentication Error Link
 const errorLink = onError(({ graphQLErrors, networkError, operation, response }) => {
-    if (!graphQLErrors) {
-        return;
+    if (graphQLErrors) {
+        // Find Any UnAuthorised Errors
+        const unauthorised = graphQLErrors.find((qlError) => qlError.message === "Unauthorized");
+        if (unauthorised) {
+            // User Has An Unauthorised Session. Clear The Session and Login Again (All Done Via Logout)
+            window.location.href = "/logout";
+            return;
+        }
     }
     // Ignore Certain Errors (These Will Be Handled Else Where - Like Login Page)
     const { operationName } = operation;
     if (OPERATION_ERRORS_TO_IGNORE.includes(operationName)) {
         return;
     }
-
-    // Find Any UnAuthorised Errors
-    const unauthorised = graphQLErrors.find((qlError) => qlError.message === "Unauthorized");
-    if (unauthorised) {
-        // User Has An Unauthorised Session. Clear The Session and Login Again (All Done Via Logout)
-        window.location.href = "/logout";
-    }
+    // Any Other Errors Drop To A Toast Notification
+    toast.custom(
+        (t) => (
+            <ErrorToast
+                id={t.id}
+                message="An error occured when trying to talk to the server. Please try the action again."
+                duration={t.duration}
+                visible={t.visible}
+            />
+        ),
+        {
+            duration: 4000,
+        }
+    );
 });
 
 const client = new ApolloClient({
