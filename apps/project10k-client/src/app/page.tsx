@@ -1,3 +1,4 @@
+import { ArrowRightEndOnRectangleIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export default function LandingPage() {
@@ -18,33 +19,50 @@ export default function LandingPage() {
                         />
                     </div>
                     <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-40 lg:flex lg:px-8 lg:pt-40">
-                        <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8">
+                        <div className="lg:flex-1">
                             <h1 className="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">
                                 Project10K
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-300">
-                                A very early stage project from Alexander Curtis.
+                                Project10k is a personal project. It was built as a development playground, to
+                                experiment with new design patterns, methodologies, technologies and frameworks.
                             </p>
-                            <p className="mt-6 text-lg leading-8 text-gray-300">Built using:</p>
+                            <p className="mt-6 text-lg leading-8 text-gray-300">
+                                At its heart, it is a fintech research tool for equity analysts. Project10K is a
+                                research tool, that allows analysts and investors to create comprehensive research notes
+                                (Journals) on public companies.
+                            </p>
+                            <p className="mt-6 text-lg leading-8 text-gray-300">
+                                Currently, it features powerful highlight and citation tools allowing users to reference
+                                back to original company filings.
+                            </p>
+                            <p className="mt-6 text-lg leading-8 text-gray-300">Frontend built using:</p>
                             <ul className="list-disc pl-6">
-                                <li>React</li>
+                                <li>React + Next.js</li>
+                                <li>Typescript</li>
                                 <li>Apollo GraphQL</li>
-                                <li>Tailwind</li>
-                                <li>MongoDB</li>
-                                <li>Next.js</li>
-                                <li>NestJS</li>
-                                <li>Docker + AWS</li>
+                                <li>Tailwind CSS</li>
                             </ul>
-                            <div className="mt-10 flex items-center gap-x-6">
+                            <p className="mt-6 text-lg leading-8 text-gray-300">Backend built using:</p>
+                            <ul className="list-disc pl-6">
+                                <li>NextJS</li>
+                                <li>Typescript</li>
+                                <li>Microservices (TCP)</li>
+                                <li>Apollo GraphQL</li>
+                                <li>JWT + Guards via Passport</li>
+                                <li>Mongoose + MongoDB</li>
+                                <li>Docker - Nginx - AWS</li>
+                            </ul>
+                        </div>
+                        <div className="mx-auto flex lg:flex-1 lg:pt-8">
+                            <div className="lg:flex lg:flex-col lg:mt-10 lg:justify-center lg:mb-40 w-full mt-16 lg:px-32">
                                 <Link legacyBehavior={true} passHref href="/login">
-                                    <a className="rounded-md bg-indigo-500 px-3.5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400">
-                                        Login
+                                    <a className="justify-center leading-10 flex font-semibold text-white hover:text-gray-400 text-4xl rounded p-4 border-dashed border-2 border-gray-400">
+                                        <ArrowRightEndOnRectangleIcon className="h-10 w-10 mr-2 flex-none" />
+                                        <div className="flex-none mr-2">Sign In</div>
                                     </a>
                                 </Link>
                             </div>
-                        </div>
-                        <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
-                            <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none"></div>
                         </div>
                     </div>
                 </div>
