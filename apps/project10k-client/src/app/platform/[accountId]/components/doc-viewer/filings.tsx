@@ -1,7 +1,7 @@
 import { useCallback, useState, ChangeEvent, useContext } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { AgGridReact } from "ag-grid-react";
-import { RowClickedEvent, ColDef } from "ag-grid-community";
+import { RowClickedEvent, ColDef, ValueFormatterParams } from "ag-grid-community";
 
 import { Loader } from "@vspark/catalyst/loader";
 
@@ -11,6 +11,7 @@ import { DocViewerContext } from "./context";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { format } from "date-fns";
 
 const FINANCIAL_FORMS = ["10-K", "10-Q", "10-K/A", "10-Q/A", "NT 10-K", "NT 10-Q", "10-K405"];
 const NEWS_FORMS = ["8-K", "8-K/A"];
@@ -35,9 +36,11 @@ const Q_COMPANY_FILINGS = gql`
     }
 `;
 
+const dateFormat = (date: Date) => format(date, "P");
+
 function DocumentsLoader() {
     return (
-        <div className="border" style={{ height: CONTENT_HEIGHT }}>
+        <div className="bg-zinc-900 p-4" style={{ height: CONTENT_HEIGHT }}>
             <Loader />
         </div>
     );
@@ -46,8 +49,8 @@ function DocumentsLoader() {
 const defaultColDefs: ColDef[] = [
     { field: "form" },
     { field: "name", flex: 1 },
-    { field: "period" },
-    { field: "filedOn" },
+    { field: "period", valueFormatter: (params: ValueFormatterParams) => dateFormat(new Date(params.data.period)) },
+    { field: "filedOn", valueFormatter: (params: ValueFormatterParams) => dateFormat(new Date(params.data.filedOn)) },
 ];
 
 function FilingTable({ filings, onClick }: { filings: ICompanyFiling[]; onClick: (filing: ICompanyFiling) => void }) {
@@ -107,7 +110,7 @@ function CompanyFilingsGroup({
     return (
         <>
             <div className="mb-10">
-                <h2 className="text-xl mb-4">{title}</h2>
+                <h2 className="text-xl mb-4 text-gray-100">{title}</h2>
                 {loading || !data || !companyFilings ? (
                     <DocumentsLoader />
                 ) : (

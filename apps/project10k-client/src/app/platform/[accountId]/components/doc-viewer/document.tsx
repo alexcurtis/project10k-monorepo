@@ -299,7 +299,7 @@ export function CompanyDocument() {
     const { companyFiling } = data;
 
     return (
-        <div className="px-4 pb-4 h-full w-full flex flex-col">
+        <div className="h-full w-full flex flex-col">
             <div style={{ position: "relative", width: "100%", height: "100%" }}>
                 <iframe
                     ref={iframeRef}

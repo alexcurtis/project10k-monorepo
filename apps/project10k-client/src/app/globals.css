@@ -7,6 +7,16 @@
     --foreground-rgb: 0, 0, 0;
     --background-start-rgb: 214, 219, 220;
     --background-end-rgb: 255, 255, 255;
+    .ag-theme-alpine-dark {
+        --ag-border-color: none;
+        --ag-background-color: #27272a;
+        --ag-header-background-color: #18181b;
+        --ag-odd-row-background-color: #18181b;
+        --ag-foreground-color: #d1d5db;
+    }
+    .ag-paging-panel {
+        border-top: none;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
