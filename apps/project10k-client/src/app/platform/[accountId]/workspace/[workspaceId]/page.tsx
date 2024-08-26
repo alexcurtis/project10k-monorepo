@@ -2,22 +2,34 @@
 import { useCallback, useState } from "react";
 import dynamic from "next/dynamic";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 import { Squares2X2Icon, ViewColumnsIcon } from "@heroicons/react/16/solid";
 
 import { Loader } from "@vspark/catalyst/loader";
 import { Button } from "@vspark/catalyst/button";
+import { EditableText, EditableTextSubmitEvent } from "@vspark/catalyst/editable-text";
+
 import { IWorkspaceQL } from "@platform/types/ql";
 import { WorkspaceContext } from "@platform/context";
 import { Journal } from "@platform/components/research/journal";
 import { MindMap } from "@platform/components/mindmap/mindmap";
 import { DocViewer } from "@platform/components/doc-viewer/viewer";
 import { WORKSPACE_QL_RESPONSE } from "@platform/graphql";
-import { IWorkspace } from "../../types/entities";
+import { IWorkspace } from "@platform/types/entities";
 
 const Q_MY_WORKSPACE = gql`query GetWorkspace($id: ID!) {
     workspace(id: $id)${WORKSPACE_QL_RESPONSE}
 }`;
+
+// Workspace Update Mutation
+const M_UPDATE_WORKSPACE = gql`
+    mutation UpdateWorkspace($id: ID!, $workspace: InputWorkspaceDto!) {
+        updateWorkspace(id: $id, workspace: $workspace) {
+            _id
+            name
+        }
+    }
+`;
 
 const DEFAULT_MIN_PANEL_SIZE = 10;
 const LAYOUT_SAVE_KEY = "layout-orientation";
@@ -43,13 +55,22 @@ function loadLayoutOrientation(): Orientation {
 function WorkspaceHeader({
     name,
     onLayoutOrientation,
+    onWorkspaceNameChange,
 }: {
     name: string;
     onLayoutOrientation: (o: Orientation) => void;
+    onWorkspaceNameChange: (name: EditableTextSubmitEvent) => void;
 }) {
     return (
         <div className="px-4 flex border-b border-white/30 py-2">
-            <h3 className="text-lg font-semibold leading-9 align-middle text-white flex-grow">{name}</h3>
+            <h3 className="text-lg font-semibold leading-9 align-middle text-white flex-grow">
+                <EditableText
+                    placeholder="Placeholder"
+                    value={name}
+                    onSubmit={onWorkspaceNameChange}
+                    neverEmpty={true}
+                />
+            </h3>
             <div className="flex-none">
                 <div className="flex">
                     <Button outline onClick={() => onLayoutOrientation(Orientation.Quadrant)}>
@@ -71,9 +92,26 @@ function ContentArea({
     workspace: IWorkspace;
     onLayoutOrientation: (o: Orientation) => void;
 }) {
+    // Mutators
+    const [updateWorkspace] = useMutation(M_UPDATE_WORKSPACE);
+    const onWorkspaceNameChangeCb = useCallback(
+        ({ value }: EditableTextSubmitEvent) => {
+            updateWorkspace({
+                variables: {
+                    id: workspace._id,
+                    workspace: { name: value },
+                },
+            });
+        },
+        [updateWorkspace, workspace]
+    );
     return (
         <div className="flex flex-col h-full max-h-full">
-            <WorkspaceHeader name={workspace.name} onLayoutOrientation={onLayoutOrientation} />
+            <WorkspaceHeader
+                name={workspace.name}
+                onLayoutOrientation={onLayoutOrientation}
+                onWorkspaceNameChange={onWorkspaceNameChangeCb}
+            />
             <Journal />
         </div>
     );

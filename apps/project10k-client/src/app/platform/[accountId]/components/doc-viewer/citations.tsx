@@ -85,15 +85,6 @@ export function Citation({
         <div className="bg-zinc-900 mb-2 cursor-move rounded-sm" draggable={true} onDragStart={onDragStartCb}>
             <div className="px-4 py-5">
                 <div className="flex space-x-3">
-                    <div className="flex-shrink-0">
-                        {/* <Image
-                            width={100}
-                            height={100}
-                            alt=""
-                            src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                            className="h-10 w-10 rounded-full"
-                        /> */}
-                    </div>
                     <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-white">
                             <span>
