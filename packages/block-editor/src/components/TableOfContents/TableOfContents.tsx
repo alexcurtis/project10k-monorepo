@@ -3,6 +3,8 @@
 import { memo, useEffect, useState } from "react";
 import { Editor as CoreEditor } from "@tiptap/core";
 import { TableOfContentsStorage } from "@tiptap-pro/extension-table-of-contents";
+import { useEditorState } from "@tiptap/react";
+import deepEql from "fast-deep-equal";
 
 import { cn } from "../../lib/utils";
 
@@ -13,32 +15,21 @@ export type TableOfContentsProps = {
 
 export const TableOfContents = memo(
   ({ editor, onItemClick }: TableOfContentsProps) => {
-    const [data, setData] = useState<TableOfContentsStorage | null>(null);
-
-    useEffect(() => {
-      const handler = ({ editor: currentEditor }: { editor: CoreEditor }) => {
-        setData({ ...currentEditor.extensionStorage.tableOfContents });
-      };
-
-      handler({ editor });
-
-      editor.on("update", handler);
-      editor.on("selectionUpdate", handler);
-
-      return () => {
-        editor.off("update", handler);
-        editor.off("selectionUpdate", handler);
-      };
-    }, [editor]);
+    const content = useEditorState({
+      editor,
+      selector: (ctx) =>
+        (ctx.editor.storage.tableOfContents as TableOfContentsStorage).content,
+      equalityFn: deepEql,
+    });
 
     return (
       <>
         <div className="mb-2 text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400">
           Table of contents
         </div>
-        {data && data.content.length > 0 ? (
+        {content.length > 0 ? (
           <div className="flex flex-col gap-1">
-            {data.content.map((item) => (
+            {content.map((item) => (
               <a
                 key={item.id}
                 href={`#${item.id}`}

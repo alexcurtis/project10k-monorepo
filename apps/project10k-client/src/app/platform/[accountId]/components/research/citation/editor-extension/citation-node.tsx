@@ -46,7 +46,7 @@ function Citation(props: ICitationProps) {
             <div className="flex-grow ml-4">
                 <p>{node.content.content[0].content.content[0].text}</p>
             </div>
-            <div className="absolute -right-10 top-0 h-full w-10">
+            <div className="absolute -right-14 top-0 h-full w-10">
                 <Button outline onClick={onNavigateToFilingCb}>
                     <ArrowRightIcon className="stroke-white" />
                 </Button>

@@ -23,7 +23,7 @@ export const useBlockEditor = ({
     {
       // Performance Options
       // https://tiptap.dev/blog/release-notes/say-hello-to-tiptap-2-5-our-most-performant-editor-yet
-      immediatelyRender: false,
+      immediatelyRender: true,
       shouldRerenderOnTransaction: false,
       //----
       content: content,

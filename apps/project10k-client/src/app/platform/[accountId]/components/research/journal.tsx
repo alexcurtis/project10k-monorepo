@@ -56,7 +56,7 @@ function JournalHeader({
     onJournalNameChange: (name: EditableTextSubmitEvent) => void;
 }) {
     return (
-        <div className="mx-24 pt-12">
+        <div className="mx-24 pt-12 flex-none">
             <p className="text-4xl font-semibold text-white">
                 <EditableText
                     placeholder="Placeholder"
@@ -117,21 +117,25 @@ function JournalEditor({ journal }: { journal: IJournal }) {
     }
 
     return (
-        <>
+        <div className="flex flex-col">
             <JournalHeader journalName={journal.name} onJournalNameChange={onJournalNameChangeCb} />
-            {errors.length > 0 ? (
-                <InlineError
-                    className="mx-24 mt-4"
-                    headline={`There was a problem saving the Journal: ${journal.name}`}
-                    errors={errors}
+            <div className="flex-none">
+                {errors.length > 0 ? (
+                    <InlineError
+                        className="mx-24 mt-4"
+                        headline={`There was a problem saving the Journal: ${journal.name}`}
+                        errors={errors}
+                    />
+                ) : null}
+            </div>
+            <div className="flex-grow overflow-auto">
+                <BlockEditor
+                    content={journal.journalEntry.content}
+                    onUpdate={updateJournalEntryCb}
+                    extensions={[Citation, CitationNode]}
                 />
-            ) : null}
-            <BlockEditor
-                content={journal.journalEntry.content}
-                onUpdate={updateJournalEntryCb}
-                extensions={[Citation, CitationNode]}
-            />
-        </>
+            </div>
+        </div>
     );
 }
 

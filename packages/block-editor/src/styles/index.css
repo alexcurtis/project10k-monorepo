@@ -1,18 +1,21 @@
 .ProseMirror {
   @apply caret-black dark:caret-white outline-0 pr-8 pl-20 py-16 z-0 lg:pl-8 lg:pr-8 mx-auto;
 
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+
   & > * {
     margin-left: 4rem;
     margin-right: 4rem;
   }
 
   .selection {
-    @apply inline;
+    @apply inline-block;
   }
 
   .selection,
   *::selection {
-    @apply bg-black/10 dark:bg-white/20;
+    @apply bg-black/10 dark:bg-white/20 inline-block;
   }
 
   & > .react-renderer {
@@ -32,15 +35,15 @@
   }
 }
 
-[data-theme='slash-command'] {
+[data-theme="slash-command"] {
   width: 1000vw;
 }
 
-@import './partials/animations.css';
-@import './partials/blocks.css';
-@import './partials/code.css';
-@import './partials/collab.css';
-@import './partials/lists.css';
-@import './partials/placeholder.css';
-@import './partials/table.css';
-@import './partials/typography.css';
+@import "./partials/animations.css";
+@import "./partials/blocks.css";
+@import "./partials/code.css";
+@import "./partials/collab.css";
+@import "./partials/lists.css";
+@import "./partials/placeholder.css";
+@import "./partials/table.css";
+@import "./partials/typography.css";

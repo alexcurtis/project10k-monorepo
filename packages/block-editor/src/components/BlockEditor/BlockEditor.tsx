@@ -36,7 +36,7 @@ export const BlockEditor = ({
   }
 
   return (
-    <div className="overflow-auto" ref={menuContainerRef}>
+    <div ref={menuContainerRef}>
       <div className="relative flex flex-col flex-1 h-full overflow-hidden">
         <ContentItemMenu editor={editor} />
         <LinkMenu editor={editor} appendTo={menuContainerRef} />

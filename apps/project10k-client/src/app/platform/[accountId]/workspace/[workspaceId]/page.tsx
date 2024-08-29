@@ -107,12 +107,16 @@ function ContentArea({
     );
     return (
         <div className="flex flex-col h-full max-h-full">
-            <WorkspaceHeader
-                name={workspace.name}
-                onLayoutOrientation={onLayoutOrientation}
-                onWorkspaceNameChange={onWorkspaceNameChangeCb}
-            />
-            <Journal />
+            <div className="flex-none">
+                <WorkspaceHeader
+                    name={workspace.name}
+                    onLayoutOrientation={onLayoutOrientation}
+                    onWorkspaceNameChange={onWorkspaceNameChangeCb}
+                />
+            </div>
+            <div className="flex-grow">
+                <Journal />
+            </div>
         </div>
     );
 }
