@@ -258,3 +258,8 @@ export const M_CREATE_NEW_JOURNAL_ON_WORKSPACE = gql`mutation CreateNewJournalOn
 	createNewJournalOnWorkspace(id: $id)${WORKSPACE_QL_RESPONSE}
 }
 `;
+
+export const M_UPDATE_CHECKLIST = gql`mutation updateChecklist($id: ID!, $checklist: InputCheckListDto!) {
+	updateCheckList(id: $id, checklist: $checklist) ${CHECKLIST_QL_RESPONSE}
+}
+`;

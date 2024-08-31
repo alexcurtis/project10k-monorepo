@@ -1,12 +1,12 @@
 "use client";
 import dynamic from "next/dynamic";
-import React, { useCallback, useState } from "react";
-import { useQuery } from "@apollo/client";
-import { addStyles, EditableMathField } from "react-mathquill";
+import React, { FormEvent, useCallback, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { EditableMathField } from "react-mathquill";
 
 import { Loader } from "@vspark/catalyst/loader";
 
-import { Q_CHECKLIST, Q_MY_ACCOUNT } from "@platform/graphql";
+import { M_UPDATE_CHECKLIST, Q_CHECKLIST, Q_MY_ACCOUNT } from "@platform/graphql";
 import { IAccountQL, ICheckListQL } from "@platform/types/ql";
 import { ICheckList } from "@platform/types/entities";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
@@ -18,6 +18,7 @@ import { Input } from "@vspark/catalyst/input";
 import { Switch } from "@vspark/catalyst/switch";
 
 import "./mathquill.css";
+import { PrimaryActionButton } from "@vspark/catalyst/buttons";
 
 function PageLoader() {
     return (
@@ -41,59 +42,83 @@ function LeafEdit({ checklist, onCancel }: { checklist: ICheckList; onCancel: ()
     const [formula, setFormula] = useState(checklist.formula);
     const [metric, setMetric] = useState(checklist.metric);
     const [textual, setTextual] = useState<boolean>(checklist.textual || false);
+    const [updateCheckList, { loading }] = useMutation(M_UPDATE_CHECKLIST);
+
+    const onSubmitCb = useCallback(
+        (event: FormEvent<HTMLFormElement>) => {
+            updateCheckList({
+                variables: {
+                    id: checklist._id,
+                    checklist: {
+                        question,
+                        why,
+                        formula,
+                        metric,
+                        textual,
+                    },
+                },
+                onCompleted: () => onCancel(),
+            });
+            event.preventDefault();
+        },
+        [updateCheckList, checklist, question, why, formula, metric, textual]
+    );
+
     return (
         <li className="p-4 bg-zinc-900 mb-2 cursor-move rounded-sm">
             <div className="p-4">
-                <DescriptionList>
-                    <DescriptionTerm className="leading-9">Question</DescriptionTerm>
-                    <DescriptionDetails className="leading-9">
-                        <Field>
-                            <Input name="question" value={question} onChange={(e) => setQuestion(e.target.value)} />
-                        </Field>
-                    </DescriptionDetails>
-                    <DescriptionTerm className="leading-9">Why? (Optional)</DescriptionTerm>
-                    <DescriptionDetails className="leading-9">
-                        <Field>
-                            <Input name="why" value={why} onChange={(e) => setWhy(e.target.value)} />
-                        </Field>
-                    </DescriptionDetails>
-                    <DescriptionTerm className="leading-9">Formula (Optional)</DescriptionTerm>
-                    <DescriptionDetails>
-                        <Field>
-                            <EditableMathField latex={formula} onChange={(e) => setFormula(e.latex())} />
-                        </Field>
-                    </DescriptionDetails>
-                    <DescriptionTerm className="leading-9">Metric</DescriptionTerm>
-                    <DescriptionDetails className="leading-9">
-                        <Field className="w-64">
-                            <Select name="metric" value={metric} onChange={(e) => setMetric(e.target.value)}>
-                                <option value="PASS_FAIL">Pass/Fail</option>
-                                <option value="SCALE">Scale</option>
-                                <option value="NONE">None</option>
-                            </Select>
-                        </Field>
-                    </DescriptionDetails>
-                    {metric === "SCALE" ? (
-                        <>
-                            <DescriptionTerm className="leading-9">Scale</DescriptionTerm>
-                            <DescriptionDetails className="leading-9">{checklist.scale?.amazing}</DescriptionDetails>
-                        </>
-                    ) : null}
-                    <DescriptionTerm className="leading-9">Textual Answer</DescriptionTerm>
-                    <DescriptionDetails className="leading-9">
-                        <Field>
-                            <Switch name="textual" checked={textual} onChange={(e) => setTextual(e)} />
-                        </Field>
-                    </DescriptionDetails>
-                </DescriptionList>
-                <div className="flex justify-end">
-                    <Button outline onClick={onCancel}>
-                        Cancel
-                    </Button>
-                    <Button className="ml-2" color="indigo">
-                        Save
-                    </Button>
-                </div>
+                <form onSubmit={onSubmitCb}>
+                    <DescriptionList>
+                        <DescriptionTerm className="leading-9">Question</DescriptionTerm>
+                        <DescriptionDetails className="leading-9">
+                            <Field>
+                                <Input name="question" value={question} onChange={(e) => setQuestion(e.target.value)} />
+                            </Field>
+                        </DescriptionDetails>
+                        <DescriptionTerm className="leading-9">Why? (Optional)</DescriptionTerm>
+                        <DescriptionDetails className="leading-9">
+                            <Field>
+                                <Input name="why" value={why} onChange={(e) => setWhy(e.target.value)} />
+                            </Field>
+                        </DescriptionDetails>
+                        <DescriptionTerm className="leading-9">Formula (Optional)</DescriptionTerm>
+                        <DescriptionDetails>
+                            <Field>
+                                <EditableMathField latex={formula} onChange={(e) => setFormula(e.latex())} />
+                            </Field>
+                        </DescriptionDetails>
+                        <DescriptionTerm className="leading-9">Metric</DescriptionTerm>
+                        <DescriptionDetails className="leading-9">
+                            <Field className="w-64">
+                                <Select name="metric" value={metric} onChange={(e) => setMetric(e.target.value)}>
+                                    <option value="PASS_FAIL">Pass/Fail</option>
+                                    <option value="SCALE">Scale</option>
+                                    <option value="NONE">None</option>
+                                </Select>
+                            </Field>
+                        </DescriptionDetails>
+                        {metric === "SCALE" ? (
+                            <>
+                                <DescriptionTerm className="leading-9">Scale</DescriptionTerm>
+                                <DescriptionDetails className="leading-9">
+                                    {checklist.scale?.amazing}
+                                </DescriptionDetails>
+                            </>
+                        ) : null}
+                        <DescriptionTerm className="leading-9">Textual Answer</DescriptionTerm>
+                        <DescriptionDetails className="leading-9">
+                            <Field>
+                                <Switch name="textual" checked={textual} onChange={(e) => setTextual(e)} />
+                            </Field>
+                        </DescriptionDetails>
+                    </DescriptionList>
+                    <div className="flex justify-end">
+                        <Button outline onClick={onCancel}>
+                            Cancel
+                        </Button>
+                        <PrimaryActionButton loading={loading} disabled={loading} label="Save" className="ml-2" />
+                    </div>
+                </form>
             </div>
         </li>
     );
