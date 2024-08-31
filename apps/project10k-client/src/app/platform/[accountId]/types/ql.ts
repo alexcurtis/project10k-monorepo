@@ -1,6 +1,14 @@
-import { IAccount, IWorkspace, ICompany, ICompanyFiling, IJournal, ICitation, IUser } from "./entities";
+import { IAccount, IWorkspace, ICompany, ICompanyFiling, IJournal, ICitation, IUser, ICheckList } from "./entities";
 
 export interface IQueryLanguage {}
+
+export interface ICheckListQL extends IQueryLanguage {
+    checklist: ICheckList;
+}
+
+export interface ICheckListsQL extends IQueryLanguage {
+    checklists: ICheckList[];
+}
 
 export interface IAccountQL extends IQueryLanguage {
     account: IAccount;

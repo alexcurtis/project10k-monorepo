@@ -11,6 +11,7 @@ import { FolderIcon, CubeIcon } from "@heroicons/react/24/solid";
 import { IAccount, IUser } from "./types/entities";
 
 import { ArrowRightStartOnRectangleIcon, ChevronUpIcon } from "@heroicons/react/16/solid";
+import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 
 interface SidebarLink {
     name: string;
@@ -62,7 +63,7 @@ export function ApplicationLinks({ navigation, pathname }: { navigation: Sidebar
     );
 }
 
-export function User({ user }: { user: IUser }) {
+export function User({ user, account }: { user: IUser; account: IAccount }) {
     return (
         <>
             <Dropdown>
@@ -71,6 +72,9 @@ export function User({ user }: { user: IUser }) {
                         <span className="min-w-0">
                             <span className="block truncate text-sm/5 font-medium text-zinc-950 dark:text-white">
                                 {user.firstName}
+                            </span>
+                            <span className="block truncate text-xs/5 font-normal text-zinc-500 dark:text-zinc-400">
+                                {account.name}
                             </span>
                             <span className="block truncate text-xs/5 font-normal text-zinc-500 dark:text-zinc-400">
                                 {user.email}
@@ -94,13 +98,14 @@ export function Sidebar({ user, account }: { user: IUser; account: IAccount }) {
     const pathname = usePathname();
     const navigation: SidebarLink[] = [
         { name: "Workspaces", href: `/platform/${account._id}/workspaces`, icon: FolderIcon },
+        { name: "Checklists", href: `/platform/${account._id}/checklists`, icon: ShieldCheckIcon },
     ];
     return (
         <div className="hidden xl:fixed xl:inset-y-0 xl:z-40 xl:flex xl:w-48 xl:flex-col h-screen">
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 p-2 ring-1 ring-white/30">
                 <Logo />
                 <ApplicationLinks navigation={navigation} pathname={pathname} />
-                <User user={user} />
+                <User user={user} account={account} />
             </div>
         </div>
     );

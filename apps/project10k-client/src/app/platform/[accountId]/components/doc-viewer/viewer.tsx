@@ -11,6 +11,7 @@ import { CompanyFilings } from "./filings";
 import { CompanyDocument } from "./document";
 import { CompanySearch } from "./search";
 import { Citations } from "./citations";
+import { Checklists } from "./citations";
 
 function DocViewerLayout() {
     // Load The Doc Viewer Page Based On Context
@@ -21,6 +22,9 @@ function DocViewerLayout() {
         }
         case DocViewerPage.Citations: {
             return <Citations />;
+        }
+        case DocViewerPage.Checklists: {
+            return <Checklists />;
         }
         case DocViewerPage.Filings: {
             return <CompanyFilings />;
@@ -34,7 +38,11 @@ function DocViewerLayout() {
 const fixedTabs: ITab[] = [
     {
         id: DocViewerPage.Citations,
-        name: "All Citations",
+        name: "Citations",
+    },
+    {
+        id: DocViewerPage.Checklists,
+        name: "Checklists",
     },
 ];
 

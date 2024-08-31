@@ -168,6 +168,7 @@ export const WORKSPACE_QL_RESPONSE = `
 export const ACCOUNT_QL_RESPONSE = `
     {
         _id
+        name
         workspaces {
             _id
             account {
@@ -176,6 +177,13 @@ export const ACCOUNT_QL_RESPONSE = `
             name
             updatedAt
             journals {
+                _id
+            }
+        }
+        checklists {
+            _id
+            name
+            children {
                 _id
             }
         }
@@ -202,11 +210,48 @@ export const LOGIN_QL_RESPONSE = `
     }
 `;
 
+export const CHECKLIST_QL_RESPONSE = `
+    {
+        _id
+        account {
+            _id
+        }
+        name
+        parent
+        children {
+            _id
+        }
+        question
+        formula
+        why
+        textual
+        metric
+        scale {
+            danger
+            fail
+            pass
+            amazing
+        }
+    }
+`;
+
 // Queries -----------------------------------------
 export const Q_MY_ACCOUNT = gql`query getAccount($id: ID!) {
     account(id: $id) ${ACCOUNT_QL_RESPONSE}
     me ${USER_QL_RESPONSE}
 }`;
+
+export const Q_CHECKLIST = gql`
+    query getCheckList($id: ID!) {
+        checklist(id: $id) ${CHECKLIST_QL_RESPONSE}
+    }
+`;
+
+export const Q_MY_CHECKLISTS = gql`
+    query getCheckLists($accountId: ID!) {
+        checklists(accountId: $accountId) ${CHECKLIST_QL_RESPONSE}
+    }
+`;
 
 // Mutators -----------------------------------------
 export const M_CREATE_NEW_JOURNAL_ON_WORKSPACE = gql`mutation CreateNewJournalOnWorkspace($id: ID!) {

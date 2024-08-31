@@ -64,12 +64,32 @@ export type IWorkspace = {
     journals: IJournal[];
 };
 
+export type ICheckListScale = {
+    danger: number;
+    fail: number;
+    pass: number;
+    amazing: number;
+};
+
+export type ICheckList = {
+    _id: string;
+    account: IAccount;
+    name: string;
+    parent?: ICheckList;
+    children?: ICheckList[];
+    question?: string;
+    formula?: string;
+    why?: string;
+    textual?: boolean;
+    metric?: string;
+    scale?: ICheckListScale;
+};
+
 export type IAccount = {
     _id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
+    name: string;
     workspaces: IWorkspace[];
+    checklists: ICheckList[];
 };
 
 export type IUser = {
@@ -91,6 +111,7 @@ export type IWorkspaceContext = {
 export enum DocViewerPage {
     Empty,
     Citations,
+    Checklists,
     Filings,
     Document,
 }
