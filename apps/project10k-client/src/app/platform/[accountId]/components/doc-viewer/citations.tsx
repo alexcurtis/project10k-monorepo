@@ -133,7 +133,7 @@ export function Citation({
 
 function CitationsLoader() {
     return (
-        <div className="p-2">
+        <div className="p-4">
             <Loader />
         </div>
     );

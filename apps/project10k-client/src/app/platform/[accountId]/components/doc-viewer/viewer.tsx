@@ -11,7 +11,7 @@ import { CompanyFilings } from "./filings";
 import { CompanyDocument } from "./document";
 import { CompanySearch } from "./search";
 import { Citations } from "./citations";
-import { Checklists } from "./citations";
+import { CheckLists } from "./checklists";
 
 function DocViewerLayout() {
     // Load The Doc Viewer Page Based On Context
@@ -24,7 +24,7 @@ function DocViewerLayout() {
             return <Citations />;
         }
         case DocViewerPage.Checklists: {
-            return <Checklists />;
+            return <CheckLists />;
         }
         case DocViewerPage.Filings: {
             return <CompanyFilings />;
