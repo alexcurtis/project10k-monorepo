@@ -1,11 +1,12 @@
 "use client";
+import dynamic from "next/dynamic";
 import React, { DragEvent, ChangeEvent, FormEvent, useCallback, useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
-import { EditableMathField } from "react-mathquill";
+import { ApolloClient, gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
+import { EditableMathFieldProps } from "react-mathquill";
 
 import { Loader } from "@vspark/catalyst/loader";
 
-import { M_UPDATE_CHECKLIST, Q_CHECKLIST, Q_MY_ACCOUNT } from "@platform/graphql";
+import { CHECKLIST_QL_RESPONSE, M_UPDATE_CHECKLIST, Q_CHECKLIST, Q_MY_ACCOUNT } from "@platform/graphql";
 import { ICheckListQL } from "@platform/types/ql";
 import { ICheckList, ICheckListScale } from "@platform/types/entities";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
@@ -17,13 +18,41 @@ import { Select } from "@vspark/catalyst/select";
 import { Input } from "@vspark/catalyst/input";
 import { Switch } from "@vspark/catalyst/switch";
 
+const EditableMathField = dynamic<EditableMathFieldProps>(
+    () => import("react-mathquill").then((mod) => mod.EditableMathField),
+    {
+        ssr: false,
+    }
+);
+
 import "./mathquill.css";
+
+// Build Out The CheckList Tree From The Apollo Cache
+function GetCheckListTreeFromApolloCache(client: ApolloClient<object>, node: ICheckList): ICheckList {
+    const id = `CheckList:${node._id}`;
+    const checklist = client.readFragment<ICheckList>({
+        id, // Checklist Cache ID
+        fragment: gql`
+            fragment CheckList on CheckList ${CHECKLIST_QL_RESPONSE}
+        `,
+    });
+    // For Some Reason Not Found In Cache. As Node Has Bare-Bones CheckList Data. Better To Return That
+    if (!checklist) {
+        return node;
+    }
+    const { children } = checklist;
+    // Populate The Children (Recursion)
+    const populatedChildren = children?.map((child) => {
+        return GetCheckListTreeFromApolloCache(client, child);
+    });
+    return { ...checklist, children: populatedChildren };
+}
 
 function NodeLoader() {
     return (
-        <div className="">
+        <>
             <Loader />
-        </div>
+        </>
     );
 }
 
@@ -126,15 +155,15 @@ function LeafEdit({ checklist, onCancel }: { checklist: ICheckList; onCancel: ()
                                     name="scale_danger"
                                     label="Fail ❌"
                                     labelClassName="text-red-500"
-                                    value={scale.danger}
-                                    onChange={(e) => setScale({ ...scale, danger: Number(e.target.value) })}
+                                    value={scale.fail}
+                                    onChange={(e) => setScale({ ...scale, fail: Number(e.target.value) })}
                                 />
                                 <ScaleAttribute
                                     name="scale_fail"
                                     label="Danger 🧨"
                                     labelClassName="text-yellow-500"
-                                    value={scale.fail}
-                                    onChange={(e) => setScale({ ...scale, fail: Number(e.target.value) })}
+                                    value={scale.danger}
+                                    onChange={(e) => setScale({ ...scale, danger: Number(e.target.value) })}
                                 />
                                 <ScaleAttribute
                                     name="scale_pass"
@@ -277,6 +306,7 @@ function Parent({ checklist }: { checklist: ICheckList }) {
 }
 
 function Node({ checklist }: { checklist: ICheckList }) {
+    const client = useApolloClient();
     // Checklist Node Query
     const { loading, data } = useQuery<ICheckListQL>(Q_CHECKLIST, {
         variables: { id: checklist._id },
@@ -284,9 +314,17 @@ function Node({ checklist }: { checklist: ICheckList }) {
 
     const onDragStartCb = useCallback(
         (event: DragEvent<HTMLDivElement>) => {
-            event.dataTransfer.setData("checklist", JSON.stringify(checklist));
+            // Stop Drag Event Bubbling Up To Parent (Tree View)
+            event.stopPropagation();
+            if (!data) {
+                return;
+            }
+            const populatedCheckList = GetCheckListTreeFromApolloCache(client, data.checklist);
+            event.dataTransfer.setData("checklist", JSON.stringify(populatedCheckList));
+            console.log("checklist", populatedCheckList);
+            console.log("checklist json", JSON.stringify(populatedCheckList));
         },
-        [checklist]
+        [client, data]
     );
 
     if (loading || !data) {
@@ -300,7 +338,7 @@ function Node({ checklist }: { checklist: ICheckList }) {
             <div
                 draggable={true}
                 onDragStart={onDragStartCb}
-                className="ml-1 before:absolute before:border-t-4 before:border-solid before:border-indigo-400 before:top-8 before:w-6 before:left-0"
+                className="ml-1 before:absolute before:border-t-4 before:border-solid before:border-indigo-400 before:top-8 before:w-5 before:left-px"
             >
                 {name ? (
                     <Parent key={checklist._id} checklist={data.checklist} />

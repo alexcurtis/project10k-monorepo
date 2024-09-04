@@ -3404,6 +3404,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-slider@npm:^1.3.6":
+  version: 1.3.6
+  resolution: "@types/react-slider@npm:1.3.6"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10c0/00edb0208fae82b29892226635a7ae0899cfe945574f2827d20c840e7906c8ee166754fb393753eee35742e889515ec748592a6e1c35b9e63f78438442698fa1
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*, @types/react@npm:^18":
   version: 18.3.3
   resolution: "@types/react@npm:18.3.3"
@@ -3642,6 +3651,7 @@ __metadata:
     "@types/node": "npm:^20"
     "@types/react": "npm:^18"
     "@types/react-dom": "npm:^18"
+    "@types/react-slider": "npm:^1.3.6"
     "@types/uuid": "npm:^10.0.0"
     "@vspark/block-editor": "workspace:^"
     "@vspark/catalyst": "workspace:^"
@@ -3662,6 +3672,7 @@ __metadata:
     react-hot-toast: "npm:^2.4.1"
     react-mathquill: "npm:^1.0.3"
     react-resizable-panels: "npm:^2.0.22"
+    react-slider: "npm:^2.0.6"
     tailwindcss: "npm:^3.4.1"
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
     typescript: "npm:^5"
@@ -7993,6 +8004,17 @@ __metadata:
     react: ^16.14.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
   checksum: 10c0/03a177fd3c381c30fbd615a189d665f2a2236b200e26e977a0540276fee9f26010ff81906ae4aec249d9b82653c17d59d4d38b245a6ffab13c8dc4e8f536a178
+  languageName: node
+  linkType: hard
+
+"react-slider@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "react-slider@npm:2.0.6"
+  dependencies:
+    prop-types: "npm:^15.8.1"
+  peerDependencies:
+    react: ^16 || ^17 || ^18
+  checksum: 10c0/15396f103d5c840822395e6fe666850c71bb0a66647204c5646c21f58fa838fe28f652810bacdd386ffa8df26895812f926f174f6f6ae67f456dbd9c5a3e5bfa
   languageName: node
   linkType: hard
 

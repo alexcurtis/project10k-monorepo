@@ -15,6 +15,7 @@ import { JOURNAL_ENTRY_QL_RESPONSE, JOURNAL_FULLFAT_QL_RESPONSE } from "@platfor
 import { IJournal, IWorkspace } from "@platform/types/entities";
 
 import { Citation, CitationNode } from "./citation/editor-extension";
+import { CheckList, CheckListLeafNode } from "./checklist/editor-extension";
 import { EmptyJournal } from "./empty";
 
 import "@vspark/block-editor/src/app/editor.css";
@@ -132,7 +133,7 @@ function JournalEditor({ journal }: { journal: IJournal }) {
                 <BlockEditor
                     content={journal.journalEntry.content}
                     onUpdate={updateJournalEntryCb}
-                    extensions={[Citation, CitationNode]}
+                    extensions={[Citation, CitationNode, CheckList, CheckListLeafNode]}
                 />
             </div>
         </div>

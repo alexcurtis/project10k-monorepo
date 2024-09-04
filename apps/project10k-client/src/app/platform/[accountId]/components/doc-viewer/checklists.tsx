@@ -1,9 +1,6 @@
 "use client";
-import dynamic from "next/dynamic";
 import React from "react";
 import { useQuery } from "@apollo/client";
-import { BriefcaseIcon } from "@heroicons/react/24/solid";
-
 import { Loader } from "@vspark/catalyst/loader";
 import { Q_MY_ACCOUNT } from "@platform/graphql";
 import { IAccountQL } from "@platform/types/ql";
