@@ -27,6 +27,13 @@ const EditableMathField = dynamic<EditableMathFieldProps>(
 
 import "./mathquill.css";
 
+export const CheckListStateIcons = {
+    fail: "❌",
+    danger: "🧨",
+    pass: "✅",
+    amazing: "🎉",
+};
+
 // Build Out The CheckList Tree From The Apollo Cache
 function GetCheckListTreeFromApolloCache(client: ApolloClient<object>, node: ICheckList): ICheckList {
     const id = `CheckList:${node._id}`;
@@ -153,28 +160,28 @@ function LeafEdit({ checklist, onCancel }: { checklist: ICheckList; onCancel: ()
                             <DescriptionDetails className="leading-9">
                                 <ScaleAttribute
                                     name="scale_danger"
-                                    label="Fail ❌"
+                                    label={`Fail ${CheckListStateIcons.fail}`}
                                     labelClassName="text-red-500"
                                     value={scale.fail}
                                     onChange={(e) => setScale({ ...scale, fail: Number(e.target.value) })}
                                 />
                                 <ScaleAttribute
                                     name="scale_fail"
-                                    label="Danger 🧨"
+                                    label={`Danger ${CheckListStateIcons.danger}`}
                                     labelClassName="text-yellow-500"
                                     value={scale.danger}
                                     onChange={(e) => setScale({ ...scale, danger: Number(e.target.value) })}
                                 />
                                 <ScaleAttribute
                                     name="scale_pass"
-                                    label="Pass ✅"
+                                    label={`Pass ${CheckListStateIcons.pass}`}
                                     labelClassName="text-green-500"
                                     value={scale.pass}
                                     onChange={(e) => setScale({ ...scale, pass: Number(e.target.value) })}
                                 />
                                 <ScaleAttribute
                                     name="scale_amazing"
-                                    label="Amazing 🎉"
+                                    label={`Amazing ${CheckListStateIcons.amazing}`}
                                     className="mb-0"
                                     labelClassName="text-white"
                                     value={scale.amazing}
@@ -321,8 +328,6 @@ function Node({ checklist }: { checklist: ICheckList }) {
             }
             const populatedCheckList = GetCheckListTreeFromApolloCache(client, data.checklist);
             event.dataTransfer.setData("checklist", JSON.stringify(populatedCheckList));
-            console.log("checklist", populatedCheckList);
-            console.log("checklist json", JSON.stringify(populatedCheckList));
         },
         [client, data]
     );

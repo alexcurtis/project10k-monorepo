@@ -2,22 +2,30 @@ import { ICheckList } from "@/app/platform/[accountId]/types/entities";
 import { Extension } from "@tiptap/core";
 import { Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
+import { Node } from "prosemirror-model";
 
-function CreateCheckListParentNode(checklist: ICheckList, view: EditorView) {
+function CheckListNodeFactory(checklist: ICheckList, view: EditorView): Node {
+    return checklist.name ? CreateCheckListParentNode(checklist, view) : CreateCheckListLeafNode(checklist, view);
+}
+
+function CreateCheckListParentNode(checklist: ICheckList, view: EditorView): Node {
     const nodes = view.state.schema.nodes;
-    const parentNode = nodes["checklist-parent-node"];
+    const parentNode = nodes["checklistparentnode"];
     const attrs = {
         _id: checklist._id,
         name: checklist.name,
     };
-    const textNode = nodes.paragraph.create(null, [view.state.schema.text(checklist.text)]);
+    const children = checklist.children || [];
+    const childNodes = children.map((child) => {
+        return CheckListNodeFactory(child, view);
+    });
+    return parentNode.create(attrs, childNodes);
 }
 
-function CreateCheckListLeafNode(checklist: ICheckList, view: EditorView) {
+function CreateCheckListLeafNode(checklist: ICheckList, view: EditorView): Node {
     const nodes = view.state.schema.nodes;
-    const leafNode = nodes["checklist-leaf-node"];
+    const leafNode = nodes["checklistleafnode"];
     const attrs = { ...checklist };
-    // const textNode = nodes.paragraph.create(null, [view.state.schema.text(checklist.text)]);
     return leafNode.create(attrs, []);
 }
 
@@ -45,7 +53,9 @@ export const CheckList = Extension.create({
                         }
 
                         const checklist = JSON.parse(checklistTransferData) as ICheckList;
-                        const node = CreateCheckListLeafNode(checklist, view);
+                        const node = CheckListNodeFactory(checklist, view);
+
+                        //CreateCheckListLeafNode(checklist, view);
 
                         // const nodes = view.state.schema.nodes;
                         // const checklistNode = nodes["checklist-node"];

@@ -13,9 +13,11 @@ const StaticMathField = dynamic<StaticMathFieldProps>(
     }
 );
 
+import { CheckListStateIcons } from "@platform/checklists/treeview";
+
 import "@platform/checklists/mathquill.css";
 
-interface ICheckListNodeProps {
+interface ICheckListLeafNodeProps {
     updateAttributes: Function;
     node: Node & {
         attrs: {
@@ -28,21 +30,6 @@ interface ICheckListNodeProps {
             scale: ICheckListScale;
             scaleAnswer: number;
             passFailAnswer: boolean;
-            content: {
-                content: [
-                    {
-                        type: string;
-                        content: {
-                            content: [
-                                {
-                                    type: string;
-                                    text: string;
-                                }
-                            ];
-                        };
-                    }
-                ];
-            };
         };
     };
 }
@@ -109,35 +96,27 @@ function CheckListStateIcon({
     scaleAnswer: number;
     passFailAnswer: boolean;
 }) {
-    // TODO - MAKE THIS REUSABLE BETWEEN THIS AND THE CHECKLIST EDITABLE VIEW
-    const icons = {
-        fail: "❌",
-        danger: "🧨",
-        pass: "✅",
-        amazing: "🎉",
-    };
-    console.log("scaleAnswer >= scale.danger", scaleAnswer, scale.danger);
     if (metric === "PASS_FAIL") {
-        return passFailAnswer ? icons.pass : icons.fail;
+        return passFailAnswer ? CheckListStateIcons.pass : CheckListStateIcons.fail;
     }
     if (metric === "SCALE") {
         if (scaleAnswer >= scale.amazing) {
-            return icons.amazing;
+            return CheckListStateIcons.amazing;
         }
         if (scaleAnswer >= scale.pass) {
-            return icons.pass;
+            return CheckListStateIcons.pass;
         }
         if (scaleAnswer >= scale.danger) {
-            return icons.danger;
+            return CheckListStateIcons.danger;
         }
-        return icons.fail;
+        return CheckListStateIcons.fail;
     }
 }
 
-function CheckListLeaf(props: ICheckListNodeProps) {
+function CheckListLeaf(props: ICheckListLeafNodeProps) {
     const { node, updateAttributes } = props;
     const { attrs } = node;
-    const { _id, question, why, formula, textual, metric, scale, scaleAnswer, passFailAnswer } = attrs;
+    const { question, why, formula, textual, metric, scale, scaleAnswer, passFailAnswer } = attrs;
 
     const onScaleAnswerChanged = useCallback(
         (scaleAnswer: number) => {
@@ -187,7 +166,7 @@ function CheckListLeaf(props: ICheckListNodeProps) {
 }
 
 export const CheckListLeafNode = Node.create({
-    name: "checklist-leaf-node",
+    name: "checklistleafnode",
     group: "block",
     content: "block*",
     isolating: true,
@@ -246,4 +225,60 @@ export const CheckListLeafNode = Node.create({
     },
 });
 
-// export default CitationNode;
+interface ICheckListParentNodeProps {
+    node: Node & {
+        attrs: {
+            _id: string;
+            name: string;
+        };
+    };
+}
+
+function CheckListParent(props: ICheckListParentNodeProps) {
+    const { node } = props;
+    const { attrs } = node;
+    const { name } = attrs;
+
+    return (
+        <NodeViewWrapper className="checklist-node text-white bg-zinc-900 p-4 rounded-sm">
+            <div className="">
+                <h1 contentEditable={false}>{name}</h1>
+                <NodeViewContent className="content" />
+            </div>
+        </NodeViewWrapper>
+    );
+}
+
+export const CheckListParentNode = Node.create({
+    name: "checklistparentnode",
+    group: "block",
+    content: "(checklistparentnode|checklistleafnode)*",
+    isolating: true,
+    draggable: true,
+    addAttributes() {
+        return {
+            _id: {
+                default: null,
+            },
+            name: {
+                default: null,
+            },
+        };
+    },
+
+    parseHTML() {
+        return [
+            {
+                tag: "div",
+            },
+        ];
+    },
+
+    renderHTML({ HTMLAttributes }) {
+        return ["div", mergeAttributes(HTMLAttributes)];
+    },
+
+    addNodeView() {
+        return ReactNodeViewRenderer(CheckListParent);
+    },
+});
