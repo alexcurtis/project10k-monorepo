@@ -55,23 +55,8 @@ export const CheckList = Extension.create({
                         const checklist = JSON.parse(checklistTransferData) as ICheckList;
                         const node = CheckListNodeFactory(checklist, view);
 
-                        //CreateCheckListLeafNode(checklist, view);
-
-                        // const nodes = view.state.schema.nodes;
-                        // const checklistNode = nodes["checklist-node"];
-                        // const textNode = nodes.paragraph.create(null, [view.state.schema.text(checklist.text)]);
-
-                        // const attrs = {
-                        //     _id: checklist._id,
-                        // };
-
                         if (coordinates) {
-                            const dropTransaction = view.state.tr.insert(
-                                coordinates.pos,
-                                node
-                                // checklistNode.create(attrs, [textNode])
-                            );
-
+                            const dropTransaction = view.state.tr.insert(coordinates.pos, node);
                             dropTransaction.setMeta("isCheckListDropTransaction", true);
                             view.dispatch(dropTransaction);
                         }

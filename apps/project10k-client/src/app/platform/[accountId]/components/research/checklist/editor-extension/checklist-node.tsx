@@ -16,12 +16,15 @@ const StaticMathField = dynamic<StaticMathFieldProps>(
 import { CheckListStateIcons } from "@platform/checklists/treeview";
 
 import "@platform/checklists/mathquill.css";
+import { Button } from "@vspark/catalyst/button";
+import { LockClosedIcon, LockOpenIcon } from "@heroicons/react/24/solid";
 
 interface ICheckListLeafNodeProps {
     updateAttributes: Function;
     node: Node & {
         attrs: {
             _id: string;
+            locked: boolean;
             question: string;
             why: string;
             formula: string;
@@ -116,7 +119,7 @@ function CheckListStateIcon({
 function CheckListLeaf(props: ICheckListLeafNodeProps) {
     const { node, updateAttributes } = props;
     const { attrs } = node;
-    const { question, why, formula, textual, metric, scale, scaleAnswer, passFailAnswer } = attrs;
+    const { locked, question, why, formula, textual, metric, scale, scaleAnswer, passFailAnswer } = attrs;
 
     const onScaleAnswerChanged = useCallback(
         (scaleAnswer: number) => {
@@ -132,6 +135,10 @@ function CheckListLeaf(props: ICheckListLeafNodeProps) {
         [updateAttributes]
     );
 
+    const onLockedChanged = useCallback(() => {
+        updateAttributes({ locked: !locked });
+    }, [updateAttributes, locked]);
+
     return (
         <NodeViewWrapper className="checklist-node text-white bg-zinc-900 p-4 rounded-sm">
             <div className="">
@@ -144,12 +151,14 @@ function CheckListLeaf(props: ICheckListLeafNodeProps) {
                     />{" "}
                     {question}
                 </h2>
+                <Button onClick={onLockedChanged}>{locked ? <LockOpenIcon /> : <LockClosedIcon />}</Button>
                 <p className="italic" contentEditable={false}>
                     {why}
                 </p>
-                <StaticMathField>{formula}</StaticMathField>
+                <StaticMathField contentEditable={false}>{formula}</StaticMathField>
                 {textual ? (
                     <NodeViewContent
+                        contentEditable={!locked}
                         as="p"
                         className="content is-editable p-4 bg-zinc-950 min-h-28 rounded-sm border border-solid border-zinc-800"
                     />
@@ -175,6 +184,9 @@ export const CheckListLeafNode = Node.create({
         return {
             _id: {
                 default: null,
+            },
+            locked: {
+                default: false,
             },
             question: {
                 default: null,
