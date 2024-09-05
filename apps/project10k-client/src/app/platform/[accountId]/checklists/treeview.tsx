@@ -116,6 +116,8 @@ function LeafEdit({ checklist, onCancel }: { checklist: ICheckList; onCancel: ()
                         metric,
                         textual,
                         scale: {
+                            min: scale.min,
+                            max: scale.max,
                             danger: scale.danger,
                             fail: scale.fail,
                             pass: scale.pass,
@@ -166,6 +168,20 @@ function LeafEdit({ checklist, onCancel }: { checklist: ICheckList; onCancel: ()
                         <>
                             <DescriptionTerm className="leading-9">Scale</DescriptionTerm>
                             <DescriptionDetails className="leading-9">
+                                <ScaleAttribute
+                                    name="scale_min"
+                                    label="Min"
+                                    labelClassName="text-white"
+                                    value={scale.min}
+                                    onChange={(e) => setScale({ ...scale, min: Number(e.target.value) })}
+                                />
+                                <ScaleAttribute
+                                    name="scale_max"
+                                    label="Max"
+                                    labelClassName="text-white"
+                                    value={scale.max}
+                                    onChange={(e) => setScale({ ...scale, max: Number(e.target.value) })}
+                                />
                                 <ScaleAttribute
                                     name="scale_danger"
                                     label={`Fail ${CheckListStateIcons.fail.icon}`}

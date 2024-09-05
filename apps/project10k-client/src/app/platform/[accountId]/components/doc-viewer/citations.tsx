@@ -22,8 +22,14 @@ import { WorkspaceContext } from "@platform/context";
 
 import { usePub } from "@platform/hooks";
 
-const dateTimeFormat = (date: Date) => format(date, "Pp");
-const dateFormat = (date: Date) => format(date, "P");
+const LOGO_DEV_PUBLIC_KEY = "pk_ewo2-MGORAq6UKF9zp-ffA";
+
+export function GenerateCompanyLogoSrcUrl(ticker: string) {
+    return `https://img.logo.dev/ticker/${ticker}?token=${LOGO_DEV_PUBLIC_KEY}`;
+}
+
+export const dateTimeFormat = (date: Date) => format(date, "Pp");
+export const dateFormat = (date: Date) => format(date, "P");
 
 // All Citations On Workspace Query - Entry Stored Seperatly from Journal (As can be big)
 const Q_CITATIONS_ON_WORKSPACE = gql`
@@ -81,10 +87,14 @@ export function Citation({
         },
         [citation]
     );
+    const logoSrc = GenerateCompanyLogoSrcUrl(citation.company.ticker[0]);
     return (
         <div className="bg-zinc-900 mb-2 cursor-move rounded-sm" draggable={true} onDragStart={onDragStartCb}>
             <div className="px-4 py-5">
                 <div className="flex space-x-3">
+                    <div className="h-12 w-12">
+                        <img className="rounded-sm" src={logoSrc} />
+                    </div>
                     <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-white">
                             <span>

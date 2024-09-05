@@ -230,6 +230,8 @@ export const CHECKLIST_QL_RESPONSE = `
         textual
         metric
         scale {
+            min
+            max
             danger
             fail
             pass

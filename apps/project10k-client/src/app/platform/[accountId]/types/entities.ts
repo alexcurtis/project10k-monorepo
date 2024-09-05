@@ -65,6 +65,8 @@ export type IWorkspace = {
 };
 
 export type ICheckListScale = {
+    min: number;
+    max: number;
     danger: number;
     fail: number;
     pass: number;

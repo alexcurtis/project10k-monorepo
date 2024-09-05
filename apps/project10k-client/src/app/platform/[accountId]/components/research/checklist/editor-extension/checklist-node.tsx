@@ -65,8 +65,8 @@ function MetricScale({
     return (
         <ReactSlider
             className="h-12"
-            min={0}
-            max={max}
+            min={scale.min}
+            max={scale.max}
             marks
             value={value}
             onChange={(value: number) => onScaleChanged(value)}
@@ -146,9 +146,10 @@ function CheckListQuestion({
     }
     const textColour = theme ? theme.textColour : "text-white";
     return (
-        <h2 className={textColour}>
-            {theme ? theme.icon : null} {question}
-        </h2>
+        <h3 className={textColour}>
+            {theme ? theme.icon : null}
+            <span className="ml-3">{question}</span>
+        </h3>
     );
 }
 
@@ -177,8 +178,8 @@ function CheckListLeaf(props: ICheckListLeafNodeProps) {
 
     return (
         <NodeViewWrapper className="checklist-node text-white bg-zinc-900 p-4 rounded-sm">
-            <div className="">
-                <h2 contentEditable={false}>
+            <div>
+                <h3 contentEditable={false}>
                     <CheckListQuestion
                         question={question}
                         metric={metric}
@@ -186,7 +187,7 @@ function CheckListLeaf(props: ICheckListLeafNodeProps) {
                         scaleAnswer={scaleAnswer}
                         passFailAnswer={passFailAnswer}
                     />
-                </h2>
+                </h3>
                 <p className="italic" contentEditable={false}>
                     {why}
                 </p>
@@ -247,6 +248,8 @@ export const CheckListLeafNode = Node.create({
             },
             scale: {
                 default: {
+                    min: 0,
+                    max: 100,
                     danger: 0,
                     fail: 0,
                     pass: 0,
@@ -295,7 +298,7 @@ function CheckListParent(props: ICheckListParentNodeProps) {
 
     return (
         <NodeViewWrapper className="checklist-node text-white bg-zinc-900 p-4 rounded-sm">
-            <div className="">
+            <div>
                 <h2 className="mb-1 text-zinc-300" contentEditable={false}>
                     {name}
                 </h2>
