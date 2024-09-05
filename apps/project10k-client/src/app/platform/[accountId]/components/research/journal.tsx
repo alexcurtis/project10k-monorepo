@@ -57,7 +57,7 @@ function JournalHeader({
     onJournalNameChange: (name: EditableTextSubmitEvent) => void;
 }) {
     return (
-        <div className="mx-24 pt-12 flex-none">
+        <div className="mx-24 pt-12 flex-none box-border">
             <p className="text-4xl font-semibold text-white">
                 <EditableText
                     placeholder="Placeholder"
@@ -118,9 +118,9 @@ function JournalEditor({ journal }: { journal: IJournal }) {
     }
 
     return (
-        <div className="flex flex-col h-full max-h-full">
+        <div className="flex flex-col h-full max-h-full box-border ">
             <JournalHeader journalName={journal.name} onJournalNameChange={onJournalNameChangeCb} />
-            <div className="flex-none">
+            <div className="flex-none box-border ">
                 {errors.length > 0 ? (
                     <InlineError
                         className="mx-24 mt-4"
@@ -129,7 +129,7 @@ function JournalEditor({ journal }: { journal: IJournal }) {
                     />
                 ) : null}
             </div>
-            <div className="flex-grow">
+            <div className="flex-grow box-border h-full max-h-full overflow-y-auto mt-8">
                 <BlockEditor
                     content={journal.journalEntry.content}
                     onUpdate={updateJournalEntryCb}

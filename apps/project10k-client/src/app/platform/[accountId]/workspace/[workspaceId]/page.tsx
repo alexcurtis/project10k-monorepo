@@ -106,7 +106,7 @@ function ContentArea({
         [updateWorkspace, workspace]
     );
     return (
-        <div className="flex flex-col h-full max-h-full">
+        <div className="flex flex-col h-full max-h-full box-border pb-14">
             <div className="flex-none">
                 <WorkspaceHeader
                     name={workspace.name}
@@ -114,7 +114,7 @@ function ContentArea({
                     onWorkspaceNameChange={onWorkspaceNameChangeCb}
                 />
             </div>
-            <div className="flex-grow">
+            <div className="flex-grow h-full max-h-full box-border">
                 <Journal />
             </div>
         </div>
