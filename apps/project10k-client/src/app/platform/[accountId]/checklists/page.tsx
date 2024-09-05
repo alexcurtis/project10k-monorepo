@@ -7,7 +7,7 @@ import { BriefcaseIcon } from "@heroicons/react/24/solid";
 import { Loader } from "@vspark/catalyst/loader";
 import { Q_MY_ACCOUNT } from "@platform/graphql";
 import { IAccountQL } from "@platform/types/ql";
-import { CheckListTree } from "./treeview";
+import { CheckListComponent } from "./treeview";
 
 function PageLoader() {
     return (
@@ -30,7 +30,7 @@ function CheckLists({ accountId }: { accountId: string }) {
     const { checklists } = data.account;
     return (
         <>
-            <CheckListTree checklists={checklists} />
+            <CheckListComponent editable={true} checklists={checklists} />
         </>
     );
 }

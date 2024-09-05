@@ -161,6 +161,9 @@ export const WORKSPACE_QL_RESPONSE = `
     {
         _id
         name
+        account {
+            _id
+        }
         journals ${WORKSPACE_JOURNALS_QL_RESPONSE}
     }
 `;

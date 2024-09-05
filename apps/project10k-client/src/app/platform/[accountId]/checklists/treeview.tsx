@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import React, { DragEvent, ChangeEvent, FormEvent, useCallback, useState } from "react";
+import React, { DragEvent, ChangeEvent, FormEvent, useCallback, useState, createContext, useContext } from "react";
 import { ApolloClient, gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { EditableMathFieldProps } from "react-mathquill";
 
@@ -27,11 +27,19 @@ const EditableMathField = dynamic<EditableMathFieldProps>(
 
 import "./mathquill.css";
 
+interface ICheckListContext {
+    editable: boolean;
+}
+
+export const CheckListContext = createContext<ICheckListContext>({
+    editable: false,
+});
+
 export const CheckListStateIcons = {
-    fail: "❌",
-    danger: "🧨",
-    pass: "✅",
-    amazing: "🎉",
+    fail: { icon: "👎", textColour: "text-red-600", bgColour: "bg-red-600" },
+    danger: { icon: "🧨", textColour: "text-yellow-600", bgColour: "bg-yellow-600" },
+    pass: { icon: "👍", textColour: "text-green-600", bgColour: "bg-green-600" },
+    amazing: { icon: "🎉", textColour: "text-indigo-500", bgColour: "bg-indigo-600" },
 };
 
 // Build Out The CheckList Tree From The Apollo Cache
@@ -160,30 +168,30 @@ function LeafEdit({ checklist, onCancel }: { checklist: ICheckList; onCancel: ()
                             <DescriptionDetails className="leading-9">
                                 <ScaleAttribute
                                     name="scale_danger"
-                                    label={`Fail ${CheckListStateIcons.fail}`}
-                                    labelClassName="text-red-500"
+                                    label={`Fail ${CheckListStateIcons.fail.icon}`}
+                                    labelClassName={CheckListStateIcons.fail.textColour}
                                     value={scale.fail}
                                     onChange={(e) => setScale({ ...scale, fail: Number(e.target.value) })}
                                 />
                                 <ScaleAttribute
                                     name="scale_fail"
-                                    label={`Danger ${CheckListStateIcons.danger}`}
-                                    labelClassName="text-yellow-500"
+                                    label={`Danger ${CheckListStateIcons.danger.icon}`}
+                                    labelClassName={CheckListStateIcons.danger.textColour}
                                     value={scale.danger}
                                     onChange={(e) => setScale({ ...scale, danger: Number(e.target.value) })}
                                 />
                                 <ScaleAttribute
                                     name="scale_pass"
-                                    label={`Pass ${CheckListStateIcons.pass}`}
-                                    labelClassName="text-green-500"
+                                    label={`Pass ${CheckListStateIcons.pass.icon}`}
+                                    labelClassName={CheckListStateIcons.pass.textColour}
                                     value={scale.pass}
                                     onChange={(e) => setScale({ ...scale, pass: Number(e.target.value) })}
                                 />
                                 <ScaleAttribute
                                     name="scale_amazing"
-                                    label={`Amazing ${CheckListStateIcons.amazing}`}
+                                    label={`Amazing ${CheckListStateIcons.amazing.icon}`}
+                                    labelClassName={CheckListStateIcons.amazing.textColour}
                                     className="mb-0"
-                                    labelClassName="text-white"
                                     value={scale.amazing}
                                     onChange={(e) => setScale({ ...scale, amazing: Number(e.target.value) })}
                                 />
@@ -251,6 +259,7 @@ function ParentEdit({ checklist, onCancel }: { checklist: ICheckList; onCancel: 
 }
 
 function ReadOnlyNode({ checklist, onEdit }: { checklist: ICheckList; onEdit: (v: boolean) => void }) {
+    const { editable } = useContext(CheckListContext);
     const [hover, setHover] = useState(false);
     const onMouseEnterCb = useCallback(() => {
         setHover(true);
@@ -267,14 +276,16 @@ function ReadOnlyNode({ checklist, onEdit }: { checklist: ICheckList; onEdit: (v
                         <p className="text-base leading-9">{name ? name : question}</p>
                     </div>
                     <div className={`flex-none ${hover ? "visible" : "invisible"}`}>
-                        <div className="flex">
-                            <Button onClick={() => onEdit(true)} className="ml-2">
-                                <PencilIcon />
-                            </Button>
-                            <Button color="red" className="ml-2">
-                                <TrashIcon />
-                            </Button>
-                        </div>
+                        {editable ? (
+                            <div className="flex">
+                                <Button onClick={() => onEdit(true)} className="ml-2">
+                                    <PencilIcon />
+                                </Button>
+                                <Button color="red" className="ml-2">
+                                    <TrashIcon />
+                                </Button>
+                            </div>
+                        ) : null}
                     </div>
                 </div>
             </div>
@@ -282,11 +293,13 @@ function ReadOnlyNode({ checklist, onEdit }: { checklist: ICheckList; onEdit: (v
     );
 }
 
-function Leaf({ checklist }: { checklist: ICheckList }) {
+function Leaf({ checklist, root }: { checklist: ICheckList; root?: boolean }) {
+    const { editable } = useContext(CheckListContext);
     const [edit, setEdit] = useState(false);
     const onEditCb = useCallback((value: boolean) => setEdit(value), [setEdit]);
+    const ident = !root ? "ml-3" : "";
     return (
-        <div className="ml-3">
+        <div className={ident}>
             {edit ? (
                 <LeafEdit checklist={checklist} onCancel={() => onEditCb(false)} />
             ) : (
@@ -296,23 +309,24 @@ function Leaf({ checklist }: { checklist: ICheckList }) {
     );
 }
 
-function Parent({ checklist }: { checklist: ICheckList }) {
+function Parent({ checklist, root }: { checklist: ICheckList; root?: boolean }) {
     const [edit, setEdit] = useState(false);
     const onEditCb = useCallback((value: boolean) => setEdit(value), [setEdit]);
     const { children } = checklist;
+    const ident = !root ? "ml-4" : "";
     return (
-        <div className="ml-4 border-l-4 border-indigo-400">
+        <div className={`${ident} border-l-4 border-indigo-400`}>
             {edit ? (
                 <ParentEdit checklist={checklist} onCancel={() => onEditCb(false)} />
             ) : (
                 <ReadOnlyNode checklist={checklist} onEdit={onEditCb} />
             )}
-            {children ? <CheckListTree checklists={children} /> : null}
+            {children ? <CheckListTree parent={checklist} checklists={children} /> : null}
         </div>
     );
 }
 
-function Node({ checklist }: { checklist: ICheckList }) {
+function Node({ checklist, root }: { checklist: ICheckList; root?: boolean }) {
     const client = useApolloClient();
     // Checklist Node Query
     const { loading, data } = useQuery<ICheckListQL>(Q_CHECKLIST, {
@@ -338,32 +352,40 @@ function Node({ checklist }: { checklist: ICheckList }) {
 
     // Only Parents Have Names
     const { name } = data.checklist;
+    // Do Not Style Root Nodes
+    const className = !root
+        ? "ml-1 before:absolute before:border-t-4 before:border-solid before:border-indigo-400 before:top-8 before:w-5 before:left-px"
+        : "";
     return (
         <ul role="list" className="relative">
-            <div
-                draggable={true}
-                onDragStart={onDragStartCb}
-                className="ml-1 before:absolute before:border-t-4 before:border-solid before:border-indigo-400 before:top-8 before:w-5 before:left-px"
-            >
+            <div draggable={true} onDragStart={onDragStartCb} className={className}>
                 {name ? (
-                    <Parent key={checklist._id} checklist={data.checklist} />
+                    <Parent key={checklist._id} checklist={data.checklist} root={root} />
                 ) : (
-                    <Leaf key={checklist._id} checklist={data.checklist} />
+                    <Leaf key={checklist._id} checklist={data.checklist} root={root} />
                 )}
             </div>
         </ul>
     );
 }
 
-export function CheckListTree({ checklists }: { checklists: ICheckList[] | undefined }) {
+function CheckListTree({ parent, checklists }: { parent?: ICheckList; checklists: ICheckList[] | undefined }) {
     if (!checklists) {
         return null;
     }
     return (
         <>
             {checklists.map((checklist) => (
-                <Node key={checklist._id} checklist={checklist} />
+                <Node key={checklist._id} checklist={checklist} root={parent ? false : true} />
             ))}
         </>
+    );
+}
+
+export function CheckListComponent({ editable, checklists }: { editable: boolean; checklists?: ICheckList[] }) {
+    return (
+        <CheckListContext.Provider value={{ editable }}>
+            <CheckListTree checklists={checklists} />
+        </CheckListContext.Provider>
     );
 }
