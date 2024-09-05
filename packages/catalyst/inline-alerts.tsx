@@ -10,7 +10,7 @@ interface IInlineError {
 export function InlineError({ headline, errors, className }: IInlineError) {
     const classNameExt = className ? className : "";
     return (
-        <div className={`rounded-md bg-red-600 p-4 ${classNameExt}`}>
+        <div className={`rounded-sm bg-red-600 p-4 ${classNameExt}`}>
             <div className="flex">
                 <div className="flex-shrink-0">
                     <XCircleIcon aria-hidden="true" className="h-6 w-6 text-white" />

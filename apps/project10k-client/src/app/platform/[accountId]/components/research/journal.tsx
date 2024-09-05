@@ -129,7 +129,7 @@ function JournalEditor({ journal }: { journal: IJournal }) {
                     />
                 ) : null}
             </div>
-            <div className="flex-grow box-border h-full max-h-full overflow-y-auto mt-8">
+            <div className="flex-grow box-border h-full max-h-full overflow-y-auto mt-6">
                 <BlockEditor
                     content={journal.journalEntry.content}
                     onUpdate={updateJournalEntryCb}
