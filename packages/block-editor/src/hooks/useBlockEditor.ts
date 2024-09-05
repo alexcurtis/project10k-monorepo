@@ -28,7 +28,6 @@ export const useBlockEditor = ({
       //----
       content: content,
       autofocus: true,
-      onCreate: ({ editor }) => {},
       onUpdate: onUpdate,
       extensions: [...ExtensionKit({}), ...extensions],
       editorProps: {
@@ -36,7 +35,6 @@ export const useBlockEditor = ({
           autocomplete: "off",
           autocorrect: "off",
           autocapitalize: "off",
-          class: "min-h-full",
         },
       },
     },

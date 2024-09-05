@@ -7,7 +7,9 @@ import { Button } from "@vspark/catalyst/button";
 
 import { usePub } from "@platform/hooks";
 import { ICompany, ICompanyFiling } from "@platform/types/entities";
-import { dateFormat, dateTimeFormat, GenerateCompanyLogoSrcUrl } from "@platform/components/doc-viewer/citations";
+import { dateFormat, dateTimeFormat } from "@platform/components/doc-viewer/citations";
+import { GenerateCompanyLogoSrcUrl } from "@platform/components/company";
+
 import { Badge } from "@vspark/catalyst/badge";
 
 interface ICitationProps {

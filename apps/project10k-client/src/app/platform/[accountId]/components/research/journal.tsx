@@ -118,7 +118,7 @@ function JournalEditor({ journal }: { journal: IJournal }) {
     }
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full max-h-full">
             <JournalHeader journalName={journal.name} onJournalNameChange={onJournalNameChangeCb} />
             <div className="flex-none">
                 {errors.length > 0 ? (
@@ -129,7 +129,7 @@ function JournalEditor({ journal }: { journal: IJournal }) {
                     />
                 ) : null}
             </div>
-            <div className="flex-grow overflow-auto">
+            <div className="flex-grow">
                 <BlockEditor
                     content={journal.journalEntry.content}
                     onUpdate={updateJournalEntryCb}
@@ -168,9 +168,5 @@ export function Journal() {
         return journal._id === activeJournalId;
     });
 
-    return (
-        <div className="h-full max-h-full">
-            {activeJournal ? <JournalContainer activeJournal={activeJournal} /> : <EmptyJournal />}
-        </div>
-    );
+    return <>{activeJournal ? <JournalContainer activeJournal={activeJournal} /> : <EmptyJournal />}</>;
 }

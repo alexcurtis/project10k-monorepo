@@ -36,17 +36,15 @@ export const BlockEditor = ({
   }
 
   return (
-    <div ref={menuContainerRef}>
-      <div className="relative flex flex-col flex-1 h-full overflow-hidden">
-        <ContentItemMenu editor={editor} />
-        <LinkMenu editor={editor} appendTo={menuContainerRef} />
-        <TextMenu editor={editor} />
-        <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
-        <TableRowMenu editor={editor} appendTo={menuContainerRef} />
-        <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
-        <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
-        <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
-      </div>
+    <div className="relative" ref={menuContainerRef}>
+      <ContentItemMenu editor={editor} />
+      <LinkMenu editor={editor} appendTo={menuContainerRef} />
+      <TextMenu editor={editor} />
+      <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
+      <TableRowMenu editor={editor} appendTo={menuContainerRef} />
+      <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
+      <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+      <EditorContent editor={editor} />
     </div>
   );
 };

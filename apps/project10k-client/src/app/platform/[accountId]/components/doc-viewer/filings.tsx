@@ -7,6 +7,7 @@ import { Loader } from "@vspark/catalyst/loader";
 
 import { ICompanyFilingsQL } from "@platform/types/ql";
 import { DocViewerPage, ICompany, ICompanyFiling } from "@platform/types/entities";
+import { GenerateCompanyLogoSrcUrl } from "@platform/components/company";
 import { DocViewerContext } from "./context";
 
 import "ag-grid-community/styles/ag-grid.css";
@@ -122,12 +123,16 @@ function CompanyFilingsGroup({
 }
 
 function Header({ title, ticker }: { title: string; ticker: string[] }) {
+    const logoSrc = GenerateCompanyLogoSrcUrl(ticker[0]);
     return (
-        <>
-            <h1 className="text-2xl mb-5 mt-4">
+        <div className="flex mt-4 mb-5">
+            <div className="h-10 w-10 flex-none">
+                <img className="rounded-sm" src={logoSrc} />
+            </div>
+            <h1 className="text-2xl flex-grow ml-2 leading-10 align-middle">
                 {title} <span className="text-zinc-400">{`(${ticker})`}</span>
             </h1>
-        </>
+        </div>
     );
 }
 

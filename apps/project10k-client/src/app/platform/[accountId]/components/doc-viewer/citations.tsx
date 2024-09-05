@@ -1,5 +1,4 @@
 import { DragEvent, useCallback, useContext, useState } from "react";
-import Image from "next/image";
 import { format } from "date-fns";
 import {
     ChevronRightIcon,
@@ -21,12 +20,7 @@ import { ICitationsOnWorkspaceQL } from "@platform/types/ql";
 import { WorkspaceContext } from "@platform/context";
 
 import { usePub } from "@platform/hooks";
-
-const LOGO_DEV_PUBLIC_KEY = "pk_ewo2-MGORAq6UKF9zp-ffA";
-
-export function GenerateCompanyLogoSrcUrl(ticker: string) {
-    return `https://img.logo.dev/ticker/${ticker}?token=${LOGO_DEV_PUBLIC_KEY}`;
-}
+import { GenerateCompanyLogoSrcUrl } from "@platform/components/company";
 
 export const dateTimeFormat = (date: Date) => format(date, "Pp");
 export const dateFormat = (date: Date) => format(date, "P");
