@@ -3566,6 +3566,7 @@ __metadata:
     "@tiptap/extension-font-family": "npm:^2.6.6"
     "@tiptap/extension-heading": "npm:^2.6.6"
     "@tiptap/extension-highlight": "npm:^2.6.6"
+    "@tiptap/extension-history": "npm:^2.6.6"
     "@tiptap/extension-horizontal-rule": "npm:^2.6.6"
     "@tiptap/extension-image": "npm:^2.6.6"
     "@tiptap/extension-link": "npm:^2.6.6"

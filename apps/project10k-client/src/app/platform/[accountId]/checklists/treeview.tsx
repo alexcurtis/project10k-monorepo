@@ -9,7 +9,7 @@ import { Loader } from "@vspark/catalyst/loader";
 import { CHECKLIST_QL_RESPONSE, M_UPDATE_CHECKLIST, Q_CHECKLIST, Q_MY_ACCOUNT } from "@platform/graphql";
 import { ICheckListQL } from "@platform/types/ql";
 import { ICheckList, ICheckListScale } from "@platform/types/entities";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Button } from "@vspark/catalyst/button";
 import { PrimaryActionButton } from "@vspark/catalyst/buttons";
 import { DescriptionList, DescriptionTerm, DescriptionDetails } from "@vspark/catalyst/description-list";
@@ -100,7 +100,9 @@ function LeafEdit({ checklist, onCancel }: { checklist: ICheckList; onCancel: ()
     const [formula, setFormula] = useState(checklist.formula);
     const [metric, setMetric] = useState(checklist.metric);
     const [textual, setTextual] = useState<boolean>(checklist.textual || false);
-    const [scale, setScale] = useState<ICheckListScale>(checklist.scale || { danger: 0, fail: 0, pass: 0, amazing: 0 });
+    const [scale, setScale] = useState<ICheckListScale>(
+        checklist.scale || { min: 0, max: 0, danger: 0, fail: 0, pass: 0, amazing: 0 }
+    );
 
     const [updateCheckList, { loading }] = useMutation(M_UPDATE_CHECKLIST);
 
@@ -274,6 +276,7 @@ function ParentEdit({ checklist, onCancel }: { checklist: ICheckList; onCancel: 
     );
 }
 
+// Both Parent and Leaf Have Same ReadOnly Node
 function ReadOnlyNode({ checklist, onEdit }: { checklist: ICheckList; onEdit: (v: boolean) => void }) {
     const { editable } = useContext(CheckListContext);
     const [hover, setHover] = useState(false);
@@ -294,6 +297,17 @@ function ReadOnlyNode({ checklist, onEdit }: { checklist: ICheckList; onEdit: (v
                     <div className={`flex-none ${hover ? "visible" : "invisible"}`}>
                         {editable ? (
                             <div className="flex">
+                                {/* Only Parents (With a Name Can Create Sub Groups / CheckLists) */}
+                                {checklist.name ? (
+                                    <>
+                                        <Button onClick={() => onEdit(true)} className="ml-2">
+                                            <PlusIcon /> New Group
+                                        </Button>
+                                        <Button onClick={() => onEdit(true)} className="ml-2">
+                                            <PlusIcon /> New Check
+                                        </Button>
+                                    </>
+                                ) : null}
                                 <Button onClick={() => onEdit(true)} className="ml-2">
                                     <PencilIcon />
                                 </Button>

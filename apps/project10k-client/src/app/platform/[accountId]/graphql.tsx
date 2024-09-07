@@ -138,6 +138,9 @@ export const WORKSPACE_JOURNALS_QL_RESPONSE = `
         _id
         name
         mindMapNode ${MINDMAP_NODE_QL_RESPONSE}
+        journalEntry {
+            _id
+        }
     }
 `;
 
@@ -145,15 +148,6 @@ export const JOURNAL_ENTRY_QL_RESPONSE = `
     {
         _id
         content
-    }
-`;
-
-export const JOURNAL_FULLFAT_QL_RESPONSE = `
-    {
-        _id
-        name
-        mindMapNode ${MINDMAP_NODE_QL_RESPONSE}
-        journalEntry ${JOURNAL_ENTRY_QL_RESPONSE}
     }
 `;
 

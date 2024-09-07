@@ -10,9 +10,9 @@ import { EditableText, EditableTextSubmitEvent } from "@vspark/catalyst/editable
 import { InlineError } from "@vspark/catalyst/inline-alerts";
 
 import { WorkspaceContext } from "@platform/context";
-import { IJournalQL } from "@platform/types/ql";
-import { JOURNAL_ENTRY_QL_RESPONSE, JOURNAL_FULLFAT_QL_RESPONSE } from "@platform/graphql";
-import { IJournal, IWorkspace } from "@platform/types/entities";
+import { IJournalEntryQL, IJournalQL } from "@platform/types/ql";
+import { JOURNAL_ENTRY_QL_RESPONSE } from "@platform/graphql";
+import { IJournal, IJournalEntry, IWorkspace } from "@platform/types/entities";
 
 import { Citation, CitationNode } from "./citation/editor-extension";
 import { CheckList, CheckListLeafNode, CheckListParentNode } from "./checklist/editor-extension";
@@ -34,10 +34,10 @@ const M_UPDATE_JOURNAL = gql`
 `;
 
 // Journal Entry Query - Entry Stored Seperatly from Journal (As can be big)
-const Q_JOURNAL_FULLFAT = gql`
-    query GetJournalFullFat($id: ID!) {
-        journal(id: $id)
-            ${JOURNAL_FULLFAT_QL_RESPONSE}
+const Q_JOURNAL_ENTRY = gql`
+    query getJournalEntry($id: ID!) {
+        journalEntry(id: $id)
+            ${JOURNAL_ENTRY_QL_RESPONSE}
     }
 `;
 
@@ -78,7 +78,7 @@ function JournalLoader() {
     );
 }
 
-function JournalEditor({ journal }: { journal: IJournal }) {
+function JournalEditor({ journal, journalEntry }: { journal: IJournal; journalEntry: IJournalEntry }) {
     // Mutators
     const [updateJournal, { error: journalError }] = useMutation(M_UPDATE_JOURNAL);
     const [updateJournalEntry, { error: journalEntryError }] = useMutation(M_UPDATE_JOURNAL_ENTRY);
@@ -100,13 +100,13 @@ function JournalEditor({ journal }: { journal: IJournal }) {
         debounce((evnt) => {
             updateJournalEntry({
                 variables: {
-                    id: journal.journalEntry._id,
+                    id: journalEntry._id,
                     content: evnt.editor.getJSON(),
                 },
                 ignoreResults: true,
             });
         }, EDITOR_SAVE_DEBOUNCE),
-        [updateJournalEntry, journal]
+        [updateJournalEntry, journal, journalEntry]
     );
 
     const errors = [];
@@ -131,7 +131,7 @@ function JournalEditor({ journal }: { journal: IJournal }) {
             </div>
             <div className="flex-grow box-border h-full max-h-full overflow-y-auto mt-6">
                 <BlockEditor
-                    content={journal.journalEntry.content}
+                    content={journalEntry.content}
                     onUpdate={updateJournalEntryCb}
                     extensions={[Citation, CitationNode, CheckList, CheckListLeafNode, CheckListParentNode]}
                 />
@@ -141,9 +141,10 @@ function JournalEditor({ journal }: { journal: IJournal }) {
 }
 
 function JournalContainer({ activeJournal }: { activeJournal: IJournal }) {
-    // Full Fat Journal Query
-    const { loading, error, data } = useQuery<IJournalQL>(Q_JOURNAL_FULLFAT, {
-        variables: { id: activeJournal._id },
+    // Full Fat Journal Entry Query
+    const { loading, error, data } = useQuery<IJournalEntryQL>(Q_JOURNAL_ENTRY, {
+        variables: { id: activeJournal.journalEntry._id },
+        fetchPolicy: "no-cache", // Do Not Store In Cache. We Want Live Data (+ Save and not Refresh)
     });
 
     // Saftey Gate - If Loading or No Data
@@ -151,8 +152,8 @@ function JournalContainer({ activeJournal }: { activeJournal: IJournal }) {
         return <JournalLoader />;
     }
 
-    const journal = data.journal;
-    return <JournalEditor journal={journal} />;
+    const journalEntry = data.journalEntry;
+    return <JournalEditor journal={activeJournal} journalEntry={journalEntry} />;
 }
 
 // Block Editor Does Not Re-Render When Data Updated - Editor Is An Expensive Function

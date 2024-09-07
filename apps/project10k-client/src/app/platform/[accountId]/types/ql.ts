@@ -1,4 +1,14 @@
-import { IAccount, IWorkspace, ICompany, ICompanyFiling, IJournal, ICitation, IUser, ICheckList } from "./entities";
+import {
+    IAccount,
+    IWorkspace,
+    ICompany,
+    ICompanyFiling,
+    IJournal,
+    ICitation,
+    IUser,
+    ICheckList,
+    IJournalEntry,
+} from "./entities";
 
 export interface IQueryLanguage {}
 
@@ -25,6 +35,10 @@ export interface IWorkspaceQL extends IQueryLanguage {
 
 export interface ICitationQL extends IQueryLanguage {
     citation: ICitation;
+}
+
+export interface IJournalEntryQL extends IQueryLanguage {
+    journalEntry: IJournalEntry;
 }
 
 export interface IJournalQL extends IQueryLanguage {

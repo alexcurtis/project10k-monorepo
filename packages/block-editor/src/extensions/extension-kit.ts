@@ -40,6 +40,7 @@ import {
   TaskList,
 } from ".";
 import { CodeBlockLowlight } from "@tiptap/extension-code-block-lowlight";
+import History from "@tiptap/extension-history";
 import { TableOfContentsNode } from "./TableOfContentsNode";
 import { lowlight } from "lowlight";
 
@@ -75,6 +76,7 @@ export const ExtensionKit = ({}: ExtensionKitProps) => [
     lowlight,
     defaultLanguage: null,
   }),
+  History,
   TextStyle,
   FontSize,
   FontFamily,

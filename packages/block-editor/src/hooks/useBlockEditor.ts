@@ -38,17 +38,17 @@ export const useBlockEditor = ({
         },
       },
     },
-    []
+    [content]
   );
 
-  useEffect(() => {
-    if (!editor || editor === null) {
-      return;
-    }
-    const { from, to } = editor.state.selection;
-    editor.commands.setContent(content);
-    editor.commands.setTextSelection({ from, to });
-  }, [content]);
+  //   useEffect(() => {
+  //     if (!editor || editor === null) {
+  //       return;
+  //     }
+  //     const { from, to } = editor.state.selection;
+  //     editor.commands.setContent(content);
+  //     editor.commands.setTextSelection({ from, to });
+  //   }, [content]);
 
   window.editor = editor;
   return { editor };
